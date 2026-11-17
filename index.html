@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Fowm Plan</title>
+  <meta name="description" content="The Fowm blueprint: every step from kitchen tests to selling the brand.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#F7F7F4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1A110C" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Fowm Plan">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png?v=1">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=1">
+  <link rel="preload" href="fonts/fredoka-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/figtree-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css?v=1">
+</head>
+<body>
+<header class="bar">
+  <div class="bar-in">
+    <nav class="tabs" aria-label="Blueprint sections">
+      <a href="#plan">Plan</a>
+      <a href="#product">Product</a>
+      <a href="#money">Money</a>
+      <a href="#grow">Grow</a>
+      <a href="#exit">Exit</a>
+      <a href="#legal">Legal</a>
+      <a href="#words">Words</a>
+    </nav>
+    <a class="meter" href="#plan" id="meter" aria-label="Plan progress: 0%"><i id="meterFill"></i><b id="meterPct">0%</b></a>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============ PLAN ============ -->
+<section class="view" data-view="plan" aria-label="Plan">
+  <div class="wrap wide">
+    <div class="hero">
+      <div>
+        <h1>The Fowm blueprint</h1>
+        <p class="lead">Tick each step as you do it. Every tick adds foam to the cup, and a full cup means Fowm is ready to sell.</p>
+        <p class="pin">Fowm = protein foam for your freddo. Athens first. €29.90 for 20 servings.</p>
+        <p class="count"><b id="doneN">0</b> of <span id="totalN">46</span> steps done</p>
+        <p class="save" data-save-status>Progress saves on this phone.</p>
+      </div>
+      <figure class="cupfig">
+        <svg class="cup" viewBox="0 -12 300 448" role="img" aria-labelledby="cupT">
+          <title id="cupT">A freddo cup. The foam rises as you finish steps.</title>
+          <defs>
+            <clipPath id="cupIn"><path d="M40,-12 L240,-12 L240,70 L208,420 L72,420 L40,70 Z"/></clipPath>
+            <linearGradient id="espG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#7A4A2E"/><stop offset=".22" stop-color="#4A2A1A"/><stop offset="1" stop-color="#26150D"/>
+            </linearGradient>
+            <linearGradient id="cremaG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#D9A877" stop-opacity="0"/><stop offset=".55" stop-color="#D9A877"/><stop offset="1" stop-color="#9A6440"/>
+            </linearGradient>
+          </defs>
+          <ellipse class="shadow" cx="140" cy="426" rx="84" ry="6"/>
+          <line class="straw" x1="178" y1="405" x2="230" y2="-2"/>
+          <line class="straw-hi" x1="175.5" y1="396.4" x2="226" y2="1.6"/>
+          <g clip-path="url(#cupIn)">
+            <g id="foam" transform="translate(0 280)">
+              <path class="foam" d="M30,30 A21,21 0 0 1 66.7,14 A21,21 0 0 1 103.3,4 A21,21 0 0 1 140,0 A21,21 0 0 1 176.7,4 A21,21 0 0 1 213.3,14 A21,21 0 0 1 250,30 L250,470 L30,470 Z"/>
+              <g class="bubbles"><circle cx="84" cy="38" r="5"/><circle cx="118" cy="26" r="3.5"/><circle cx="162" cy="40" r="4.5"/><circle cx="200" cy="34" r="3"/><circle cx="104" cy="62" r="3"/><circle cx="150" cy="72" r="4"/><circle cx="188" cy="90" r="3.2"/><circle cx="92" cy="106" r="4"/><circle cx="132" cy="128" r="3"/></g>
+            </g>
+            <rect x="0" y="284" width="300" height="18" fill="url(#cremaG)"/>
+            <rect x="0" y="300" width="300" height="130" fill="url(#espG)"/>
+            <g class="ice">
+              <rect x="86" y="318" width="36" height="36" rx="7" transform="rotate(-12 104 336)"/>
+              <rect x="136" y="346" width="32" height="32" rx="6" transform="rotate(10 152 362)"/>
+              <rect x="100" y="372" width="34" height="34" rx="7" transform="rotate(24 117 389)"/>
+              <rect x="152" y="310" width="28" height="28" rx="6" transform="rotate(-6 166 324)"/>
+            </g>
+          </g>
+          <line class="shine" x1="58" y1="98" x2="82" y2="372"/>
+          <path class="cup-line" d="M40,70 L72,420 L208,420 L240,70"/>
+          <rect class="lip" x="33" y="62" width="214" height="13" rx="6.5"/>
+          <g id="ruler"></g>
+        </svg>
+        <figcaption><b id="cupStage">You're in Stage 0: Decide and protect</b><span id="cupSub">The numbers on the side are the seven stages.</span></figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="next" aria-labelledby="nextH">
+      <h2 id="nextH">Next up</h2>
+      <p class="muted" id="nextIntro">The open steps in your current stage.</p>
+      <ul class="checks" id="nextList"></ul>
+      <div class="gate" id="gatePrompt" hidden>
+        <p id="gateText"></p>
+        <label class="check"><input class="vh" type="checkbox" id="gateBox" data-gate="0"><span class="box" aria-hidden="true"></span><span class="txt">We hit this gate</span></label>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>The whole plan in eight lines</h2>
+      <p>Fowm can become a multi-million brand, but only if one thing comes true first: people who try it on their freddo buy it again. This plan proves that cheaply, before you spend big.</p>
+      <dl class="eight">
+        <div><dt>Product</dt><dd>Protein foam for your freddo. 15g of protein, 20 seconds, your own coffee.</dd></div>
+        <div><dt>Place</dt><dd>Athens first, then Greece, Canada when you move, the US last.</dd></div>
+        <div><dt>Price</dt><dd>€29.90 for 20 servings, and a 2-pouch subscription at 10% off.</dd></div>
+        <div><dt>Proof</dt><dd>100 paid pre-orders, then 40%+ of customers reordering within 90 days.</dd></div>
+        <div><dt>Growth</dt><dd>Creators on commission and cafés serving protein freddos, then Skroutz, then shops.</dd></div>
+        <div><dt>Money</dt><dd>Your own money until it's proven, then prizes and loans, then angel investors.</dd></div>
+        <div><dt>Protection</dt><dd>A trademark, formula ownership in writing, and clean books from day one.</dd></div>
+        <div><dt>The sale</dt><dd>Hot brands have sold for about 3–4 × yearly sales (<a href="#grow">Grow</a>). Small brands sell for 2.5–4.5 × yearly profit (<a href="#exit">Exit</a>).</dd></div>
+      </dl>
+      <div class="note">
+        <p><b>The honest odds.</b> The brands in <a href="#grow">Grow</a> are the winners, not the average, and most food brands never reach a sale. A realistic ladder looks like this: a solid small brand might sell for €100–250k, a real brand for €0.7–2M, and a big one for €5–19M. Billions took Poppi more than $500M in yearly sales. Treat billions as the dream, millions as the goal, and the next 90 days as the job.</p>
+      </div>
+      <h3>Still open, and not mine to answer</h3>
+      <ul class="rows">
+        <li><b>Is Fowm taxed at 13% or 24% VAT?</b>Ask your accountant. The difference is worth about €2.35 a pouch (<a href="#money">Money</a>).</li>
+        <li><b>Can "Fowm" be registered as a trademark?</b>Ask a trademark attorney before you print pouches (<a href="#legal">Legal</a>).</li>
+        <li><b>Who packs orders in Greece once you move for university?</b>Decide by summer 2027 (Stage 4 below).</li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <h2>Seven stages, from your kitchen to a sale</h2>
+      <p>Each stage ends with a gate: numbers you must hit before moving on. If you miss a gate, stay in that stage and fix it, using the red-number fixes in <a href="#money">Money</a>. Dates assume 15–30 hours a week.</p>
+      <ol class="stages" id="stages">
+
+        <li class="stage" data-stage="0" data-title="Decide and protect">
+          <details>
+            <summary><div class="st-row"><span class="st-num">0</span><span><span class="st-title">Decide and protect</span><span class="here">You're here</span><span class="st-when">17 Nov – 15 Dec 2026</span></span><span class="st-count">0/6</span></div></summary>
+            <div class="st-body">
+              <ul class="checks">
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s0-1"><span class="box" aria-hidden="true"></span><span class="txt">Write one line and pin it above your desk: <i>"Fowm = protein foam for your freddo. Athens first. €29.90 for 20 servings."</i></span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s0-2"><span class="box" aria-hidden="true"></span><span class="txt">Book a trademark attorney's opinion on "Fowm" (see Legal). Decide: file the word, file the logo, or adjust the name.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s0-3"><span class="box" aria-hidden="true"></span><span class="txt">Get quotes from 2 food technologists. Confirm Fowm is sold as a food, not a supplement.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s0-4"><span class="box" aria-hidden="true"></span><span class="txt">Order unflavoured whey isolate and run kitchen tests A–D (log them in Product). Film every test for content.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s0-5"><span class="box" aria-hidden="true"></span><span class="txt">Write the one-page manufacturer brief and email 8 manufacturers.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s0-6"><span class="box" aria-hidden="true"></span><span class="txt">Change the planned website price to €29.90 and the subscription to a 2-pouch pack at 10% off. Keep "launching soon".</span></label></li>
+              </ul>
+              <div class="gate"><p class="gate-text"><b>Gate:</b> you've picked the best kitchen recipe, emailed 8 manufacturers and decided how to protect the name.</p><label class="check"><input class="vh" type="checkbox" data-gate="0"><span class="box" aria-hidden="true"></span><span class="txt">We hit this gate</span></label></div>
+            </div>
+          </details>
+        </li>
+
+        <li class="stage" data-stage="1" data-title="Samples and blind tests">
+          <details>
+            <summary><div class="st-row"><span class="st-num">1</span><span><span class="st-title">Samples and blind tests</span><span class="here">You're here</span><span class="st-when">Mid-Dec 2026 – mid-Feb 2027</span></span><span class="st-count">0/6</span></div></summary>
+            <div class="st-body">
+              <ul class="checks">
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s1-1"><span class="box" aria-hidden="true"></span><span class="txt">Get samples from at least 3 manufacturers and run the foam test on each.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s1-2"><span class="box" aria-hidden="true"></span><span class="txt">Run a blind test with 30–50 people in real freddos: at the gym, at school, at a friendly café.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s1-3"><span class="box" aria-hidden="true"></span><span class="txt">Collect an email from every taster. Post the journey 3 times a week on @getfowm.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s1-4"><span class="box" aria-hidden="true"></span><span class="txt">Choose the manufacturer. Get the price per kg at 250, 500 and 1,000 kg, the minimum order and the lead time, plus formula ownership in writing.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s1-5"><span class="box" aria-hidden="true"></span><span class="txt">Line up 10 creators (your girlfriend first) and 3 cafés that say "yes, we'll try it".</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s1-6"><span class="box" aria-hidden="true"></span><span class="txt">Get courier quotes from BOX NOW and ACS, and put the real shipping cost into the calculator in Money.</span></label></li>
+              </ul>
+              <div class="gate"><p class="gate-text"><b>Gate:</b> one sample scores 7/10 or more, 6 in 10 tasters would buy at €29.90, and 300+ people are on the waitlist.</p><label class="check"><input class="vh" type="checkbox" data-gate="1"><span class="box" aria-hidden="true"></span><span class="txt">We hit this gate</span></label></div>
+            </div>
+          </details>
+        </li>
+
+        <li class="stage" data-stage="2" data-title="Company and first batch">
+          <details>
+            <summary><div class="st-row"><span class="st-num">2</span><span><span class="st-title">Company and first batch</span><span class="here">You're here</span><span class="st-when">Mid-Feb – mid-Apr 2027</span></span><span class="st-count">0/7</span></div></summary>
+            <div class="st-body">
+              <ul class="checks">
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s2-1"><span class="box" aria-hidden="true"></span><span class="txt">Set up the IKE, the accountant, a business bank account and myDATA.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s2-2"><span class="box" aria-hidden="true"></span><span class="txt">File the trademark if it isn't filed yet. If you filed before the company existed, ask the attorney how to move it into the company.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s2-3"><span class="box" aria-hidden="true"></span><span class="txt">Register with EFET, and with the EOAN packaging register and a recycling scheme.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s2-4"><span class="box" aria-hidden="true"></span><span class="txt">Get the Greek back label approved by the technologist, then print 500 pouches.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s2-5"><span class="box" aria-hidden="true"></span><span class="txt">Order the first batch of 250–500 pouches. Get the lab test and the shelf-life data.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s2-6"><span class="box" aria-hidden="true"></span><span class="txt">Set up Shopify Payments, the BOX NOW plugin, the legal pages, and product pages with all mandatory food information.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s2-7"><span class="box" aria-hidden="true"></span><span class="txt">Open pre-orders to the waitlist at a founder price no lower than €27.90, so you still keep about €4 a pouch.</span></label></li>
+              </ul>
+              <div class="gate"><p class="gate-text"><b>Gate:</b> the stock is in your hands, the lab result matches the label, and 100 pre-orders are paid.</p><label class="check"><input class="vh" type="checkbox" data-gate="2"><span class="box" aria-hidden="true"></span><span class="txt">We hit this gate</span></label></div>
+            </div>
+          </details>
+        </li>
+
+        <li class="stage" data-stage="3" data-title="Launch in Athens">
+          <details>
+            <summary><div class="st-row"><span class="st-num">3</span><span><span class="st-title">Launch in Athens</span><span class="here">You're here</span><span class="st-when">Mid-Apr – Jul 2027, freddo season</span></span><span class="st-count">0/6</span></div></summary>
+            <div class="st-body">
+              <ul class="checks">
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s3-1"><span class="box" aria-hidden="true"></span><span class="txt">Ship every pre-order within 48 hours, and message every customer personally.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s3-2"><span class="box" aria-hidden="true"></span><span class="txt">Ask every customer for a review and a 10-second video.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s3-3"><span class="box" aria-hidden="true"></span><span class="txt">Start the creator programme: 30 creators on 10% commission.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s3-4"><span class="box" aria-hidden="true"></span><span class="txt">Start the café pilots: 5 cafés with a "Protein Freddo" menu card.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s3-5"><span class="box" aria-hidden="true"></span><span class="txt">Turn on subscriptions.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s3-6"><span class="box" aria-hidden="true"></span><span class="txt">Every Monday, fill in the weekly number check in Money.</span></label></li>
+              </ul>
+              <div class="gate"><p class="gate-text"><b>Gate:</b> you have 500 customers, 30%+ reorder within 90 days, you keep €5+ per order, and 3 cafés sell 20+ a week.</p><label class="check"><input class="vh" type="checkbox" data-gate="3"><span class="box" aria-hidden="true"></span><span class="txt">We hit this gate</span></label></div>
+            </div>
+          </details>
+        </li>
+
+        <li class="stage" data-stage="4" data-title="Prove repeat, prepare the move">
+          <details>
+            <summary><div class="st-row"><span class="st-num">4</span><span><span class="st-title">Prove repeat, prepare the move</span><span class="here">You're here</span><span class="st-when">Aug – Dec 2027</span></span><span class="st-count">0/6</span></div></summary>
+            <div class="st-body">
+              <ul class="checks">
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s4-1"><span class="box" aria-hidden="true"></span><span class="txt">Before you leave for university, hand daily packing to a fulfilment warehouse or a paid helper. Keep customers, creators and cafés yourself.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s4-2"><span class="box" aria-hidden="true"></span><span class="txt">List on Skroutz, sign 20 more cafés and pitch one café chain.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s4-3"><span class="box" aria-hidden="true"></span><span class="txt">Launch the second flavour.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s4-4"><span class="box" aria-hidden="true"></span><span class="txt">Order a bigger second batch of 1,000–2,000 pouches to cut the cost per pouch.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s4-5"><span class="box" aria-hidden="true"></span><span class="txt">Meet a Greece–Canada tax adviser before you become a Canadian resident.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s4-6"><span class="box" aria-hidden="true"></span><span class="txt">Apply to the Elevate Greece registry.</span></label></li>
+              </ul>
+              <div class="gate"><p class="gate-text"><b>Gate:</b> 40%+ reorder within 90 days, sales have grown 3 months in a row, and you keep €7+ per order.</p><label class="check"><input class="vh" type="checkbox" data-gate="4"><span class="box" aria-hidden="true"></span><span class="txt">We hit this gate</span></label></div>
+            </div>
+          </details>
+        </li>
+
+        <li class="stage" data-stage="5" data-title="Raise and expand">
+          <details>
+            <summary><div class="st-row"><span class="st-num">5</span><span><span class="st-title">Raise and expand</span><span class="here">You're here</span><span class="st-when">2028</span></span><span class="st-count">0/5</span></div></summary>
+            <div class="st-body">
+              <ul class="checks">
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s5-1"><span class="box" aria-hidden="true"></span><span class="txt">Raise a small angel round if your numbers are green (the ready-to-raise check is in Grow).</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s5-2"><span class="box" aria-hidden="true"></span><span class="txt">If you're in Montreal, apply to the Dobson Cup and Futurpreneur.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s5-3"><span class="box" aria-hidden="true"></span><span class="txt">Launch in Canada with English and French labels.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s5-4"><span class="box" aria-hidden="true"></span><span class="txt">Get into gyms, pharmacies and health shops in Greece.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s5-5"><span class="box" aria-hidden="true"></span><span class="txt">Hire your first person, for operations.</span></label></li>
+              </ul>
+              <div class="gate"><p class="gate-text"><b>Gate:</b> shops reorder without you chasing them, and your first investors are in.</p><label class="check"><input class="vh" type="checkbox" data-gate="5"><span class="box" aria-hidden="true"></span><span class="txt">We hit this gate</span></label></div>
+            </div>
+          </details>
+        </li>
+
+        <li class="stage" data-stage="6" data-title="Scale and sell">
+          <details>
+            <summary><div class="st-row"><span class="st-num">6</span><span><span class="st-title">Scale and sell</span><span class="here">You're here</span><span class="st-when">2029 onward</span></span><span class="st-count">0/4</span></div></summary>
+            <div class="st-body">
+              <ul class="checks">
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s6-1"><span class="box" aria-hidden="true"></span><span class="txt">Enter supermarkets once your cost per pouch is low enough (see Grow).</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s6-2"><span class="box" aria-hidden="true"></span><span class="txt">Enter the US.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s6-3"><span class="box" aria-hidden="true"></span><span class="txt">Build a team that runs Fowm without you.</span></label></li>
+                <li><label class="check"><input class="vh" type="checkbox" data-task="s6-4"><span class="box" aria-hidden="true"></span><span class="txt">Spend 12–24 months preparing the sale (see Exit), then run an auction for buyers.</span></label></li>
+              </ul>
+            </div>
+          </details>
+        </li>
+      </ol>
+    </section>
+
+    <section class="block">
+      <h2>Your weekly routine</h2>
+      <p>About 20 hours a week, until university.</p>
+      <ul class="bars">
+        <li><span>Fill in the number check and pick this week's one fix<span class="when">Monday</span></span><span class="amt">1 h</span><span class="track"><i data-w="20"></i></span></li>
+        <li><span>Film and post content<span class="when">Twice a week</span></span><span class="amt">5 h</span><span class="track"><i data-w="100"></i></span></li>
+        <li><span>Answer customers, creators and messages<span class="when">Daily</span></span><span class="amt">5 h</span><span class="track"><i data-w="100"></i></span></li>
+        <li><span>Visit cafés and gyms<span class="when">Once a week</span></span><span class="amt">4 h</span><span class="track"><i data-w="80"></i></span></li>
+        <li><span>Manufacturer, stock, recipe work<span class="when">Once a week</span></span><span class="amt">3 h</span><span class="track"><i data-w="60"></i></span></li>
+        <li><span>Money, accountant, admin<span class="when">Friday</span></span><span class="amt">2 h</span><span class="track"><i data-w="40"></i></span></li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <h2>Mistakes that kill brands</h2>
+      <p>Most young brands don't die from competitors. They die from a mistake they made themselves. Read this list before every big decision.</p>
+      <ul class="rows">
+        <li><b>Restarting.</b>Every new name, country or product puts you back at zero. Fowm, Athens and protein foam are now fixed until the numbers say otherwise.</li>
+        <li><b>Polishing before proving.</b>Logos, packaging and websites don't matter until the foam tastes great and people reorder.</li>
+        <li><b>Splitting your time.</b>15–30 hours a week is enough for Fowm, but only if Fowm gets most of it.</li>
+        <li><b>Pricing too low.</b>At €24.90 you'd work for about €1.64 a pouch (<a href="#money">Money</a>). Cheap prices are very hard to raise later.</li>
+        <li><b>Big discounts.</b>A 15% subscription discount or a 25% launch code can wipe out everything you keep.</li>
+        <li><b>Ads before reorders.</b>Paying for strangers before your friends reorder burns cash fast.</li>
+        <li><b>Raising too much, too early.</b>Super Coffee raised over $100M, then had to cut marketing by 80% and staff by 70% to survive (<a href="https://www.bevnet.com/?p=222959">BevNET</a>).</li>
+        <li><b>Going EU-wide on day one.</b>Each country brings its own packaging registration, VAT and language rules (<a href="#legal">Legal</a>).</li>
+        <li><b>Illegal claims.</b>"Fat burner", "boosts metabolism" or any health claim not on the EU list can get you fined or pulled.</li>
+        <li><b>Not owning your brand.</b>No trademark or no written formula ownership means nothing to sell.</li>
+        <li><b>Copying another brand's look.</b>Packaging that's too close to Grüns or anyone else invites legal letters. Stay clearly yourself.</li>
+        <li><b>One sales channel.</b>Brands that only sell on Amazon are valued 1–2 points lower (<a href="https://eightx.co/blog/average-sde-multiple-by-revenue-band">Eightx</a>).</li>
+        <li><b>Fake reviews or fake "was €X" prices.</b>Both are illegal in the EU and destroy trust.</li>
+        <li><b>Ignoring cash.</b>Whey prices swing, and stock eats cash before it makes any. Know your months of cash left, every week.</li>
+      </ul>
+    </section>
+  </div>
+</section>
+
+<!-- ============ PRODUCT ============ -->
+<section class="view" data-view="product" aria-label="Product">
+  <div class="wrap">
+    <section class="block">
+      <h2>The market and Fowm's edge</h2>
+      <p class="lead">Protein is the number one food trend of 2026, and cold foam is the fastest-growing way people add it to coffee. But almost nobody sells protein cold foam you make at home. That gap is Fowm.</p>
+
+      <h3>The wave is real</h3>
+      <ul>
+        <li>Innova ranked protein the number one food and drink trend of 2026. Nearly 60% of consumers worldwide say they're adding more protein to their diet (<a href="https://www.tridge.com/news/pioneering-protein-innovation-inside-the-nor-itzbjxpn">Tridge</a>).</li>
+        <li>In Greece, protein milk sales grew 35.8% in a year, to €12.1M (<a href="https://presentations.boussiasevents.gr/files/_boussias_conferences_content/presentations/dairy_conference/2026/PPT7_%CE%92%CE%B1%CE%B3%CE%B3%CE%AD%CE%BB%CE%B7%CF%82%20%CE%A6%CF%8E%CF%83%CE%BA%CE%BF%CE%BB%CE%BF%CF%82.pdf">Greek Dairy Conference 2026</a>).</li>
+        <li>In Germany, high-protein sales grew 39.1% in a year, and 48% of shoppers buy high-protein foods (<a href="https://yougov.com/de-de/artikel/55076-high-protein-ist-vom-fitness-zum-massenmarkt-geworden">YouGov</a>).</li>
+        <li>Not everywhere: most Italian consumers don't prioritise protein (<a href="https://foodnavigator.com/Article/2026/04/27/10-big-food-trends-in-europe/">FoodNavigator</a>). Don't pick Italy as an early market.</li>
+      </ul>
+
+      <h3>Starbucks already proved protein cold foam sells</h3>
+      <p>It launched Protein Cold Foam in the US and Canada on 29 September 2025, adding about 15g of protein to any cold drink. Cold foam was already used in one of every seven drinks (<a href="https://stories.starbucks.ca/?p=42525">Starbucks</a>). It became Starbucks' most popular protein add-on (<a href="https://www.axios.com/2026/03/26/starbucks-menu-protein-coffee-drinks">Axios</a>), and cold foam sales grew more than 40% in one quarter (<a href="https://www.foodbusinessnews.net/articles/30230-starbucks-starting-to-build-momentum">Food Business News</a>). In April 2026 it launched across Europe, the Middle East and Africa with 15g of whey (<a href="https://proteinproductiontechnology.com/post/starbucks-launches-protein-cold-foam-drinks-with-15g-whey-protein-across-emea-menu">Protein Production Technology</a>).</p>
+      <p>What this means for you: the world's biggest coffee chain is teaching millions of people what protein cold foam is, for free. But you can only get it in their cafés, at their prices.</p>
+
+      <h3>Greece is the perfect test market</h3>
+      <ul>
+        <li>Greeks spent about €4B on coffee in 2024, €3.5B of it outside the home (<a href="https://en.protothema.gr/2025/02/05/coffee-mania-how-greek-coffee-culture-evolved-from-traditional-greek-coffee-to-freddo">Proto Thema</a>).</li>
+        <li>Freddo espresso and freddo cappuccino make up 70–80% of all cold coffee drunk in Greece (<a href="https://www.tovima.com/culture/the-freddo-espresso-a-modern-greek-cultural-phenomenon/">To Vima</a>). A freddo cappuccino is cold espresso with cold milk foam on top. Greeks already love the foam. Fowm just adds 15g of protein to it.</li>
+        <li>Prices are squeezing people: 45.7% of Greeks say they'll visit cafés less, and shoppers want products that recreate the café at home (<a href="https://greekcitytimes.com/2026/10/05/greek-coffee-market-proves-resilient-amid-consumer-trends/">Greek City Times</a>). That's exactly what Fowm does.</li>
+      </ul>
+
+      <h3>At home, protein cold foam is nearly empty</h3>
+      <div class="map" role="group" aria-label="Market map of protein coffee products: café or home, foam or no foam">
+        <span></span><span class="ax">In a café</span><span class="ax">At home</span>
+        <span class="ay">Foam</span>
+        <div class="q"><div><b>Starbucks Protein Cold Foam</b><span>15g whey add-on, only in its cafés</span></div></div>
+        <div class="q"><div class="me"><b>Fowm</b><span>15g foam on your own coffee, about €1.50</span></div><div><b>Nexus Collagen Cold Foam</b><span>8g collagen protein per serving</span></div></div>
+        <span class="ay">No foam</span>
+        <div class="q"><div><b>Coffee Island Protein Freddo</b><span>20g, €4.60 a drink, limited edition</span></div></div>
+        <div class="q"><div><b>Instant protein coffees</b><span>Prozis, ESN Flexpresso, More Iced Coffee</span></div><div><b>Plain whey stirred into coffee</b><span>Clumps, no foam</span></div></div>
+      </div>
+      <p class="cap">From the product pages of Starbucks, Coffee Island, Prozis, ESN, More Nutrition and Stack3d, November 2026.</p>
+      <p>The only at-home cold foam powder found, Nexus, carries 8g of collagen per serving (<a href="https://www.stack3d.com/2026/10/nexus-collagen-cold-foam/">Stack3d</a>). Coffee Island sells a 20g protein freddo for €4.60 a drink, as a limited edition (<a href="https://www.coffeeisland.gr/en/catalog/viewProduct/9072-espresso-protein">Coffee Island</a>). Instant protein coffees from <a href="https://www.prozis.com/gr/el/prozis/protein-latte-400g">Prozis</a>, <a href="https://www.rossmann.de/de/lebensmittel-esn-flexpresso-protein-coffee-caramel/p/4250519665597">ESN</a> and <a href="https://www.shop-apotheke.at/fitness/upm4XLR2E/more-nutrition-protein-iced-coffee.htm">More Nutrition</a> replace your coffee instead of upgrading it.</p>
+      <p class="pin">Fowm in one line: protein foam for your freddo. 15g of protein, 20 seconds, your own coffee.</p>
+
+      <h3>Three threats to watch</h3>
+      <ul class="rows">
+        <li><b>A big brand copies you.</b>Starbucks, Coffee Island or More Nutrition could sell an at-home version. Your defence is speed, a brand people love, and café partners who already use Fowm.</li>
+        <li><b>Whey prices jump.</b>Whey is your main cost (<a href="#money">Money</a>). Lock prices with your manufacturer when you can.</li>
+        <li><b>The trend cools.</b>Euromonitor expects protein demand to keep growing from people with lasting needs: older adults, GLP-1 users and people who lift weights (<a href="https://www.euromonitor.com/newsroom/press-releases/july-2026/wellness-trends-and-glp-1s-fuel-protein-market">Euromonitor</a>). Build Fowm around taste and foam, not just protein, so it survives either way.</li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <h2>Making Fowm foam</h2>
+      <p class="lead">Fowm lives or dies on one test: does one scoop whip into thick foam in 20 seconds and taste great on a freddo? Nothing else matters until the answer is yes.</p>
+
+      <h3>How protein foam works</h3>
+      <ul>
+        <li><b>Foam is tiny air bubbles wrapped in protein.</b> Frothing pushes air in. The protein spreads around each bubble like a skin and holds it up.</li>
+        <li><b>Whey isolate is the best foamer.</b> In a patent test, a whey isolate foamed about as well as egg white. A whey concentrate with more fat and milk sugar foamed much worse (<a href="https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/4218490">US patent 4218490</a>).</li>
+        <li><b>Too much fat kills foam.</b> A study of barista drinks found foam depends on protein level and on the balance of fat to protein (<a href="https://www.omya.com/en/omya-specialty-materials/industries/food-pharma-and-nutrition/food-pharma-and-nutrition-articles/the-role-of-calcium-carbonate-in-the-foamability-of-barista-style-plant-based-drinks">Omya</a>). Your current test recipe has coconut milk powder, which is fat. Test a version without it.</li>
+        <li><b>Foam beats clumps.</b> Starbucks first tried stirring protein straight into drinks, and it kept clumping. So they turned it into foam (<a href="https://www.fastcompany.com/91350628/starbucks-protein-cold-foam?partner=rss">Fast Company</a>). That's your whole product story.</li>
+        <li><b>Hot coffee needs a helper.</b> The dipotassium phosphate you ordered stops protein curdling in hot, acidic coffee.</li>
+      </ul>
+
+      <h3>Your kitchen tests (do these first)</h3>
+      <p>You need: a handheld frother, a scale that reads 0.01g, cold milk, water, oat milk, freddo espresso and a timer. For 15g of protein you need about 17g of 90% whey isolate, so one serving is 20–25g of powder. That fits your 500g pouch with 20 servings.</p>
+      <p>Log each version here as you test it. Try it with milk, water and oat milk. The winner's instructions become your pack's "how to use" line.</p>
+      <div class="leader" id="leader"><span id="leaderText">Log a test to see which version is winning.</span></div>
+      <div class="tests" id="tests"></div>
+      <p class="hint">How the leader is picked (my rule): no clumps, still foamy after 5 minutes, then the best taste. Ties go to the taller foam.</p>
+      <p class="hint" data-save-status></p>
+
+      <h3>Choosing a manufacturer</h3>
+      <p>Send one short brief to 5–8 manufacturers. Ask each for samples of your winning recipe.</p>
+      <ul>
+        <li><b>Greece:</b> <a href="https://amhes.com/en/idiotiki-etiketa/">AMHES Pharma</a> does private label from formula to finished product, in small and large batches. It's already on your list.</li>
+        <li><b>EU, low minimums:</b> <a href="https://wonnda.com/magazine/supplement-contract-manufacturers/">ERA Scientifico</a> in Latvia (white label from about 500 units), <a href="https://nutrikal.com/blogs/blog/top-10-private-label-supplement-trends-dominating-europe-in-2025">Nutrikal</a> in Bulgaria (runs of 500–2,000 units), and Private Vitamin Lab in Slovenia, which does single-dose sachets (<a href="https://wonnda.com/magazine/white-label-supplement-manufacturers-europe/">Wonnda</a>).</li>
+        <li><b>Expect bigger minimums elsewhere.</b> Branded protein powder often starts at 500–2,000 kg per order (<a href="https://usetorg.com/category/protein-powder">Torg</a>). That's 1,000–4,000 pouches, too many for a first test.</li>
+      </ul>
+      <p><b>Questions to ask every manufacturer:</b></p>
+      <ul>
+        <li>What's your minimum order, and the price per kg at 250 kg, 500 kg and 1,000 kg?</li>
+        <li>How much are samples, and how fast?</li>
+        <li>Can you buy the whey isolate and fix its price for 6–12 months?</li>
+        <li>Which food-safety certificates do you hold (ISO 22000, FSSC 22000, HACCP)?</li>
+        <li>Will you test protein per serving and shelf life?</li>
+        <li>Can you pack sachets later, and at what minimum?</li>
+        <li><b>Do I own the formula?</b> Get it in writing. A buyer will check this when you sell Fowm.</li>
+      </ul>
+      <div class="note"><p><b>Watch the whey price.</b> Whey is your biggest cost, and it's at record highs. In April 2026, European whey isolate cost about €25,750 per tonne (<a href="https://www.dairyindustries.com/?p=50391">Dairy Industries</a>). Whey concentrate prices have about quadrupled in three years (<a href="https://vespertool.com/blog/major-sports-nutrition-brands-are-telling-consumers-why-whey-prices-are-going-up-in-2026/">Vesper</a>). In October 2026, isolate was still trading near a record (<a href="https://www.ingredientsnetwork.com/whey-protein-production-struggles-to-keep-pace-news130148.html">Ingredients Network</a>).</p></div>
+
+      <h3>Packaging</h3>
+      <ul>
+        <li><b>Pouches:</b> digital printing needs no plates, so small runs are possible. <a href="https://packhelp.com/p/recyclable-doypack/custom/">Packhelp</a> prints doypacks from 500 pieces. Switch to cheaper plate printing only when you order 10,000+.</li>
+        <li><b>Sachets come later.</b> Stick-pack minimums usually run 5,000–25,000 units (<a href="https://wonnda.com/magazine/top-supplement-trends/">Wonnda</a>). Your €2 single-serve idea becomes product two, once pouches sell.</li>
+        <li><b>Your design is done.</b> Only the back label is left: the legal text in <a href="#legal">Legal</a>.</li>
+      </ul>
+
+      <h3>Before you sell a single pouch</h3>
+      <ol class="steps tight">
+        <li><span class="rt">Lab test</span>Send the finished powder to an accredited lab, such as <a href="https://tuvaustriahellas.gr/services/labs/?lang=en">TÜV Austria Hellas</a> in Athens. It confirms the protein per serving. Your label number must match the lab result.</li>
+        <li><span class="rt">Shelf life</span>Get the manufacturer's shelf-life test, and print the best-before date it supports.</li>
+        <li><span class="rt">Blind taste test</span>30–50 people try a freddo with Fowm against a normal freddo cappuccino, without knowing which is which. Pass mark (my rule): an average taste of 7/10 or more, and at least 6 in 10 saying they'd buy it at €29.90.</li>
+      </ol>
+    </section>
+  </div>
+</section>
+
+<!-- ============ MONEY ============ -->
+<section class="view" data-view="money" aria-label="Money">
+  <div class="wrap">
+    <section class="block">
+      <h2>The money math</h2>
+      <p class="lead">At the old €24.90 price, Fowm would make about €1.64 per pouch before any advertising, because whey is at record prices. List it at €29.90 and sell two pouches per order. That multiplies what you keep about 4–6 times.</p>
+
+      <div class="panel" id="calc">
+        <h3>What you keep per order</h3>
+        <p class="hint">Tap an example, then move the sliders. Subscription means 2 pouches at 10% off with free delivery.</p>
+        <div class="presets" role="group" aria-label="Examples to load">
+          <button type="button" class="chipbtn" data-preset="old">€24.90 (old)</button>
+          <button type="button" class="chipbtn" data-preset="single">€29.90</button>
+          <button type="button" class="chipbtn" data-preset="double">2 × €29.90</button>
+          <button type="button" class="chipbtn" data-preset="sub">Subscription</button>
+        </div>
+        <div class="out"><span class="big" id="cKept" aria-live="polite">€0.00</span><span class="pill none" id="cPill">…</span></div>
+        <p class="out-sub" id="cPer"></p>
+        <div class="stack" id="cStack" aria-hidden="true"></div>
+        <ul class="legend" id="cLegend"></ul>
+
+        <div class="ctrl">
+          <div class="ctrl-head"><label for="cPrice">Price per pouch</label><output id="oPrice" for="cPrice"></output></div>
+          <input type="range" id="cPrice" min="19.9" max="39.9" step="1" value="29.9">
+          <p class="hint" id="cServing"></p>
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-head"><span class="lab" id="lUnits">Pouches per order</span></div>
+          <div class="seg" role="radiogroup" aria-labelledby="lUnits">
+            <label><input class="vh" type="radio" name="units" value="1"><span>1</span></label>
+            <label><input class="vh" type="radio" name="units" value="2"><span>2</span></label>
+            <label><input class="vh" type="radio" name="units" value="3"><span>3</span></label>
+          </div>
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-head"><span class="lab" id="lDisc">Discount</span></div>
+          <div class="seg" role="radiogroup" aria-labelledby="lDisc">
+            <label><input class="vh" type="radio" name="disc" value="0"><span>None</span></label>
+            <label><input class="vh" type="radio" name="disc" value="10"><span>10%</span></label>
+            <label><input class="vh" type="radio" name="disc" value="15"><span>15%</span></label>
+            <label><input class="vh" type="radio" name="disc" value="20"><span>20%</span></label>
+            <label><input class="vh" type="radio" name="disc" value="25"><span>25%</span></label>
+          </div>
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-head"><span class="lab" id="lVat">VAT rate</span></div>
+          <div class="seg" role="radiogroup" aria-labelledby="lVat">
+            <label><input class="vh" type="radio" name="vat" value="24"><span>24%</span></label>
+            <label><input class="vh" type="radio" name="vat" value="13"><span>13%</span></label>
+          </div>
+          <p class="hint">Not settled yet. Your accountant decides which one applies.</p>
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-head"><label for="cWhey">Whey isolate price</label><output id="oWhey" for="cWhey"></output></div>
+          <input type="range" id="cWhey" min="15" max="40" step="0.5" value="27">
+          <p class="hint">€27 a kilo is the 2026 record range. Whey is most of what a pouch costs.</p>
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-head"><label for="cShip">Shipping and box, per order</label><output id="oShip" for="cShip"></output></div>
+          <input type="range" id="cShip" min="0" max="6" step="0.25" value="3.5">
+          <p class="hint">€3.50 until you get a courier quote from BOX NOW or ACS.</p>
+        </div>
+        <details class="more">
+          <summary>What one pouch costs you</summary>
+          <ul id="cCost"></ul>
+          <p class="hint">My estimate until manufacturers quote. Card fees on Shopify Payments run about 2.1% + €0.30 per order in Germany (<a href="https://qualimero.com/blog/shopify-gebuehren">Qualimero</a>).</p>
+        </details>
+      </div>
+
+      <p class="formula">Kept = price ÷ (1 + VAT) − product cost − card fee − shipping</p>
+      <div class="note"><p><b>Open question for your accountant: is Fowm taxed at 24% or 13% VAT?</b> Greek VAT is 24%, 13% or 6% (<a href="https://www.aade.gr/sites/default/files/2020-01/%CE%A4%CE%95%CE%9B%CE%99%CE%9A%CE%9F_%CF%80%CE%B1%CF%81%CE%B1%CF%81%CF%84%CE%B7%CE%BC%CE%B1%20%CE%99%CE%99%CE%99_4646.pdf">AADE</a>). Food preparations can land at 13% or 24% depending on their customs code (<a href="https://www.aade.gr/sites/default/files/2020-12/1144152_2020.pdf">AADE</a>). The difference is worth about €2.35 per pouch.</p></div>
+
+      <h3>Pricing rules</h3>
+      <ul class="rows">
+        <li><b>List price €29.90 for 20 servings.</b>That's €1.50 a serving, a third of a €4.60 café protein freddo. It's still cheaper per kilo than <a href="https://www.rossmann.de/de/lebensmittel-esn-flexpresso-protein-coffee-caramel/p/4250519665597">ESN's protein coffee</a> (€66.63/kg) and <a href="https://www.shop-apotheke.at/fitness/upm4XLR2E/more-nutrition-protein-iced-coffee.htm">More Nutrition's Iced Coffee</a> (€79.26/kg).</li>
+        <li><b>Subscription = 2 pouches every 5–6 weeks, 10% off, free delivery.</b>At 15% off on a single pouch you'd keep only about €2 per order.</li>
+        <li><b>Never discount below what you keep.</b>A 25%-off code on a single €29.90 pouch loses money if VAT is 24%.</li>
+        <li><b>Update the calculator when real quotes arrive.</b>Ask manufacturers for prices, and get a courier quote from BOX NOW or ACS.</li>
+      </ul>
+
+      <h3>How much you can pay to win a customer</h3>
+      <p>This is the "customer acquisition cost": what you spend on ads, samples and creators per new customer.</p>
+      <ul class="rows">
+        <li><b>Before you know people reorder</b>Spend at most what the first order keeps, about €5–8.</li>
+        <li><b>Once 30%+ of customers reorder</b>You can spend up to what the first three orders keep, about €15–24.</li>
+      </ul>
+      <p class="hint" id="cCac"></p>
+
+      <h3>How to spend the €3–15k (first 6 months)</h3>
+      <div class="seg" role="radiogroup" aria-label="Budget">
+        <label><input class="vh" type="radio" name="budget" value="3"><span>€3k: prove it</span></label>
+        <label><input class="vh" type="radio" name="budget" value="15"><span>€15k: launch properly</span></label>
+      </div>
+      <ul class="bars" id="budget"></ul>
+      <p class="hint">Only the trademark fees are official prices (<a href="https://www.dury.de/en/european-tradmark-law/1077-eu-trademark-registration-2026-a-complete-guide-for-international-businesses">EUIPO fees</a>). Everything else is my estimate, so swap in real quotes as you get them. With €3k you can't produce stock yet, but you can prove people want Fowm and take pre-orders. Around €8k is the smallest real launch (about 250 pouches).</p>
+    </section>
+
+    <section class="block">
+      <h2>Numbers to watch</h2>
+      <p class="lead">The single most important number is how many customers buy again within 90 days. For coffee, food and supplements, healthy brands get 30–45% (<a href="https://topgrowthmarketing.com/ecommerce-customer-retention-90-day-guide/">Top Growth Marketing</a>).</p>
+      <p>Every Monday, type in this week's numbers. Each one turns green, yellow or red and tells you what to do next.</p>
+      <div class="panel">
+        <div class="kpi-sum">
+          <div class="tally" id="tally"></div>
+          <p class="small" id="oneFix"></p>
+          <p class="hint" id="kpiDate"></p>
+        </div>
+        <ul class="kpi" id="kpi"></ul>
+        <button type="button" class="textbtn" id="kpiClear">Clear this week's numbers</button>
+        <p class="hint" data-save-status></p>
+      </div>
+      <p class="small muted">Where the lines come from: median Shopify stores convert 2.5% of visitors in supplements and 2.3% in food (<a href="https://sherocommerce.com/blogs/insights/dtc-growth-flywheel">Littledata via Shero</a>). Supplement subscriptions typically lose 5–8% of subscribers a month (<a href="https://eightx.co/blog/supplement-subscription-churn-rate-benchmark">Eightx</a>). The taste, café, kept-money and cash lines are my own rules for Fowm.</p>
+      <div class="note"><p>Most second orders, 76%, happen within 90 days of the first (<a href="https://topgrowthmarketing.com/ecommerce-customer-retention-90-day-guide/">Top Growth Marketing</a>). So your first three months with each customer decide almost everything.</p></div>
+    </section>
+  </div>
+</section>
+
+<!-- ============ GROW ============ -->
+<section class="view" data-view="grow" aria-label="Grow">
+  <div class="wrap">
+    <section class="block">
+      <h2>How to sell it</h2>
+      <p class="lead">Win customers in this order: 100 fans who reorder, then creators, then cafés, then Skroutz, then gyms and pharmacies, then supermarkets. Only move to the next step once the one before it works.</p>
+
+      <h3>Who buys Fowm (start with two groups)</h3>
+      <ul class="rows">
+        <li><b>Freddo cappuccino drinkers who train</b>18–35, in Athens. They already love the foam and already want protein.</li>
+        <li><b>People who want more protein but hate shakes</b>More Nutrition built a billion-euro brand mostly on women aged 25–40, who are 80–85% of its customers (<a href="https://www.uamr.de/?p=7837">UAMR</a>).</li>
+      </ul>
+      <p>Later, add the groups Euromonitor expects to keep buying protein: older adults and people on weight-loss drugs (<a href="#product">Product</a>).</p>
+
+      <h3>The six steps, in order</h3>
+      <ol class="steps">
+        <li><span class="rt">100 champions, before you launch</span>
+          <ul>
+            <li>Keep getfowm.com on "launching soon" and collect emails.</li>
+            <li>Run free tastings at gyms, at your school or university and outside cafés. Everyone who tastes gives you an email.</li>
+            <li>Offer the first 100 people a founder price, in return for honest feedback and a short video.</li>
+            <li><b>Goal: 100 paid pre-orders.</b> If you can't get 100 people who know you to pay, strangers won't either.</li>
+          </ul>
+        </li>
+        <li><span class="rt">Creators on commission</span>
+          <ul>
+            <li><b>Copy More Nutrition:</b> 10% of the sales each creator brings in, with no fixed fee (<a href="https://www.kolsquare.com/en/customer-stories/how-more-nutrition-became-a-billion-euro-brand-with-influencer-marketing">Kolsquare</a>). Start with your girlfriend's code, then grow to 30–50 Greek creators in fitness, coffee and student life.</li>
+            <li><b>Greece is cheap for this.</b> Greek creator campaigns cost 30–40% less than in the UK, France or Germany, and nano creators start around $10 (about €9) a post (<a href="https://keepface.com/site/?p=8603">Keepface</a>).</li>
+            <li><b>Always get usage rights,</b> so you can run their best videos as ads.</li>
+            <li><b>Videos that work for Fowm:</b> the slow foam pour, "plain freddo vs protein freddo", "15g of protein in 20 seconds", and the price of a café protein freddo against yours.</li>
+            <li><b>TikTok Shop isn't open in Greece yet.</b> It reached 10 EU countries in June 2026 (<a href="https://commonthreadco.com/blogs/coachs-corner/tiktok-shop-europe-expansion-2026-ecommerce-brands">Common Thread</a>), and Greece is a likely next launch (<a href="https://shopappy.com/ecommerce/tiktok-shop/tiktok-shop-next-eu-wave-2026">Shopappy</a>). Sign up on day one when it does.</li>
+          </ul>
+        </li>
+        <li><span class="rt">Cafés (the Oatly move)</span>
+          <ul>
+            <li>Pick 5–10 cafés in the southern suburbs where people know you. Start with places you or your family already have a link to.</li>
+            <li><b>Offer:</b> a free first bag, a menu card that says "Protein Freddo, made with Fowm", and pouches to sell at the counter.</li>
+            <li><b>Price:</b> a delivered freddo cappuccino costs about €2.50–2.80 (<a href="https://www.powergame.gr/ikonomia/1437534/chanetai-enas-misthos-etisios-gia-ton-proino-kafe/">Powergame</a>). Coffee Island charges €4.60 for its protein freddo. So a café can add €1.50 for protein foam. Sell Fowm to cafés at about €1 a serving before VAT, in 1kg bags (my starting point; test it).</li>
+            <li><b>Pass mark (my rule):</b> 20+ protein freddos a week per café after 4 weeks. Then sign 20 more cafés, and pitch a chain.</li>
+          </ul>
+        </li>
+        <li><span class="rt">Online marketplaces</span>
+          <ul>
+            <li><b>Your own site comes first.</b> It keeps the customer's email and the subscription.</li>
+            <li><b>Skroutz next,</b> once you have reviews. It gets about 12 million visits a month and has 500,000+ Skroutz Plus members (<a href="https://www.zunapro.com/greece/el/blog/poliseis-sto-skroutz-plires-odigos-polites">Zunapro</a>). Commission depends on the category, so check the seller page.</li>
+            <li><b>Amazon in Germany or Italy</b> only when you expand there (<a href="#legal">Legal</a>).</li>
+          </ul>
+        </li>
+        <li><span class="rt">Gyms, pharmacies and health shops</span>
+          <p>Put pouches at gym receptions on a sell-or-return deal, then pitch pharmacy groups and health shops with your sales numbers.</p>
+        </li>
+        <li><span class="rt">Supermarkets, only when your cost is lower</span>
+          <p>Shops and distributors take a large cut. A common rule of thumb is that the brand receives about half the shelf price. At €29.90 that's about €12–15 before VAT, which is roughly what a pouch costs you today. Supermarkets only work once bigger production runs make each pouch cheaper.</p>
+        </li>
+      </ol>
+
+      <h3>Keeping customers</h3>
+      <ul>
+        <li><b>Subscription first:</b> 2 pouches every 5–6 weeks, with one-click pause or skip.</li>
+        <li><b>Emails:</b> a welcome series with freddo recipes, and a "running low?" email on day 25.</li>
+        <li><b>Flavour drops every 2–3 months:</b> vanilla, salted caramel, mocha, then something Greek.</li>
+        <li><b>Reviews:</b> ask after the second use. Never fake one.</li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <h2>What winning brands did</h2>
+      <p class="lead">The brands below with a public price sold for roughly 3–4 × their yearly sales. Each one fixed one annoying problem with one hero product that people used every day, then grew it with creators and shops.</p>
+      <div class="brands" tabindex="0" aria-label="Brand stories, scroll sideways">
+        <article class="brand">
+          <h4><a href="https://www.modernretail.co/operations/a-timeline-of-what-led-up-to-gruns-being-acquired-by-unilever/">Grüns</a></h4>
+          <dl>
+            <div><dt>What it fixed</dt><dd>Greens powders taste awful, so it made gummies</dd></div>
+            <div><dt>Started</dt><dd>2023</dd></div>
+            <div><dt>Sold to</dt><dd>Unilever, 2026</dd></div>
+            <div><dt>Price</dt><dd>About $1.2B (<a href="https://www.mainsights.io/ma-news/unilever-to-acquire-us-greens-supplement-brand-gruns-for-approximately-usd-12bn-valuing-the-company-at-around-4x-run-rate-sales-of-usd-300m">source</a>)</dd></div>
+            <div><dt>Yearly sales at sale</dt><dd>About $300M run rate</dd></div>
+          </dl>
+        </article>
+        <article class="brand">
+          <h4><a href="https://www.just-drinks.com/news/pepsico-strikes-near-2bn-deal-to-buy-poppi/">Poppi</a></h4>
+          <dl>
+            <div><dt>What it fixed</dt><dd>Soda is full of sugar, so it made a prebiotic soda with 5g of sugar</dd></div>
+            <div><dt>Started</dt><dd>Shark Tank, 2018</dd></div>
+            <div><dt>Sold to</dt><dd>PepsiCo, 2025</dd></div>
+            <div><dt>Price</dt><dd>$1.95B</dd></div>
+            <div><dt>Yearly sales at sale</dt><dd>Over $500M</dd></div>
+          </dl>
+        </article>
+        <article class="brand">
+          <h4><a href="https://www.businesswire.com/news/home/20250220357704/en">Alani Nu</a></h4>
+          <dl>
+            <div><dt>What it fixed</dt><dd>Energy drinks were made for men, so it made a brand for young women</dd></div>
+            <div><dt>Started</dt><dd>2018</dd></div>
+            <div><dt>Sold to</dt><dd>Celsius, 2025</dd></div>
+            <div><dt>Price</dt><dd>$1.8B</dd></div>
+            <div><dt>Yearly sales at sale</dt><dd>Price was under 3 × sales</dd></div>
+          </dl>
+        </article>
+        <article class="brand">
+          <h4><a href="https://www.thegrocer.co.uk/news/grenade-mondelez-takeover-will-supercharge-us/654633.article">Grenade</a></h4>
+          <dl>
+            <div><dt>What it fixed</dt><dd>Protein bars taste bad, so it made bars like chocolate bars</dd></div>
+            <div><dt>Started</dt><dd>2010</dd></div>
+            <div><dt>Sold to</dt><dd>Mondelēz, 2021</dd></div>
+            <div><dt>Price</dt><dd>About £200M</dd></div>
+            <div><dt>Yearly sales at sale</dt><dd>£51.7M (2019)</dd></div>
+          </dl>
+        </article>
+        <article class="brand">
+          <h4><a href="https://www.lse.co.uk/news/lactalis-acquires-uk-protein-brand-protein-works-7bat4nh3sfk25ko.html">Protein Works</a></h4>
+          <dl>
+            <div><dt>What it fixed</dt><dd>An online protein shop, made in the UK</dd></div>
+            <div><dt>Started</dt><dd>2012</dd></div>
+            <div><dt>Sold to</dt><dd>Lactalis, 2026</dd></div>
+            <div><dt>Price</dt><dd>Not disclosed</dd></div>
+            <div><dt>Yearly sales at sale</dt><dd>About €65M</dd></div>
+          </dl>
+        </article>
+        <article class="brand">
+          <h4><a href="https://www.kolsquare.com/en/customer-stories/how-more-nutrition-became-a-billion-euro-brand-with-influencer-marketing">More Nutrition</a></h4>
+          <dl>
+            <div><dt>What it fixed</dt><dd>Flavour powders that actually taste good</dd></div>
+            <div><dt>Started</dt><dd>2017</dd></div>
+            <div><dt>Sold to</dt><dd>Majority to an investor, 2022</dd></div>
+            <div><dt>Price</dt><dd>Not disclosed</dd></div>
+            <div><dt>Yearly sales at sale</dt><dd>Group now over €1B (<a href="https://www.mercadofinanciero.com/comunicados/noticia-comunicado-the-quality-group-grows-h1-revenue-by-more-than-40-to-over-850-million-20260721100606.html">source</a>)</dd></div>
+          </dl>
+        </article>
+      </div>
+      <p class="swipe">Swipe sideways for all six brands.</p>
+
+      <h3>The secrets they share, and the Fowm version of each</h3>
+      <details class="acc" open>
+        <summary>One problem, one hero product</summary>
+        <div class="acc-body pair">
+          <div><b>What they did</b><p>Grüns' founder was sick of mixing powders and chugging juices, so he made greens you can chew (<a href="https://www.modernretail.co/operations/a-timeline-of-what-led-up-to-gruns-being-acquired-by-unilever/">Modern Retail</a>). Grenade made a protein bar that tastes like a chocolate bar.</p></div>
+          <div class="us"><b>The Fowm version</b><p>Protein that turns any coffee into a thick, sweet-tasting cold foam. No clumps, no chalk, no shaker.</p></div>
+        </div>
+      </details>
+      <details class="acc">
+        <summary>A daily habit, not a treat</summary>
+        <div class="acc-body pair">
+          <div><b>What they did</b><p>80% of Grüns customers use it every day (<a href="https://www.pulse.bot/private-equity/blogs/unilever-is-acquiring-gruns-33729d4a-651c-4d4c-b38e-62ed07a1d000/">Pulse</a>). Daily use means a reorder every month.</p></div>
+          <div class="us"><b>The Fowm version</b><p>One scoop in every coffee, every day. Greeks already drink coffee every day.</p></div>
+        </div>
+      </details>
+      <details class="acc">
+        <summary>Creators on commission instead of expensive ads</summary>
+        <div class="acc-body pair">
+          <div><b>What they did</b><p>More Nutrition paid creators 10% of the sales they brought in, with no fixed fees. It went from about 100 creators and €40M in sales to 1,300 creators and about €1B (<a href="https://www.kolsquare.com/en/customer-stories/how-more-nutrition-became-a-billion-euro-brand-with-influencer-marketing">Kolsquare</a>). Alani Nu was founded by a fitness influencer.</p></div>
+          <div class="us"><b>The Fowm version</b><p>Your girlfriend's code deal becomes a programme for dozens of Greek creators, each with a code and a commission.</p></div>
+        </div>
+      </details>
+      <details class="acc">
+        <summary>Go where the drink is made</summary>
+        <div class="acc-body pair">
+          <div><b>What they did</b><p>Oatly launched in the US by giving free cartons of its Barista Edition to the best coffee shops. It went from 10 shops to over 1,000 in a year (<a href="https://time.com/5190977/how-oat-milk-could-change-the-way-you-drink-coffee">TIME</a>). People tasted it in cafés, then asked for it in supermarkets.</p></div>
+          <div class="us"><b>The Fowm version</b><p>A protein freddo on the menu of Athens cafés, made with Fowm.</p></div>
+        </div>
+      </details>
+      <details class="acc">
+        <summary>Win at home first</summary>
+        <div class="acc-body pair">
+          <div><b>What they did</b><p>70% of Grenade's sales were in the UK while it grew (<a href="https://www.nutraingredients.com/Article/2022/10/21/Grenade-s-co-founder-on-building-a-disruptive-brand">NutraIngredients</a>). More Nutrition grew in Germany, Austria and Switzerland first.</p></div>
+          <div class="us"><b>The Fowm version</b><p>Own Athens, then Greece, then move outward.</p></div>
+        </div>
+      </details>
+      <details class="acc">
+        <summary>Start tiny, raise money only once it works</summary>
+        <div class="acc-body pair">
+          <div><b>What they did</b><p>Grenade started in a spare bedroom with a $700 budget (<a href="https://www.thebusinessdesk.com/westmidlands/?p=2049967">TheBusinessDesk</a>). Super Coffee raised over $100M, then later had to cut marketing spend by 80% and staff by 70% to become profitable (<a href="https://www.bevnet.com/?p=222959">BevNET</a>).</p></div>
+          <div class="us"><b>The Fowm version</b><p>Your plan exactly. Self-fund until the numbers prove it, then raise.</p></div>
+        </div>
+      </details>
+      <details class="acc">
+        <summary>Shops create the giant exit</summary>
+        <div class="acc-body pair">
+          <div><b>What they did</b><p>Poppi was in 36,000 stores when PepsiCo bought it (<a href="https://finance.yahoo.com/news/poppi-founder-allison-ellsworth-selling-163121802.html">Yahoo Finance</a>). Grüns was in Walmart, Target and Sam's Club before Unilever bought it (<a href="https://www.foodnavigator.com/Article/2026/04/10/unilever-acquires-supplement-brand-gruns-expanding-health-and-wellbeing-portfolio/">FoodNavigator</a>).</p></div>
+          <div class="us"><b>The Fowm version</b><p>Online first, then cafés, then pharmacies and supermarkets.</p></div>
+        </div>
+      </details>
+      <details class="acc">
+        <summary>Ride a wave</summary>
+        <div class="acc-body pair">
+          <div><b>What they did</b><p>Each rode a trend that was just starting: gut health, greens, protein.</p></div>
+          <div class="us"><b>The Fowm version</b><p>Protein is the wave right now, and cold foam is its most visible form (<a href="#product">Product</a>).</p></div>
+        </div>
+      </details>
+      <div class="note"><p><b>The honest part.</b> Most of these founders had an unfair advantage. Grüns' founder came from private equity. Poppi got a famous investor on Shark Tank. More Nutrition's founder already had a big audience. Your unfair advantages are different: Greece's freddo foam culture, four languages for expansion, real café work experience, and time on your side.</p></div>
+    </section>
+
+    <section class="block">
+      <h2>Raising money</h2>
+      <p class="lead">Don't ask anyone for money until customers reorder. Then take the cheapest money first: sales, prizes and loans before investors. Each investor round usually costs 15–20% of the company (<a href="https://retailisnotdead.beehiiv.com/p/issue-59-how-can-cpg-brands-get-vc-funding">Retail Is Not Dead</a>).</p>
+      <p><b>Raising is hard for food brands right now.</b> Investors now say revenue and shop partnerships are what count (<a href="https://angelinvestorsnetwork.com/capital-raising/how-to-raise-capital-for-consumer-brand-cpg-2025-playbook">Angel Investors Network</a>). The typical consumer seed round fell below $1 million, and the gap between seed and the next round stretched to about three years (<a href="https://www.peony.ink/blog/cpg-fundraising-data-room">Peony, citing Carta</a>). That's why your "self-fund first, then raise" plan is right.</p>
+
+      <div class="panel">
+        <div class="ready-head"><h3 class="flush">Ready to raise?</h3><span class="pill none" id="readyPill">0 of 6</span></div>
+        <div class="ready-bar"><i id="readyBar"></i></div>
+        <p class="hint">My rules. Raise only when all six are true.</p>
+        <ul class="checks">
+          <li><label class="check"><input class="vh" type="checkbox" data-raise="r1"><span class="box" aria-hidden="true"></span><span class="txt">40%+ of customers reorder within 90 days</span></label></li>
+          <li><label class="check"><input class="vh" type="checkbox" data-raise="r2"><span class="box" aria-hidden="true"></span><span class="txt">Sales have grown for 3 months in a row</span></label></li>
+          <li><label class="check"><input class="vh" type="checkbox" data-raise="r3"><span class="box" aria-hidden="true"></span><span class="txt">At least one shop or café chain sells Fowm</span></label></li>
+          <li><label class="check"><input class="vh" type="checkbox" data-raise="r4"><span class="box" aria-hidden="true"></span><span class="txt">You keep €7+ per order before ads</span></label></li>
+          <li><label class="check"><input class="vh" type="checkbox" data-raise="r5"><span class="box" aria-hidden="true"></span><span class="txt">The trademark is filed, and you own the formula in writing</span></label></li>
+          <li><label class="check"><input class="vh" type="checkbox" data-raise="r6"><span class="box" aria-hidden="true"></span><span class="txt">Your accountant can show clean monthly numbers</span></label></li>
+        </ul>
+      </div>
+
+      <h3>The money ladder, cheapest first</h3>
+      <ol class="steps tight">
+        <li><span class="rt">Your own €3–15k</span>Now.</li>
+        <li><span class="rt">Profit from sales</span>Put it all back into stock and customers.</li>
+        <li><span class="rt">Prizes</span>If you go to McGill, the Dobson Cup gives away close to C$200,000 a year in prizes (<a href="https://www.mcgill.ca/channels/node/218172">McGill</a>). Second place in a track wins C$12,000 (<a href="https://www.mcgill.ca/dobsoncup">McGill</a>). Prize money only goes to registered companies with a Canadian bank account (<a href="https://mcgill.ca/x/w6p">McGill</a>).</li>
+        <li><span class="rt">Loans for young founders</span>Futurpreneur lends Canadians aged 18–39 up to C$75,000 without collateral, with a mentor for two years (<a href="https://futurpreneur.ca/en/?p=10931">Futurpreneur</a>). You need to live in Canada, and loans must be paid back.</li>
+        <li><span class="rt">Greek angels</span>Greek angel investors can deduct 50% of what they invest in a startup listed on the Elevate Greece registry. The company must be Greek and under 8 years old (<a href="https://www.pertamapartners.com/funding/greece-angel-investor-tax-deduction-2026">Pertama Partners</a>). Elevate Greece judges each startup case by case (<a href="https://elevategreece.gov.gr/faq/">Elevate Greece</a>), so apply early.</li>
+        <li><span class="rt">Consumer brand funds</span>Only once you're growing fast. Pre-seed food and drink cheques have a median of about $625,000 (<a href="https://f4.fund/investors/food-beverage/marketing-adtech/pre-seed">F4 Fund</a>).</li>
+      </ol>
+
+      <h3>How much of the company to give away</h3>
+      <ul class="rows">
+        <li><b>Never more than 20% in one round.</b>Keep more than half the company until a big round.</li>
+        <li><b>Watch "SAFE" notes.</b>Several of them stacked can quietly cost another 15–25% before real investors even arrive (<a href="https://eightx.co/blog/average-dilution-per-round-for-consumer-brands">Eightx</a>).</li>
+      </ul>
+      <div class="panel" id="dil">
+        <h3>Try a round</h3>
+        <div class="out"><span class="big" id="dInv">13%</span><span class="pill none" id="dPill">…</span></div>
+        <p class="out-sub" id="dText"></p>
+        <div class="ctrl">
+          <div class="ctrl-head"><label for="dRaise">Money you raise</label><output id="oRaise" for="dRaise"></output></div>
+          <input type="range" id="dRaise" min="25000" max="2000000" step="25000" value="150000">
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-head"><label for="dPre">What Fowm is worth before the money</label><output id="oPre" for="dPre"></output></div>
+          <input type="range" id="dPre" min="0" max="1000" step="1" value="316">
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-head"><label for="dOwn">How much you own today</label><output id="oDOwn" for="dOwn"></output></div>
+          <input type="range" id="dOwn" min="10" max="100" step="1" value="100">
+        </div>
+      </div>
+
+      <h3>What to prepare</h3>
+      <ul>
+        <li><b>A 10-slide deck:</b> problem, product, proof (sales and reorders), money per order, market, competitors, how you sell, you, how much you're raising, and what you'll spend it on.</li>
+        <li><b>A folder of proof:</b> monthly profit and loss, reorder rates by month of first purchase, cost to win a customer per channel, formula ownership papers, trademark filing, supplier contracts.</li>
+      </ul>
+    </section>
+  </div>
+</section>
+
+<!-- ============ EXIT ============ -->
+<section class="view" data-view="exit" aria-label="Exit">
+  <div class="wrap">
+    <section class="block">
+      <h2>How a brand becomes worth millions</h2>
+      <p class="lead">A company sells for its yearly profit (or yearly sales) times a number called the multiple. So to sell Fowm for millions, it has to make millions in sales, from customers who keep coming back every year.</p>
+      <p class="formula">Sale price = yearly profit (or sales) × multiple</p>
+      <div class="note"><p><b>The lemonade-stand version.</b> Someone buys your lemonade stand because it makes money every year. If it makes €10k profit a year and they pay 3 years' worth, the stand sells for €30k. Nobody pays for a stand that has not sold any lemonade yet. That's why Fowm is worth €0 today, and why this whole plan is about sales that repeat.</p></div>
+
+      <h3>How buyers price a brand, by size</h3>
+      <ul class="rows">
+        <li><b>Small: under about €5M sales a year, run by you</b>2.5–4.5 × yearly owner profit (<a href="https://eightx.co/blog/what-is-sde-sellers-discretionary-earnings">Eightx</a>). <span class="meta">Example: €60k profit sells for €150–270k.</span></li>
+        <li><b>Medium: €5–15M sales, with a team</b>3.5–5.5 × yearly profit (<a href="https://eightx.co/blog/how-ecommerce-brands-are-valued">Eightx</a>). <span class="meta">Example: €1M profit sells for €3.5–5.5M.</span></li>
+        <li><b>Big and growing, bought by a food giant</b>0.5–1.9 × yearly sales (<a href="https://eightx.co/blog/average-ecommerce-acquisition-multiple-by-vertical-ev-rev-and-ev-ebitda">Eightx</a>). <span class="meta">Example: €20M sales sells for €10–38M.</span></li>
+        <li><b>Hot brand, several giants competing to buy it</b>3–4 × yearly sales or more (<a href="#grow">Grow</a>). <span class="meta">This is where billion-dollar deals come from.</span></li>
+      </ul>
+      <p>The big jump happens when a giant like Nestlé or PepsiCo buys you. They pay for your <b>sales and your growth</b>, not just your profit, because they can push your product into thousands of shops overnight.</p>
+
+      <div class="panel" id="val">
+        <h3>What could Fowm sell for?</h3>
+        <div class="out"><span class="big mid" id="vVal" aria-live="polite">€0</span></div>
+        <p class="out-sub" id="vHow"></p>
+        <p class="out-sub" id="vShare"></p>
+        <div class="ctrl">
+          <div class="ctrl-head"><label for="vSales">Yearly sales</label><output id="oSales" for="vSales"></output></div>
+          <input type="range" id="vSales" min="0" max="1000" step="1" value="325">
+          <div class="presets" role="group" aria-label="Quick picks for yearly sales">
+            <button type="button" class="chipbtn" data-sales="250000">€250k</button>
+            <button type="button" class="chipbtn" data-sales="1000000">€1M</button>
+            <button type="button" class="chipbtn" data-sales="10000000">€10M</button>
+            <button type="button" class="chipbtn" data-sales="100000000">€100M</button>
+          </div>
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-head"><label for="vMargin">Profit, as a share of sales</label><output id="oMargin" for="vMargin"></output></div>
+          <input type="range" id="vMargin" min="0" max="40" step="1" value="15">
+          <p class="hint">15% is my starting guess. Use your real number once your accountant has one.</p>
+        </div>
+        <div class="ctrl">
+          <label class="switch"><input class="vh" type="checkbox" id="vHot"><span class="track" aria-hidden="true"></span><span>Several giants want to buy it</span></label>
+          <p class="hint" id="vHotHint">Bidding wars happen for big, fast-growing brands, so this only counts from €15M of sales a year.</p>
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-head"><label for="vOwn">How much of Fowm you own</label><output id="oOwn" for="vOwn"></output></div>
+          <input type="range" id="vOwn" min="5" max="100" step="1" value="100">
+          <p class="hint">Lower this once investors own a part (try a round in <a href="#grow">Grow</a>).</p>
+        </div>
+      </div>
+
+      <h3>What makes buyers pay a higher multiple</h3>
+      <ul class="rows">
+        <li><b>Customers who rebuy.</b>Subscriptions and monthly habits are worth more than one-time buyers.</li>
+        <li><b>Fast growth.</b>A brand growing 50% a year gets a much higher multiple than one growing 5%.</li>
+        <li><b>High profit per pouch.</b>Food brands usually keep 40–55% of each sale after product costs (<a href="https://level-4f4.pages.dev/market-monitor/ecommerce/">Level</a>). Aim higher online.</li>
+        <li><b>Sold in many places.</b>Website, Amazon, shops and cafés together. A brand that only sells on Amazon gets 1–2 points less on its multiple (<a href="https://eightx.co/blog/average-sde-multiple-by-revenue-band">Eightx</a>).</li>
+        <li><b>You own everything.</b>The trademark, the formula, the domain, the customer list. Not the manufacturer.</li>
+        <li><b>It runs without you.</b>A team and written processes, so the buyer isn't buying your phone number.</li>
+        <li><b>Clean numbers.</b>An accountant from day one, so a buyer can trust every figure.</li>
+      </ul>
+      <p><b>Timing matters too.</b> Food deal prices dropped hard in 2025: the median food and drink takeover fell to 1.4 × sales, down from 1.9 × the year before (<a href="https://eightx.co/blog/average-ecommerce-acquisition-multiple-by-vertical-ev-rev-and-ev-ebitda">Eightx</a>). You can't control the market, so build a brand that's worth buying in a bad year too.</p>
+      <div class="note"><p><b>The ladder in one line.</b> €1M in yearly sales makes Fowm worth roughly €0.3–1M. €10M makes it worth €5–19M. €100M makes it worth €50–190M or more. Billions need hundreds of millions in yearly sales, plus a bidding war.</p></div>
+    </section>
+
+    <section class="block">
+      <h2>Montreal, the US and selling Fowm</h2>
+      <p class="lead">Prove Fowm in Greece, carry it to Canada when you move for university, and enter the US only once it's working. Plan the company structure 2–3 years before you sell, because Canada's best tax breaks need that long to qualify.</p>
+
+      <h3>The country path</h3>
+      <ol class="steps tight">
+        <li><span class="rt">Greece, now to 2028</span>Win Athens, then the rest of Greece.</li>
+        <li><span class="rt">Canada, from fall 2027 if you move</span>Canadian labels need English and French, and your fluent French is a real edge in Montreal. Canada has its own rules for protein products, so hire a Canadian regulatory consultant before you sell there. Futurpreneur and the Dobson Cup become available once you live there (<a href="#grow">Grow</a>).</li>
+        <li><span class="rt">The US, later</span>It's the biggest market, and Starbucks is already teaching Americans what protein cold foam is (<a href="#product">Product</a>). It's also the most competitive. Go once Canada proves the model.</li>
+      </ol>
+
+      <h3>Tax: set it up years before you sell</h3>
+      <p>This is the most expensive place to make a mistake. Get a cross-border tax adviser for Greece and Canada <b>before you move</b>, and don't decide the structure alone.</p>
+      <ul class="rows">
+        <li><b>Selling as a Greek resident</b>15% tax on the gain from selling shares in a non-listed company (<a href="https://taxsummaries.pwc.com/greece/individual/income-determination">PwC</a>).</li>
+        <li><b>Moving to Canada resets the clock</b>When you become a Canadian resident, Canada treats most of what you own as bought at its value on the day you arrive. Growth from before you arrived generally isn't taxed in Canada (<a href="https://www.barretttaxlaw.com/tax-services/pre-immigration-tax-planning-canada">Barrett Tax Law</a>).</li>
+        <li><b>Lifetime exemption (law today)</b>Up to C$1,275,000 of gain tax-free in 2026 on qualifying shares (<a href="https://www.bdo.ca/insights/lifetime-capital-gains-exemption-business-sale-planning">BDO</a>). The company must run its business mainly in Canada and pass tests that look back 24 months (<a href="https://money.ca/managing-money/taxes/lifetime-capital-gains-business-shares-exemption">Money.ca</a>). A Greek IKE wouldn't qualify.</li>
+        <li><b>Canada Growth Incentive (proposed, not law yet)</b>The 5 November 2026 budget proposes making up to C$15 million of gain tax-free per person per business (<a href="https://www.mintz.com/insights-center/viewpoints/2906/2026-11-10-qsbs-eh-canadas-new-15-million-capital-gains-exemption">Mintz</a>). Under the proposal, the shares must be in a Canadian-controlled private company, issued from 5 November 2026 for cash or work, and held for 36 months. The business must run mainly in Canada for its first 24 months. Moving an existing business into a new company may not count. Product businesses appear to be included.</li>
+        <li><b>What this could mean for you</b>It might pay to start a fresh Canadian company for North America when you move, instead of moving the Greek one. That's a question for the adviser, not a decision to make from this page.</li>
+      </ul>
+
+      <h3>Who buys brands like Fowm</h3>
+      <ul class="rows">
+        <li><b>Big consumer-goods groups buying wellness brands</b>Unilever bought Grüns (2026), PepsiCo bought Poppi (2025), Mondelēz bought Grenade (2021).</li>
+        <li><b>Dairy giants moving into protein</b>Lactalis bought Protein Works (2026) (<a href="https://www.nutraingredients.com/Article/2026/06/18/dairy-giants-move-into-activ-nutrition-as-protein-demand-surges/">NutraIngredients</a>).</li>
+        <li><b>Drink brands buying other brands</b>Celsius bought Alani Nu (2025).</li>
+        <li><b>Private equity</b>CVC backs The Quality Group, owner of More Nutrition and ESN (<a href="https://www.mercadofinanciero.com/comunicados/noticia-comunicado-the-quality-group-grows-h1-revenue-by-more-than-40-to-over-850-million-20260721100606.html">press release</a>).</li>
+      </ul>
+
+      <h3>How a sale actually happens</h3>
+      <ol class="steps tight">
+        <li><span class="rt">12–24 months before</span>Audited accounts, written processes, every legal right in the company's name, and a growth story backed by numbers.</li>
+        <li><span class="rt">Hire an adviser</span>Small online brands sell through brokers. Empire Flippers' deals ran 1–5 × yearly owner profit, with an average sale price of $270,802 in 2025 (<a href="https://www.peony.ink/blog/how-to-sell-an-ecommerce-business">Peony</a>). Bigger brands use an investment bank that runs an auction.</li>
+        <li><span class="rt">Offers come in</span>You pick one and sign a letter of intent: the price, the terms, and a promise not to talk to other buyers for a while.</li>
+        <li><span class="rt">Due diligence</span>The buyer checks everything: books, contracts, trademark, formula, customers.</li>
+        <li><span class="rt">Closing</span>Part of the money is paid at once, and part later if targets are hit. PepsiCo's Poppi deal included extra payments for hitting sales goals after closing (<a href="https://www.nbcdfw.com/news/business/money-report/pepsico-buys-prebiotic-soda-brand-poppi-for-more-than-1-6-billion/3793866/?amp=1">NBC</a>).</li>
+        <li><span class="rt">You may stay on</span>Grenade's founders kept a minority stake and kept running it under Mondelēz (<a href="https://www.just-food.com/?p=57259">Just Food</a>).</li>
+      </ol>
+    </section>
+  </div>
+</section>
+
+<!-- ============ LEGAL ============ -->
+<section class="view" data-view="legal" aria-label="Legal">
+  <div class="wrap">
+    <section class="block">
+      <h2>Legal setup in Greece and the EU</h2>
+      <p class="lead">Before your first sale you need nine things in place. Sell in Greece only at first: since August 2026, every extra EU country adds its own packaging registration.</p>
+      <div class="note"><p><b>The biggest legal risk is your name.</b> EU examiners refuse trademarks that describe the product. An obvious misspelling of a descriptive word is not enough to avoid that (<a href="https://www.citma.org.uk/resources/clearly-cannabis.html">CITMA</a>). "Fowm" sounds like "foam", and Fowm makes foam. Pay a trademark attorney for an opinion <b>before you print pouches</b>. If the word alone is too risky, you may need to register the logo, or adjust the name. A buyer will only pay millions for a brand you legally own.</p></div>
+
+      <h3>The nine things, in order</h3>
+      <ol class="steps tight">
+        <li><span class="rt">Trademark attorney opinion, then file an EU trademark</span>€850 for 1 class, +€50 for the 2nd, +€150 for each extra (<a href="https://www.dury.de/en/european-tradmark-law/1077-eu-trademark-registration-2026-a-complete-guide-for-international-businesses">Dury</a>). The attorney costs about €800–1,500 (<a href="https://tmarkmetric.com/insights/eu-trademark-cost">TMarkMetric</a>). <span class="meta">When: now</span></li>
+        <li><span class="rt">Hire a food technologist and decide "food, not supplement"</span>Ask for a quote. <span class="meta">When: now</span></li>
+        <li><span class="rt">Set up a single-owner company (IKE)</span>€1 minimum capital, online through the one-stop service (<a href="https://www.zunapro.com/greece/el/blog/pos-na-idrisete-ike-stin-ellada-plires-odigos">Zunapro</a>). <span class="meta">When: about 1 month before your first stock order</span></li>
+        <li><span class="rt">Accountant</span>A monthly fee. <span class="meta">When: the same day as the company</span></li>
+        <li><span class="rt">Register with EFET as a food business</span>Your technologist files it. <span class="meta">When: before your first sale</span></li>
+        <li><span class="rt">Packaging registry (EOAN) and a recycling scheme</span>A small yearly fee. <span class="meta">When: before your first sale</span></li>
+        <li><span class="rt">Legal back label in Greek</span>Your technologist checks it. <span class="meta">When: before printing</span></li>
+        <li><span class="rt">Website legal pages</span>Templates plus your accountant. <span class="meta">When: before launch</span></li>
+        <li><span class="rt">Each new EU country: VAT, packaging and language rules</span>Costs vary. <span class="meta">When: only once Greece works</span></li>
+      </ol>
+
+      <h3>Notes on each step</h3>
+      <details class="acc">
+        <summary>Trademark</summary>
+        <div class="acc-body"><p>File in class 29 and 30 at least (food and coffee products). Search <a href="https://www.tmdn.org/tmview">TMview</a> for similar names first. You have 5 years to start using the mark in the EU.</p></div>
+      </details>
+      <details class="acc">
+        <summary>Food, not supplement</summary>
+        <div class="acc-body"><p>In Greece, food supplements go through the National Organisation for Medicines (EOF), while foods fall under EFET (<a href="https://www.eof.gr/wp-content/uploads/2024/12/Food-supplements-Rules_%CE%95%CE%9B%CE%9B%CE%97%CE%9D%CE%99%CE%9A%CE%91_FINAL.docx">EOF</a>). A coffee foam powder fits better as a food. Your technologist confirms it.</p></div>
+      </details>
+      <details class="acc">
+        <summary>Company</summary>
+        <div class="acc-body"><p>An IKE protects your personal money if something goes wrong, and it's what buyers and investors expect. Company profits pay 22% tax, and dividends 5%. As the only owner-manager you'll likely also pay social security: the lowest category is €250.77 a month in 2026 (<a href="https://www.newmoney.gr/roh/ergasiaka/asfalistiko-2026-pos-i-miomenes-isfores-epireazoun-tis-mellontikes-sintaxis-gia-tous-epangelmaties/amp/">Newmoney</a>). That's why you start the company late, not now. If you're under 18 when you set it up, ask the accountant how a parent signs for you.</p></div>
+      </details>
+      <details class="acc">
+        <summary>Accountant</summary>
+        <div class="acc-body"><p>Electronic invoicing to the tax office (myDATA) is mandatory from 2026 (<a href="https://www.zunapro.com/greece/el/blog/pos-na-idrisete-ike-stin-ellada-plires-odigos">Zunapro</a>). Clean books from day one also make the company easier to sell.</p></div>
+      </details>
+      <details class="acc">
+        <summary>EFET</summary>
+        <div class="acc-body"><p>The company named on the label is responsible for the food. Register before you sell anything, even to friends.</p></div>
+      </details>
+      <details class="acc">
+        <summary>Packaging</summary>
+        <div class="acc-body"><p>Under Greek law, anyone who packs goods, or has them packed for them, must join the national producer register and a recycling scheme (<a href="https://www.oenet.gr/online/αρθρα-μελετεσ/item/87228-ipoxreoseis-paragogon-eisagogeon-emporon-siskeuasion-mpatarion-lipantikon-ilektrikou-kai-ilektronikou-eksoplismou">OENET</a>).</p></div>
+      </details>
+      <details class="acc">
+        <summary>The label</summary>
+        <div class="acc-body"><p>Mandatory information must be in a language the buyers understand (<a href="https://food.ec.europa.eu/food-safety/labelling-and-nutrition/food-information-consumers-legislation/language-and-presentation-food-information_en">European Commission</a>), so Greek for Greece. Milk must be highlighted as an allergen, since whey comes from milk. Online, all mandatory information except the best-before date must be on the product page before people buy (<a href="https://food.ec.europa.eu/food-safety/labelling-and-nutrition/food-information-consumers-legislation/distance-selling_en?prefLang=it">European Commission</a>).</p></div>
+      </details>
+      <details class="acc">
+        <summary>What you can claim</summary>
+        <div class="acc-body"><p>"High protein" needs at least 20% of the calories from protein, and "source of protein" 12% (<a href="https://reading.ac.uk/foodlaw/label/nutrition-claims.htm">University of Reading</a>). Fowm easily qualifies. Health claims must come word for word from the EU's approved list (<a href="https://knowledge4policy.ec.europa.eu/node/11279_ga">European Commission</a>). Never write "burns fat", "boosts metabolism" or anything about weight-loss drugs.</p></div>
+      </details>
+      <details class="acc">
+        <summary>Selling to other EU countries</summary>
+        <div class="acc-body">
+          <ul>
+            <li><b>VAT:</b> below €10,000 a year of sales to other EU countries you charge Greek VAT. Above that, you charge each customer's country VAT (<a href="https://www.taxually.com/blog/eu-vat-oss-ioss-distance-selling-2026">Taxually</a>).</li>
+            <li><b>Packaging:</b> shipping to Germany requires LUCID registration and a recycling licence. Fines reach €200,000 (<a href="https://koksal.av.tr/en/legislation/packaging-compliance-verpackg-lucid-and-eu-ppwr/">Koksal</a>). Foreign online sellers now need an authorised representative in Germany (<a href="https://www.ecopv-eu.com/?p=21113">ecoPV</a>). Since 12 August 2026, even one parcel to France triggers registration there (<a href="https://www.endereco.de/en/?p=39826">Endereco</a>).</li>
+            <li><b>Plan:</b> Greece first. Add one country at a time, through a compliance service, once Greek customers reorder.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+  </div>
+</section>
+
+<!-- ============ WORDS ============ -->
+<section class="view" data-view="words" aria-label="Words and sources">
+  <div class="wrap">
+    <section class="block">
+      <h2>Word list</h2>
+      <p>Every business word in this blueprint, explained simply.</p>
+      <label class="search"><span class="vh">Find a word</span><input type="search" id="gq" placeholder="Find a word, like churn or IKE" autocomplete="off" enterkeyhint="search"></label>
+      <dl class="gloss" id="gloss">
+        <div><dt>Angel</dt><dd>A rich person who invests their own money in young companies.</dd></div>
+        <div><dt>CAC (customer acquisition cost)</dt><dd>What you spend on ads, samples and creators to win one new customer.</dd></div>
+        <div><dt>CCPC</dt><dd>A private company controlled by Canadians. Canada's big tax breaks need one.</dd></div>
+        <div><dt>Churn</dt><dd>The share of subscribers who cancel each month.</dd></div>
+        <div><dt>COGS (cost of goods)</dt><dd>What one pouch costs you to make and deliver to your door.</dd></div>
+        <div><dt>Contribution ("kept per order")</dt><dd>What's left of an order after VAT, product cost, card fee and shipping, before ads.</dd></div>
+        <div><dt>Co-packer / private label</dt><dd>A factory that makes your product with your brand on it.</dd></div>
+        <div><dt>Dilution</dt><dd>How much of the company you give away when investors put money in.</dd></div>
+        <div><dt>DKP (dipotassium phosphate)</dt><dd>The helper that stops protein curdling in hot coffee.</dd></div>
+        <div><dt>DTC (direct to consumer)</dt><dd>Selling from your own website straight to customers.</dd></div>
+        <div><dt>Due diligence</dt><dd>When a buyer checks every detail of your company before paying.</dd></div>
+        <div><dt>Earn-out</dt><dd>Part of a sale price that's paid later, only if targets are hit.</dd></div>
+        <div><dt>EBITDA</dt><dd>Company profit before interest, tax and some accounting costs. Bigger buyers use it.</dd></div>
+        <div><dt>EFET</dt><dd>Greece's food safety authority.</dd></div>
+        <div><dt>EFKA</dt><dd>Greece's social security fund.</dd></div>
+        <div><dt>EOAN</dt><dd>Greece's recycling organisation and packaging register.</dd></div>
+        <div><dt>EOF</dt><dd>Greece's medicines authority, which also handles food supplements.</dd></div>
+        <div><dt>EPR / LUCID / PPWR</dt><dd>EU rules that make sellers pay for packaging recycling in each country. LUCID is Germany's register.</dd></div>
+        <div><dt>EUIPO</dt><dd>The EU trademark office.</dd></div>
+        <div><dt>Gross margin</dt><dd>The share of the price left after the product's cost.</dd></div>
+        <div><dt>Health claim</dt><dd>A sentence about what food does for your body. Only EU-approved wording is allowed.</dd></div>
+        <div><dt>IKE</dt><dd>A Greek private company, the usual choice for startups.</dd></div>
+        <div><dt>LCGE</dt><dd>Canada's lifetime tax break on the sale of qualifying small-company shares.</dd></div>
+        <div><dt>LOI (letter of intent)</dt><dd>The first signed agreement on price and terms when selling a company.</dd></div>
+        <div><dt>MOQ (minimum order quantity)</dt><dd>The smallest order a factory accepts.</dd></div>
+        <div><dt>Multiple</dt><dd>The number a buyer multiplies your profit or sales by to set the price.</dd></div>
+        <div><dt>myDATA</dt><dd>Greece's electronic invoicing system.</dd></div>
+        <div><dt>Nutrition claim</dt><dd>Words like "high protein", allowed only above set levels.</dd></div>
+        <div><dt>OSS (one-stop shop)</dt><dd>One EU VAT return for sales to customers in other EU countries.</dd></div>
+        <div><dt>Pre-seed / seed / Series A</dt><dd>The first, second and third investor rounds.</dd></div>
+        <div><dt>Repeat purchase rate</dt><dd>The share of customers who buy again within a set time.</dd></div>
+        <div><dt>SAFE</dt><dd>A note where an investor gives money now for shares later.</dd></div>
+        <div><dt>SDE (owner profit)</dt><dd>Profit plus what the owner pays themselves. Small brands are priced on it.</dd></div>
+        <div><dt>Subscription</dt><dd>A customer who gets Fowm automatically on a schedule.</dd></div>
+        <div><dt>UGC (user-generated content)</dt><dd>Videos made by customers or creators, not by you.</dd></div>
+        <div><dt>Usage rights</dt><dd>Permission to run a creator's video as your own ad.</dd></div>
+        <div><dt>VAT</dt><dd>The sales tax inside the price: 24%, 13% or 6% in Greece.</dd></div>
+        <div><dt>WPI / WPC</dt><dd>Whey protein isolate (purer, best foam) and whey protein concentrate.</dd></div>
+      </dl>
+      <p class="empty" id="glossEmpty" hidden>No word matches that. Try a shorter search.</p>
+    </section>
+
+    <section class="block">
+      <h2>Sources</h2>
+      <p>Every figure is linked where it appears. These are the main pages behind each part, checked in November 2026.</p>
+      <details class="acc">
+        <summary>Valuations and sales of brands</summary>
+        <ul class="src acc-body">
+          <li><a href="https://eightx.co/blog/how-ecommerce-brands-are-valued">Eightx: how ecommerce brands are valued</a></li>
+          <li><a href="https://eightx.co/blog/what-is-sde-sellers-discretionary-earnings">Eightx: SDE multiples</a></li>
+          <li><a href="https://eightx.co/blog/average-ecommerce-acquisition-multiple-by-vertical-ev-rev-and-ev-ebitda">Eightx: multiples by vertical</a></li>
+          <li><a href="https://www.modernretail.co/operations/a-timeline-of-what-led-up-to-gruns-being-acquired-by-unilever/">Modern Retail: Grüns timeline</a></li>
+          <li><a href="https://www.mainsights.io/ma-news/unilever-to-acquire-us-greens-supplement-brand-gruns-for-approximately-usd-12bn-valuing-the-company-at-around-4x-run-rate-sales-of-usd-300m">M&amp;A Insights: Unilever and Grüns</a></li>
+          <li><a href="https://www.just-drinks.com/news/pepsico-strikes-near-2bn-deal-to-buy-poppi/">Just Drinks: PepsiCo and Poppi</a></li>
+          <li><a href="https://www.businesswire.com/news/home/20250220357704/en">Business Wire: Celsius and Alani Nu</a></li>
+          <li><a href="https://www.thegrocer.co.uk/news/grenade-mondelez-takeover-will-supercharge-us/654633.article">The Grocer: Mondelēz and Grenade</a></li>
+          <li><a href="https://www.lse.co.uk/news/lactalis-acquires-uk-protein-brand-protein-works-7bat4nh3sfk25ko.html">LSE: Lactalis and Protein Works</a></li>
+          <li><a href="https://www.kolsquare.com/en/customer-stories/how-more-nutrition-became-a-billion-euro-brand-with-influencer-marketing">Kolsquare: More Nutrition</a></li>
+          <li><a href="https://time.com/5190977/how-oat-milk-could-change-the-way-you-drink-coffee">TIME: Oatly in cafés</a></li>
+          <li><a href="https://www.bevnet.com/?p=222959">BevNET: Super Coffee</a></li>
+          <li><a href="https://www.peony.ink/blog/how-to-sell-an-ecommerce-business">Peony: selling an ecommerce business</a></li>
+        </ul>
+      </details>
+      <details class="acc">
+        <summary>Market</summary>
+        <ul class="src acc-body">
+          <li><a href="https://stories.starbucks.ca/?p=42525">Starbucks: Protein Cold Foam launch</a></li>
+          <li><a href="https://www.axios.com/2026/03/26/starbucks-menu-protein-coffee-drinks">Axios: Starbucks protein data</a></li>
+          <li><a href="https://proteinproductiontechnology.com/post/starbucks-launches-protein-cold-foam-drinks-with-15g-whey-protein-across-emea-menu">Protein Production Technology: EMEA launch</a></li>
+          <li><a href="https://en.protothema.gr/2025/02/05/coffee-mania-how-greek-coffee-culture-evolved-from-traditional-greek-coffee-to-freddo">Proto Thema: Greek coffee market</a></li>
+          <li><a href="https://www.tovima.com/culture/the-freddo-espresso-a-modern-greek-cultural-phenomenon/">To Vima: freddo</a></li>
+          <li><a href="https://greekcitytimes.com/2026/10/05/greek-coffee-market-proves-resilient-amid-consumer-trends/">Greek City Times: 2026 coffee market</a></li>
+          <li><a href="https://www.euromonitor.com/newsroom/press-releases/july-2026/wellness-trends-and-glp-1s-fuel-protein-market">Euromonitor: protein market</a></li>
+          <li><a href="https://foodnavigator.com/Article/2026/04/27/10-big-food-trends-in-europe/">FoodNavigator: European food trends</a></li>
+        </ul>
+      </details>
+      <details class="acc">
+        <summary>Product and costs</summary>
+        <ul class="src acc-body">
+          <li><a href="https://www.dairyindustries.com/?p=50391">Dairy Industries: whey benchmark prices</a></li>
+          <li><a href="https://vespertool.com/blog/major-sports-nutrition-brands-are-telling-consumers-why-whey-prices-are-going-up-in-2026/">Vesper: whey price rises</a></li>
+          <li><a href="https://www.ingredientsnetwork.com/whey-protein-production-struggles-to-keep-pace-news130148.html">Ingredients Network: whey supply</a></li>
+          <li><a href="https://www.fastcompany.com/91350628/starbucks-protein-cold-foam?partner=rss">Fast Company: Starbucks protein foam</a></li>
+          <li><a href="https://www.omya.com/en/omya-specialty-materials/industries/food-pharma-and-nutrition/food-pharma-and-nutrition-articles/the-role-of-calcium-carbonate-in-the-foamability-of-barista-style-plant-based-drinks">Omya: foam and fat-to-protein balance</a></li>
+          <li><a href="https://amhes.com/en/idiotiki-etiketa/">AMHES Pharma private label</a></li>
+          <li><a href="https://wonnda.com/magazine/white-label-supplement-manufacturers-europe/">Wonnda: EU manufacturers</a></li>
+          <li><a href="https://packhelp.com/p/recyclable-doypack/custom/">Packhelp doypacks</a></li>
+        </ul>
+      </details>
+      <details class="acc">
+        <summary>Legal</summary>
+        <ul class="src acc-body">
+          <li><a href="https://www.citma.org.uk/resources/clearly-cannabis.html">CITMA: misspelt descriptive marks</a></li>
+          <li><a href="https://www.dury.de/en/european-tradmark-law/1077-eu-trademark-registration-2026-a-complete-guide-for-international-businesses">Dury: EUIPO fees</a></li>
+          <li><a href="https://food.ec.europa.eu/food-safety/labelling-and-nutrition/food-information-consumers-legislation/distance-selling_en?prefLang=it">European Commission: distance selling of food</a></li>
+          <li><a href="https://reading.ac.uk/foodlaw/label/nutrition-claims.htm">University of Reading: nutrition claims</a></li>
+          <li><a href="https://www.taxually.com/blog/eu-vat-oss-ioss-distance-selling-2026">Taxually: EU VAT threshold</a></li>
+          <li><a href="https://www.endereco.de/en/?p=39826">Endereco: PPWR from August 2026</a></li>
+          <li><a href="https://www.newmoney.gr/roh/ergasiaka/asfalistiko-2026-pos-i-miomenes-isfores-epireazoun-tis-mellontikes-sintaxis-gia-tous-epangelmaties/amp/">Newmoney: EFKA 2026</a></li>
+        </ul>
+      </details>
+      <details class="acc">
+        <summary>Selling, numbers and money</summary>
+        <ul class="src acc-body">
+          <li><a href="https://www.zunapro.com/greece/el/blog/poliseis-sto-skroutz-plires-odigos-polites">Zunapro: selling on Skroutz</a></li>
+          <li><a href="https://keepface.com/site/?p=8603">Keepface: Greek influencer costs</a></li>
+          <li><a href="https://commonthreadco.com/blogs/coachs-corner/tiktok-shop-europe-expansion-2026-ecommerce-brands">Common Thread: TikTok Shop Europe</a></li>
+          <li><a href="https://topgrowthmarketing.com/ecommerce-customer-retention-90-day-guide/">Top Growth Marketing: 90-day retention</a></li>
+          <li><a href="https://eightx.co/blog/supplement-subscription-churn-rate-benchmark">Eightx: subscription churn</a></li>
+          <li><a href="https://www.mcgill.ca/dobsoncup">McGill Dobson Cup</a></li>
+          <li><a href="https://futurpreneur.ca/en/?p=10931">Futurpreneur</a></li>
+          <li><a href="https://www.pertamapartners.com/funding/greece-angel-investor-tax-deduction-2026">Pertama Partners: Greek angel tax deduction</a></li>
+          <li><a href="https://www.mintz.com/insights-center/viewpoints/2906/2026-11-10-qsbs-eh-canadas-new-15-million-capital-gains-exemption">Mintz: Canada Growth Incentive</a></li>
+          <li><a href="https://www.bdo.ca/insights/lifetime-capital-gains-exemption-business-sale-planning">BDO: lifetime capital gains exemption</a></li>
+          <li><a href="https://taxsummaries.pwc.com/greece/individual/income-determination">PwC: Greek capital gains tax</a></li>
+        </ul>
+      </details>
+    </section>
+  </div>
+</section>
+
+</main>
+
+<footer class="wrap foot">
+  <p>Built from your <a href="https://claude.ai/artifact/8CgYjH2Runv6Se3pEPD6qs">Fowm blueprint doc</a>, 17 November 2026. Numbers marked "my estimate" or "my rule" are mine, so replace them with real quotes as you get them.</p>
+  <p>Not legal, tax or financial advice. Check big decisions with an accountant, a lawyer or an adviser.</p>
+</footer>
+
+<noscript><p style="padding:40px;text-align:center">Fowm Plan needs JavaScript.</p></noscript>
+<script src="app.js?v=1" defer></script>
+</body>
+</html>
