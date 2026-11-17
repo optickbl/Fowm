@@ -619,3 +619,6 @@ details.more summary::-webkit-details-marker{display:none}
 details.more summary{position:relative;padding-right:30px}
 details.more summary::after{content:"";position:absolute;right:8px;top:15px;width:8px;height:8px;border-right:2.2px solid var(--brown);border-bottom:2.2px solid var(--brown);transform:rotate(45deg);transition:transform .45s var(--spring-soft)}
 details.more[open]:not(.shut) summary::after{transform:translateY(4px) rotate(-135deg)}
+/* ready-to-send messages inside a step */
+.msg-card{margin:0 0 16px;padding:13px 14px 14px;border-radius:14px;background:var(--cream)}
+.msg-text{margin:0 0 12px;white-space:pre-wrap;font-size:15px;line-height:1.45;-webkit-user-select:text;user-select:text}
