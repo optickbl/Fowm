@@ -1,7 +1,7 @@
 /* Fowm Plan service worker: works offline after the first visit. */
-const VERSION = 'fowm-v3';
+const VERSION = 'fowm-v4';
 const SHELL = [
-  './', 'index.html', 'styles.css?v=3', 'app.js?v=3', 'manifest.webmanifest?v=3',
+  './', 'index.html', 'styles.css?v=4', 'app.js?v=4', 'manifest.webmanifest?v=4',
   'icons/icon-192.png?v=1', 'icons/icon-512.png?v=1', 'icons/apple-touch-icon.png?v=1',
   'img/mascot.png', 'img/mascot-sm.png',
   'fonts/fredoka-latin-wght-normal.woff2', 'fonts/fredoka-latin-ext-wght-normal.woff2',
@@ -13,7 +13,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.filter((k) => k !== VERSION).map((k) => caches.delete(k)));
+    await Promise.all(keys.filter((k) => k.startsWith('fowm-') && k !== VERSION).map((k) => caches.delete(k)));
     await self.clients.claim();
   })());
 });

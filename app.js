@@ -51,6 +51,46 @@ function shortEuro(n) {
 }
 const fmtNum = (n) => { const r = Math.round(n * 10) / 10; return (r < 0 ? MINUS : "") + String(Math.abs(r)); };
 const clamp = (x, lo, hi, d) => (typeof x === "number" && isFinite(x)) ? Math.min(hi, Math.max(lo, x)) : d;
+// Number fields forgive how people type ("7,4", "64%", "€27.50", "1.234,5") and never save something
+// different from what they show: out of range or not a number shows a message and saves nothing.
+function parseNum(raw) {
+  const typed = String(raw).trim();
+  if (!typed) return null;
+  let s = typed.replace(/[\u2212\u2013\u2014]/g, "-").replace(/\s+/g, "").replace(/(%|\/10)$/, "");
+  const neg = s.startsWith("-"); if (neg) s = s.slice(1);
+  s = s.replace(/^€|€$/g, "");
+  if (!/^[\d.,]+$/.test(s) || !/\d/.test(s)) return NaN;
+  const marks = s.match(/[.,]/g) || [];
+  let num = s;
+  if (marks.length === 1) num = s.replace(",", ".");
+  else if (marks.length > 1) {
+    const kinds = new Set(marks), last = Math.max(s.lastIndexOf("."), s.lastIndexOf(","));
+    const dec = kinds.size === 2 ? s[last] : null, whole = dec ? s.slice(0, last) : s, frac = dec ? s.slice(last + 1) : "";
+    if ((whole.match(/[.,]/g) || []).some(m => m === dec)) return NaN;
+    const groups = whole.split(/[.,]/);
+    if (!groups[0] || groups[0].length > 3 || groups.slice(1).some(g => g.length !== 3)) return NaN;
+    num = groups.join("") + (dec ? "." + frac : "");
+  }
+  const n = Number(num);
+  return isFinite(n) ? (neg ? -n : n) : NaN;
+}
+const fmtLimit = (n) => (n < 0 ? "−" : "") + Math.abs(n).toLocaleString("en-US");
+function numField(inp, err, min, max, set) {
+  const check = (leaving) => {
+    const n = parseNum(inp.value);
+    let bad = false;
+    if (n === null) set(undefined);
+    else if (Number.isNaN(n)) bad = leaving || /[^\d.,€%\s\-\u2212\/]/.test(inp.value); // half-typed "7," is fine until you leave
+    else if (n < min || n > max) bad = true;
+    else { set(n); if (leaving) inp.value = String(Math.round(n * 1000) / 1000); }
+    inp.classList.toggle("bad", bad); inp.setAttribute("aria-invalid", String(bad));
+    err.textContent = bad ? "Type a number from " + fmtLimit(min) + " to " + fmtLimit(max) + ". Nothing was saved." : "";
+    err.hidden = !bad;
+  };
+  inp.addEventListener("input", () => check(false));
+  inp.addEventListener("blur", () => check(true));
+  inp._check = check;
+}
 function roundNice(x) { const p = Math.pow(10, Math.floor(Math.log10(x)) - 1); return Math.round(x / p) * p; }
 const plural = (n, one, many) => n + " " + (n === 1 ? one : many);
 const uid = () => "c-" + (Math.random().toString(36).slice(2) + Date.now().toString(36)).slice(0, 10);
@@ -90,77 +130,293 @@ const CH_ICON = {
 const chIcon = (k) => svgEl(`<svg viewBox="0 0 28 28" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${CH_ICON[k]}</g></svg>`);
 
 /* ---------- the plan ---------- */
+// Every step: t = what to do (shown in lists), how = how to do it, done = when to tick it,
+// go = shortcuts to the screen or Guide chapter it needs. The ids never change, so ticks stay put.
 const STAGES = [
   { n: 0, title: "Decide and protect", when: "17 Nov – 15 Dec 2026",
     gate: "You've picked the best kitchen recipe, emailed 8 manufacturers and decided how to protect the name.",
     steps: [
-      ["s0-1", 'Write one line and pin it above your desk: "Fowm = protein foam for your freddo. Athens first. €29.90 for 20 servings."'],
-      ["s0-2", 'Book a trademark attorney\'s opinion on "Fowm" (see Legal in the Guide). Decide: file the word, file the logo, or adjust the name.'],
-      ["s0-3", "Get quotes from 2 food technologists. Confirm Fowm is sold as a food, not a supplement."],
-      ["s0-4", "Order unflavoured whey isolate and run kitchen tests A–D (log them in Numbers, under Tests). Film every test for content."],
-      ["s0-5", "Write the one-page manufacturer brief and email 8 manufacturers (track them in Contacts)."],
-      ["s0-6", 'Change the planned website price to €29.90 and the subscription to a 2-pouch pack at 10% off. Keep "launching soon".']
+      { id: "s0-1", t: "Pin Fowm's one-line promise above your desk",
+        how: ['Write it on paper, word for word: "Fowm = protein foam for your freddo. Athens first. €29.90 for 20 servings."',
+          "Pin it where you work, so you see it every day.",
+          "Before any big decision (a new country, product or price), read it. If the idea doesn't fit the line, it waits."],
+        done: "The line is on your wall." },
+      { id: "s0-2", t: "Get a trademark attorney's opinion on the name Fowm",
+        how: ['Search TMview (tmdn.org/tmview) for "Fowm" and close names like "Foam". Screenshot what you find.',
+          "Find an EU trademark attorney on the EUIPO's list of professional representatives in Greece, or ask an accountant for a name.",
+          'Email 2 or 3 of them: "I want to register Fowm as an EU trademark for a protein coffee foam powder, in classes 29 and 30. Can you give me a written opinion and a fixed price?"',
+          'Ask about the main risk: Fowm sounds like "foam", and the product makes foam. Examiners refuse names that just describe the product.',
+          "Budget about €800–1,500 for the attorney, plus the EUIPO fee: €850 for 1 class and €50 more for the 2nd."],
+        done: "You have a written opinion and you've decided: file the word, file the logo, or adjust the name.",
+        go: [["Legal", "#guide/legal"]] },
+      { id: "s0-3", t: "Get quotes from 2 food technologists",
+        how: ['Search Google for "τεχνολόγος τροφίμων" in Athens, and pick 2 who work with small food brands.',
+          "Send both the same email: Fowm is a whey protein powder you froth into cold foam for coffee, sold in 500 g pouches with 20 servings.",
+          "Ask each for a price to: confirm Fowm is sold as a food (EFET) and not a food supplement (EOF), check the Greek back label, and file the EFET registration later.",
+          "Paste both quotes into this step's note."],
+        done: "You have 2 written quotes, and one of them has confirmed Fowm is a food, not a supplement.",
+        go: [["Legal", "#guide/legal"]] },
+      { id: "s0-4", t: "Order whey isolate and run kitchen tests A to D",
+        how: ["Buy unflavoured whey isolate (90% protein), a handheld frother, a scale that reads 0.01 g and a timer. Have cold milk, water, oat milk and freddo espresso ready.",
+          "One serving is about 17 g of isolate for 15 g of protein, so 20–25 g of powder once flavour is in.",
+          "Make 4 versions. A: whey isolate and flavour. B: A plus a tiny pinch of xanthan gum. C: your current 50/50 whey and pea with coconut. D: the best one, lightly sweetened.",
+          "For each one: froth 20 seconds, measure the foam, check it at 5 and 10 minutes, look for clumps, taste it from 1 to 10, and pour it on a hot latte to see if it curdles. Try milk, water and oat milk.",
+          "Log every result in Numbers, under Tests, and film each test for content."],
+        done: "All 4 versions are logged and the app shows a leader.",
+        go: [["Kitchen tests", "#numbers/tests"], ["Making the foam", "#guide/foam"]] },
+      { id: "s0-5", t: "Write the manufacturer brief and email 8 manufacturers",
+        how: ["Write one page: what Fowm is, your winning recipe, 500 g pouches with 20 servings, 15 g of protein a serving, and a first order of 250–500 pouches.",
+          "Add your questions: the minimum order and the price per kg at 250, 500 and 1,000 kg; what samples cost and how fast they come; whether they can fix the whey price for 6–12 months; their food-safety certificates (ISO 22000, FSSC 22000, HACCP); whether they test protein per serving and shelf life; sachets later, and at what minimum; and that you own the formula, in writing.",
+          "Email 8 manufacturers. Start with AMHES Pharma (Greece), ERA Scientifico (Latvia), Nutrikal (Bulgaria) and Private Vitamin Lab (Slovenia).",
+          "Add each one in Contacts, under Manufacturers, and set them to Emailed."],
+        done: "8 manufacturers are in Contacts, marked Emailed.",
+        go: [["Manufacturers", "#contacts/maker"], ["Making the foam", "#guide/foam"]] },
+      { id: "s0-6", t: "Set the shop price to €29.90 and plan the 2-pouch subscription",
+        how: ["In your Shopify admin, open Products, then your pouch, and set the price to €29.90.",
+          "Write down the subscription for later: 2 pouches every 5–6 weeks, 10% off, free delivery. You switch it on in Stage 3.",
+          'Keep getfowm.com on "launching soon" and keep collecting emails.'],
+        done: 'The pouch shows €29.90 in Shopify and the site still says "launching soon".',
+        go: [["The money math", "#guide/money"]] }
     ] },
   { n: 1, title: "Samples and blind tests", when: "Mid-Dec 2026 – mid-Feb 2027",
     gate: "One sample scores 7/10 or more, 6 in 10 tasters would buy at €29.90, and 300+ people are on the waitlist.",
     steps: [
-      ["s1-1", "Get samples from at least 3 manufacturers and run the foam test on each."],
-      ["s1-2", "Run a blind test with 30–50 people in real freddos: at the gym, at school, at a friendly café. Log every taster in Numbers, under Tests."],
-      ["s1-3", "Collect an email from every taster. Post the journey 3 times a week on @getfowm."],
-      ["s1-4", "Choose the manufacturer. Get the price per kg at 250, 500 and 1,000 kg, the minimum order and the lead time, plus formula ownership in writing."],
-      ["s1-5", 'Line up 10 creators (your girlfriend first) and 3 cafés that say "yes, we\'ll try it".'],
-      ["s1-6", "Get courier quotes from BOX NOW and ACS, and put the real shipping cost into the per-order calculator."]
+      { id: "s1-1", t: "Get samples from 3 manufacturers and foam-test each",
+        how: ["Ask at least 3 of the manufacturers who replied for samples of your winning recipe.",
+          "Test each one exactly like the kitchen tests: froth 20 seconds, foam height, 5 and 10 minutes, clumps, taste from 1 to 10, hot latte.",
+          "Write each score in their card in Contacts (Your foam test score) and set them to Samples in."],
+        done: "3 samples are tested and scored in Contacts.",
+        go: [["Manufacturers", "#contacts/maker"]] },
+      { id: "s1-2", t: "Run a blind taste test with 30–50 people",
+        how: ["Make 2 freddos that look the same: a normal freddo cappuccino, and one topped with Fowm foam. Mark the cups so only you know which is which.",
+          "Ask people at the gym, at school and at a friendly café to try both.",
+          'Ask 2 questions about the Fowm one: "From 1 to 10, how good is it?" and "Would you buy it at €29.90 for 20 servings?"',
+          "Log each person in Numbers, under Tests: tap the score, tap Would buy or Wouldn't buy, then Add taster. Use one sample number per manufacturer."],
+        done: "One sample has 30 or more tasters logged.",
+        go: [["Taste test", "#numbers/tests"]] },
+      { id: "s1-3", t: "Grow the waitlist and post 3 times a week",
+        how: ["Put a QR code to getfowm.com on the tasting table, and ask every taster to join the waitlist there.",
+          "Post the journey on @getfowm 3 times a week: kitchen tests, tastings, the slow foam pour.",
+          "Every Monday, check how many people have signed up."],
+        done: "300 or more people are on the waitlist." },
+      { id: "s1-4", t: "Choose your manufacturer and get the terms in writing",
+        how: ["Compare them in Contacts: foam score, price per kg at 250, 500 and 1,000 kg, minimum order and lead time.",
+          "Pick the best-tasting sample you can afford at 250–500 pouches.",
+          "Get it in writing: the prices, the minimum order, the lead time, and that you own the formula.",
+          "Set them to Chosen in Contacts and switch on You own the formula, in writing."],
+        done: "One manufacturer is Chosen, and your formula ownership is in writing.",
+        go: [["Manufacturers", "#contacts/maker"]] },
+      { id: "s1-5", t: "Line up 10 creators and 3 cafés",
+        how: ["Creators: start with your girlfriend, then Greek creators in fitness, coffee and student life. Offer 10% of the sales from their code, no fixed fee, and ask for the right to use their videos as ads.",
+          'Cafés: pick cafés in the southern suburbs where people know you. Offer a free first bag and a "Protein Freddo, made with Fowm" menu card.',
+          "Add everyone in Contacts and update their status as they answer."],
+        done: "10 creators have said yes and 3 cafés have agreed to a trial.",
+        go: [["Creators", "#contacts/creator"], ["Cafés", "#contacts/cafe"]] },
+      { id: "s1-6", t: "Get courier quotes from BOX NOW and ACS",
+        how: ["Ask both for an e-shop quote for parcels in Greece: one 500 g pouch in a small box.",
+          "Take the cheaper price per parcel and add what the box costs.",
+          "Put that number into Numbers, Calculators, Per order, under Shipping and box."],
+        done: "The calculator uses your real shipping cost.",
+        go: [["Per-order calculator", "#numbers/order"]] }
     ] },
   { n: 2, title: "Company and first batch", when: "Mid-Feb – mid-Apr 2027",
     gate: "The stock is in your hands, the lab result matches the label, and 100 pre-orders are paid.",
     steps: [
-      ["s2-1", "Set up the IKE, the accountant, a business bank account and myDATA."],
-      ["s2-2", "File the trademark if it isn't filed yet. If you filed before the company existed, ask the attorney how to move it into the company."],
-      ["s2-3", "Register with EFET, and with the EOAN packaging register and a recycling scheme."],
-      ["s2-4", "Get the Greek back label approved by the technologist, then print 500 pouches."],
-      ["s2-5", "Order the first batch of 250–500 pouches. Get the lab test and the shelf-life data."],
-      ["s2-6", "Set up Shopify Payments, the BOX NOW plugin, the legal pages, and product pages with all mandatory food information."],
-      ["s2-7", "Open pre-orders to the waitlist at a founder price no lower than €27.90, so you still keep about €4 a pouch."]
+      { id: "s2-1", t: "Set up the company, accountant, bank account and myDATA",
+        how: ["Start about a month before your first stock order. Hire an accountant first: they set the rest up with you.",
+          "Form a single-owner IKE online through e-ΥΜΣ (eyms.businessportal.gr) with your Taxisnet login, or let the accountant do it. The minimum capital is €1. If you're under 18, ask the accountant how a parent signs for you.",
+          "Open a business bank account in the company's name.",
+          "Ask the accountant to set up electronic invoicing to the tax office (myDATA). It's mandatory.",
+          "Ask about social security too: as the only owner-manager you'll likely pay at least €250.77 a month (2026)."],
+        done: "The company exists, it has its own bank account, and you can invoice through myDATA.",
+        go: [["Legal", "#guide/legal"]] },
+      { id: "s2-2", t: "File the EU trademark in the company's name",
+        how: ["If it isn't filed yet, have your attorney file it with the EUIPO in the company's name, in classes 29 and 30 at least.",
+          "If you filed in your own name before the company existed, ask the attorney to move it to the company.",
+          "Write the filing number in this step's note."],
+        done: "The trademark is filed in the company's name.",
+        go: [["Legal", "#guide/legal"]] },
+      { id: "s2-3", t: "Register with EFET and the packaging register",
+        how: ["EFET: your food technologist files the company's registration as a food business. Do it before you sell anything, even to friends.",
+          "Packaging: register the company in ΕΜΠΑ, the national producer register run by ΕΟΑΝ (empa.eoan.gr). Anyone who has goods packed for them must.",
+          "Join a packaging recycling scheme (a ΣΣΕΔ, such as ΕΕΑΑ) and pay its small yearly fee. Your accountant can help.",
+          "Write the ΕΜΠΑ number in this step's note. It goes on your sales invoices."],
+        done: "You have the EFET registration and your ΕΜΠΑ number.",
+        go: [["Legal", "#guide/legal"]] },
+      { id: "s2-4", t: "Get the Greek back label approved, then print 500 pouches",
+        how: ["Write the back label in Greek. Among other things it lists the ingredients with milk highlighted as an allergen (whey comes from milk), the net weight, the nutrition table, how to use it, the best-before date, and the company's name and address.",
+          'Claims: "high protein" is allowed. Never write "burns fat", "boosts metabolism" or anything about weight-loss drugs.',
+          "Send it to your technologist, who checks nothing is missing. Print only once they approve it.",
+          "Print 500 doypacks with digital printing (Packhelp prints from 500)."],
+        done: "The technologist has approved the label and the 500 pouches are ordered.",
+        go: [["Legal", "#guide/legal"], ["Making the foam", "#guide/foam"]] },
+      { id: "s2-5", t: "Order the first batch, then lab-test it",
+        how: ["Order 250–500 pouches from your chosen manufacturer.",
+          "Get their shelf-life test, and print the best-before date it supports.",
+          "Send a finished pouch to an accredited lab, such as TÜV Austria Hellas in Athens, to confirm the protein per serving.",
+          "Check the lab result matches the label. If it doesn't, fix the label before you sell."],
+        done: "The stock is with you and the lab result matches the label.",
+        go: [["Making the foam", "#guide/foam"]] },
+      { id: "s2-6", t: "Set up the shop: payments, BOX NOW, legal pages, product page",
+        how: ["In Shopify, go to Settings, then Payments, and activate Shopify Payments. It works for stores in Greece.",
+          "Install the Box Now app from the Shopify App Store and connect your BOX NOW business account, so customers can pick a locker.",
+          "Add the legal pages (Shopify has templates under Settings, then Policies) and have your accountant check them.",
+          "Put all the mandatory food information from the label on the product page, except the best-before date.",
+          "Place a real test order to check it all works."],
+        done: "A real test order goes through, with a BOX NOW locker.",
+        go: [["Legal", "#guide/legal"]] },
+      { id: "s2-7", t: "Open pre-orders to the waitlist at €27.90 or more",
+        how: ["Make a founder code worth €2 off in Shopify, under Discounts, so a pouch costs €27.90. Never go lower, or you keep less than about €4 a pouch.",
+          "In Products, let the pouch sell before stock arrives (Continue selling when out of stock), and write the ship date on the page.",
+          "Email the waitlist: the founder price, for the first 100 people, and when pouches ship.",
+          "Ask each founder for honest feedback and a short video once they've tried it."],
+        done: "100 pre-orders are paid.",
+        go: [["Selling it", "#guide/selling"]] }
     ] },
   { n: 3, title: "Launch in Athens", when: "Mid-Apr – Jul 2027, freddo season",
     gate: "You have 500 customers, 30%+ reorder within 90 days, you keep €5+ per order, and 3 cafés sell 20+ a week.",
     steps: [
-      ["s3-1", "Ship every pre-order within 48 hours, and message every customer personally."],
-      ["s3-2", "Ask every customer for a review and a 10-second video."],
-      ["s3-3", "Start the creator programme: 30 creators on 10% commission."],
-      ["s3-4", 'Start the café pilots: 5 cafés with a "Protein Freddo" menu card.'],
-      ["s3-5", "Turn on subscriptions."],
-      ["s3-6", "Every Monday, do the check-in in Numbers."]
+      { id: "s3-1", t: "Ship every order within 48 hours and message each customer",
+        how: ["Pack and ship each order within 48 hours.",
+          "Create the BOX NOW voucher from the Box Now app in Shopify.",
+          "Message every customer yourself: thank them, explain how to use it (one scoop, froth 20 seconds) and ask how they like it."],
+        done: "Every pre-order has shipped and every customer has your message." },
+      { id: "s3-2", t: "Ask every customer for a review and a 10-second video",
+        how: ["A few days after delivery, once they've used it twice, ask for a review on the product page and a 10-second video of the foam pour. A reviews app such as Judge.me collects the reviews.",
+          "Ask if you can repost the video.",
+          "Never write or buy fake reviews. They're illegal in the EU."],
+        done: "You've asked every customer." },
+      { id: "s3-3", t: "Start the creator programme: 30 creators on 10% commission",
+        how: ["Give each creator their own discount code in Shopify, under Discounts, and track the orders it brings.",
+          "Pay 10% of the sales from their code each month, with no fixed fee.",
+          "Get the right to use their videos as ads, in writing.",
+          'Ideas that work: the slow foam pour, "plain freddo vs protein freddo", "15 g of protein in 20 seconds", and a café\'s €4.60 protein freddo against yours.',
+          "Log codes and orders in Contacts, under Creators."],
+        done: "30 creators are Posting.",
+        go: [["Creators", "#contacts/creator"]] },
+      { id: "s3-4", t: "Start café pilots in 5 cafés",
+        how: ['Give each café a free first bag, a "Protein Freddo, made with Fowm" menu card and pouches to sell at the counter.',
+          "Sell to cafés at about €1 a serving before VAT, in 1 kg bags. They can add about €1.50 to a freddo.",
+          "Show the staff how to make it: one scoop, froth 20 seconds, pour it on the freddo.",
+          "Every week, log each café's protein freddos in Contacts, under Cafés."],
+        done: "5 cafés are on Trial or Selling.",
+        go: [["Cafés", "#contacts/cafe"]] },
+      { id: "s3-5", t: "Turn on subscriptions",
+        how: ["Install a subscription app in Shopify. Shopify's own Shopify Subscriptions app is the simplest.",
+          "Set it to 2 pouches every 5–6 weeks, 10% off, with free delivery.",
+          "Make sure customers can skip or pause in one tap, before they ever see cancel."],
+        done: "Someone can subscribe, skip and pause on your site." },
+      { id: "s3-6", t: "Do the check-in every Monday",
+        how: ["Every Monday, open Numbers, then Check-in, and type in the numbers you have.",
+          "Read This week's one fix, and write what you'll do in This week's plan.",
+          "Tap Save. Your streak grows every week you save."],
+        done: "Your streak reaches 4 weeks.",
+        go: [["Check-in", "#numbers/checkin"]] }
     ] },
   { n: 4, title: "Prove repeat, prepare the move", when: "Aug – Dec 2027",
     gate: "40%+ reorder within 90 days, sales have grown 3 months in a row, and you keep €7+ per order.",
     steps: [
-      ["s4-1", "Before you leave for university, hand daily packing to a fulfilment warehouse or a paid helper. Keep customers, creators and cafés yourself."],
-      ["s4-2", "List on Skroutz, sign 20 more cafés and pitch one café chain."],
-      ["s4-3", "Launch the second flavour."],
-      ["s4-4", "Order a bigger second batch of 1,000–2,000 pouches to cut the cost per pouch."],
-      ["s4-5", "Meet a Greece–Canada tax adviser before you become a Canadian resident."],
-      ["s4-6", "Apply to the Elevate Greece registry."]
+      { id: "s4-1", t: "Hand packing to a warehouse or helper before you leave",
+        how: ["By summer 2027, get quotes from 2 fulfilment warehouses in Athens and from one paid helper.",
+          "Compare their cost per order with the shipping cost in your calculator.",
+          "Write a one-page packing guide: what goes in the box, which voucher, how fast.",
+          "Keep customers, creators and cafés yourself."],
+        done: "Someone else ships every order, and you've checked 10 of them.",
+        go: [["Per-order calculator", "#numbers/order"]] },
+      { id: "s4-2", t: "List on Skroutz, sign 20 more cafés, pitch a café chain",
+        how: ["Skroutz: apply as a shop once you have reviews, and check the commission for your category on Skroutz's seller page.",
+          "Cafés: once your pilot cafés sell 20+ protein freddos a week after 4 weeks, sign 20 more with the same offer.",
+          "Chain: pitch one café chain with your numbers per café."],
+        done: "You're live on Skroutz, 20 more cafés are signed, and a chain has your pitch.",
+        go: [["Cafés", "#contacts/cafe"], ["Selling it", "#guide/selling"]] },
+      { id: "s4-3", t: "Launch the second flavour",
+        how: ["Pick the next flavour: vanilla, salted caramel or mocha. Something Greek can come later.",
+          "Run the kitchen tests and a blind taste test on it first, with a new sample number.",
+          "Get the label approved, then offer it to your customers first."],
+        done: "The second flavour is on sale.",
+        go: [["Taste test", "#numbers/tests"]] },
+      { id: "s4-4", t: "Order a bigger batch of 1,000–2,000 pouches",
+        how: ["Check your months of cash left first: stock eats cash before it earns anything.",
+          "Ask your manufacturer for the price per kg at the bigger size, and lock the whey price for 6–12 months if they offer it.",
+          "Update the whey price in Numbers, Calculators, Per order.",
+          "Order 1,000–2,000 pouches."],
+        done: "The batch is ordered and the calculator shows your new cost.",
+        go: [["Per-order calculator", "#numbers/order"]] },
+      { id: "s4-5", t: "See a Greece–Canada tax adviser before you move",
+        how: ["Book a tax adviser who knows both Greece and Canada, before you become a Canadian resident.",
+          "Ask what happens to the Greek company when you move, whether to start a new Canadian company for North America, and whether Canada's lifetime exemption or the proposed Canada Growth Incentive could apply to you.",
+          "Don't move shares or companies until you have their answer in writing."],
+        done: "You have their advice in writing.",
+        go: [["Selling the company", "#guide/exit"]] },
+      { id: "s4-6", t: "Apply to the Elevate Greece registry",
+        how: ["Apply at elevategreece.gov.gr with the company's details.",
+          "Being listed lets Greek angel investors deduct 50% of what they invest in Fowm. The company must be Greek and under 8 years old.",
+          "They judge each startup case by case, so apply early."],
+        done: "You've applied.",
+        go: [["Raising money", "#guide/raising"]] }
     ] },
   { n: 5, title: "Raise and expand", when: "2028",
     gate: "Shops reorder without you chasing them, and your first investors are in.",
     steps: [
-      ["s5-1", "Raise a small angel round if your numbers are green (see Raising money in the Guide)."],
-      ["s5-2", "If you're in Montreal, apply to the Dobson Cup and Futurpreneur."],
-      ["s5-3", "Launch in Canada with English and French labels."],
-      ["s5-4", "Get into gyms, pharmacies and health shops in Greece."],
-      ["s5-5", "Hire your first person, for operations."]
+      { id: "s5-1", t: "Raise a small angel round, only if your numbers are green",
+        how: ["Open Raising money in the Guide and tick the 6 ready-to-raise boxes. Raise only when all 6 are ticked.",
+          "Prepare a 10-slide deck and a folder of proof: monthly profit and loss, reorders, contracts.",
+          "Give away no more than 20% in one round. Try it in Numbers, Calculators, Investor round."],
+        done: "The round is closed and the money is in the company's account.",
+        go: [["Raising money", "#guide/raising"], ["Investor round", "#numbers/round"]] },
+      { id: "s5-2", t: "In Montreal, apply to the Dobson Cup and Futurpreneur",
+        how: ["Dobson Cup: McGill's startup competition. Prize money only goes to registered companies with a Canadian bank account.",
+          "Futurpreneur: loans of up to C$75,000 without collateral for Canadians aged 18–39, with a mentor for 2 years. You need to live in Canada, and loans must be paid back."],
+        done: "You've applied to both, or decided they don't fit.",
+        go: [["Raising money", "#guide/raising"]] },
+      { id: "s5-3", t: "Launch in Canada with English and French labels",
+        how: ["Hire a Canadian regulatory consultant before you sell there. Canada has its own rules for protein products.",
+          "Make the labels in English and French.",
+          "Ask your tax adviser which company should sell in Canada."],
+        done: "Fowm is on sale in Canada.",
+        go: [["Selling the company", "#guide/exit"]] },
+      { id: "s5-4", t: "Get into gyms, pharmacies and health shops in Greece",
+        how: ["Gyms: put pouches at the reception on sell-or-return.",
+          "Pharmacies and health shops: pitch pharmacy groups and health-shop chains with your sales numbers."],
+        done: "Shops reorder without you chasing them.",
+        go: [["Selling it", "#guide/selling"]] },
+      { id: "s5-5", t: "Hire your first person, for operations",
+        how: ["Write down every task you do each week: packing, stock, cafés.",
+          "Hand over operations first. Keep customers, creators and growth.",
+          "Ask your accountant about the contract and social security before you offer a salary."],
+        done: "They run operations week to week without you." }
     ] },
   { n: 6, title: "Scale and sell", when: "2029 onward", gate: null,
     steps: [
-      ["s6-1", "Enter supermarkets once your cost per pouch is low enough (see Selling it in the Guide)."],
-      ["s6-2", "Enter the US."],
-      ["s6-3", "Build a team that runs Fowm without you."],
-      ["s6-4", "Spend 12–24 months preparing the sale (see Selling the company in the Guide), then run an auction for buyers."]
+      { id: "s6-1", t: "Enter supermarkets once a pouch costs you much less",
+        how: ["Shops and distributors keep about half the shelf price, so at €29.90 you'd get about €12–15 before VAT.",
+          "Only start once bigger batches make a pouch cost you well below that.",
+          "Start with one chain."],
+        done: "A supermarket chain stocks Fowm and reorders.",
+        go: [["Selling it", "#guide/selling"]] },
+      { id: "s6-2", t: "Enter the US",
+        how: ["Go only once Canada proves the model.",
+          "Get US regulatory and tax advice before you sell there.",
+          "Lead with what Starbucks already taught Americans: protein cold foam."],
+        done: "Fowm is on sale in the US.",
+        go: [["The market", "#guide/market"]] },
+      { id: "s6-3", t: "Build a team that runs Fowm without you",
+        how: ["Write down every process: stock, orders, cafés, creators, money.",
+          "Give each one to a person who owns it.",
+          "Test it: take 2 weeks off and see what breaks."],
+        done: "Fowm runs for a month without you.",
+        go: [["Selling the company", "#guide/exit"]] },
+      { id: "s6-4", t: "Prepare the sale for 12–24 months, then run an auction",
+        how: ["Get audited accounts, written processes, and every right (trademark, formula, domain) in the company's name.",
+          "Hire an adviser: a broker for a small brand, an investment bank for a big one.",
+          "Let several buyers bid. Sign a letter of intent with the best one, then go through due diligence and closing.",
+          "Talk to your tax adviser before you sign anything."],
+        done: "The sale has closed.",
+        go: [["Selling the company", "#guide/exit"]] }
     ] }
 ];
 const BUILTIN = new Map();
-STAGES.forEach(st => st.steps.forEach(([id, text]) => BUILTIN.set(id, { id, text, stage: st.n, own: false })));
+STAGES.forEach(st => st.steps.forEach(x => BUILTIN.set(x.id, { id: x.id, text: x.t, how: x.how, done: x.done, go: x.go || [], stage: st.n, own: false })));
 
 const ROUTINE = [
   ["Do the check-in and pick this week's one fix", "Monday", 1],
@@ -238,12 +494,12 @@ const CTYPES = {
       { k: "where", label: "Country or city", type: "text" },
       { k: "email", label: "Email", type: "email" },
       { k: "phone", label: "Phone", type: "tel" },
-      { k: "p250", label: "Price per kg at 250 kg", type: "num", pre: "€" },
-      { k: "p500", label: "Price per kg at 500 kg", type: "num", pre: "€" },
-      { k: "p1000", label: "Price per kg at 1,000 kg", type: "num", pre: "€" },
-      { k: "moq", label: "Minimum order", type: "num", unit: "kg" },
-      { k: "lead", label: "Lead time", type: "num", unit: "weeks" },
-      { k: "foam", label: "Your foam test score for their sample", type: "num", unit: "/10" },
+      { k: "p250", label: "Price per kg at 250 kg", type: "num", pre: "€", max: 1000 },
+      { k: "p500", label: "Price per kg at 500 kg", type: "num", pre: "€", max: 1000 },
+      { k: "p1000", label: "Price per kg at 1,000 kg", type: "num", pre: "€", max: 1000 },
+      { k: "moq", label: "Minimum order", type: "num", unit: "kg", max: 1000000 },
+      { k: "lead", label: "Lead time", type: "num", unit: "weeks", max: 520 },
+      { k: "foam", label: "Your foam test score for their sample", type: "num", unit: "/10", max: 10 },
       { k: "owns", label: "You own the formula, in writing", type: "yn" }
     ] },
   cafe: { label: "Cafés", one: "café", statuses: ["To visit", "Pitched", "Trial", "Selling", "Stopped"],
@@ -252,7 +508,7 @@ const CTYPES = {
       { k: "area", label: "Area", type: "text" },
       { k: "person", label: "Contact person", type: "text" },
       { k: "phone", label: "Phone", type: "tel" },
-      { k: "week", label: "Protein freddos a week", type: "num" },
+      { k: "week", label: "Protein freddos a week", type: "num", max: 10000 },
       { k: "start", label: "Started on", type: "date" }
     ] },
   creator: { label: "Creators", one: "creator", statuses: ["To ask", "Asked", "Said yes", "Posting", "Stopped"],
@@ -261,8 +517,8 @@ const CTYPES = {
       { k: "handle", label: "Handle", type: "text", ph: "@name" },
       { k: "platform", label: "Platform", type: "choice", options: ["Instagram", "TikTok", "Both"] },
       { k: "code", label: "Discount code", type: "text" },
-      { k: "comm", label: "Commission", type: "num", unit: "%" },
-      { k: "orders", label: "Orders from their code", type: "num" }
+      { k: "comm", label: "Commission", type: "num", unit: "%", max: 100 },
+      { k: "orders", label: "Orders from their code", type: "num", max: 1000000 }
     ] }
 };
 
@@ -320,8 +576,8 @@ function cleanState(d) {
     if (Object.keys(r).length) o.tests[v] = r;
   }
   if (Array.isArray(d.tasters)) o.tasters = d.tasters.filter(t => isObj(t) && Number.isInteger(t.score) && t.score >= 1 && t.score <= 10 && typeof t.buy === "boolean")
-    .slice(0, 1000).map(t => ({ id: /^c-[a-z0-9]{4,16}$/.test(t.id) ? t.id : uid(), s: Number.isInteger(t.s) && t.s >= 1 && t.s <= 5 ? t.s : 1, score: t.score, buy: t.buy, d: RE_DATE.test(t.d) ? t.d : isoOf(today()), who: str(t.who, 24) }));
-  if (Array.isArray(d.contacts)) o.contacts = d.contacts.filter(c => isObj(c) && CTYPES[c.type] && str(c.name, 80).trim()).slice(0, 500).map(c => {
+    .slice(-1000).map(t => ({ id: /^c-[a-z0-9]{4,16}$/.test(t.id) ? t.id : uid(), s: Number.isInteger(t.s) && t.s >= 1 && t.s <= 5 ? t.s : 1, score: t.score, buy: t.buy, d: RE_DATE.test(t.d) ? t.d : isoOf(today()), who: str(t.who, 24) }));
+  if (Array.isArray(d.contacts)) o.contacts = d.contacts.filter(c => isObj(c) && CTYPES[c.type] && str(c.name, 80).trim()).slice(-500).map(c => {
     const T = CTYPES[c.type], f = {};
     if (isObj(c.f)) for (const fd of T.fields) {
       const x = c.f[fd.k];
@@ -334,12 +590,17 @@ function cleanState(d) {
     return { id: /^c-[a-z0-9]{4,16}$/.test(c.id) ? c.id : uid(), type: c.type, name: str(c.name, 80), status: T.statuses.includes(c.status) ? c.status : T.statuses[0], f, note: str(c.note, 3000), t: typeof c.t === "string" ? c.t.slice(0, 30) : "" };
   });
   if (isObj(d.seen)) for (const k of Object.keys(d.seen)) if (/^[0-6]$/.test(k) && RE_DATE.test(d.seen[k])) o.seen[k] = d.seen[k];
+  if (RE_DATE.test(d.backup)) o.backup = d.backup;   // the day of the last backup file
+  if (RE_DATE.test(d.snooze)) o.snooze = d.snooze;   // the day "Not now" was tapped on the reminder
   return o;
 }
 
 function loadState() {
-  const cur = readLS(KEY);
+  let raw = null, cur = null;
+  if (lsOK) try { raw = localStorage.getItem(KEY); } catch (e) {}
+  if (raw) try { cur = JSON.parse(raw); } catch (e) {}
   if (isObj(cur) && cur.v === 2) return cleanState(cur);
+  if (raw) try { if (!localStorage.getItem(KEY + "/unreadable")) localStorage.setItem(KEY + "/unreadable", raw); } catch (e) {}
   const st = blank();
   const old = readLS("fowm-blueprint/state"); // version 1 of this app
   if (isObj(old)) {
@@ -383,12 +644,17 @@ function save() { clearTimeout(saveTimer); saveTimer = setTimeout(writeState, 12
 function saveUI() { clearTimeout(uiTimer); uiTimer = setTimeout(() => { if (lsOK) try { localStorage.setItem(UIKEY, JSON.stringify(UI)); } catch (e) {} }, 200); }
 function flush() { if (saveTimer) { clearTimeout(saveTimer); writeState(); } }
 addEventListener("pagehide", flush);
-document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flush(); else if (view === "today") renderToday(); });
+let shownDay = null;
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") { flush(); return; }
+  const d = isoOf(today());
+  if (d !== shownDay) { shownDay = d; if (view && view !== "chapter" && !sheetOpen) rerenderKeepScroll(); }
+  else if (view === "today" && !sheetOpen) rerenderKeepScroll();
+});
 
 /* ---------- progress ---------- */
 function stepsOf(n) {
-  const st = STAGES[n];
-  const list = st.steps.map(([id, text]) => ({ id, text, stage: n, own: false }));
+  const list = STAGES[n].steps.map(x => BUILTIN.get(x.id));
   for (const c of (S.custom[n] || [])) list.push({ id: c.id, text: c.text, stage: n, own: true });
   return list;
 }
@@ -398,13 +664,16 @@ function findStep(id) {
   return null;
 }
 function progress() {
-  let done = 0, total = 0;
+  let done = 0, total = 0, before = true;
   const per = STAGES.map(st => {
     const steps = stepsOf(st.n);
     const d = steps.filter(x => S.tasks[x.id]).length;
     const hasGate = !!st.gate, g = hasGate && S.gates[st.n] ? 1 : 0;
     done += d + g; total += steps.length + (hasGate ? 1 : 0);
-    return { n: st.n, steps, d, w: steps.length + (hasGate ? 1 : 0), complete: hasGate ? g === 1 : (steps.length > 0 && d === steps.length) };
+    // a stage is done when its gate is hit (or, for the last stage, every step), and only once every earlier stage is done
+    const own = hasGate ? g === 1 : (steps.length > 0 && d === steps.length);
+    const complete = before && own; before = complete;
+    return { n: st.n, steps, d, w: steps.length + (hasGate ? 1 : 0), complete };
   });
   let current = per.findIndex(p => !p.complete);
   if (current < 0) current = STAGES.length;
@@ -415,8 +684,8 @@ function checkBadges(fromUser) {
   const p = progress();
   const now = p.per.map(x => x.complete);
   if (fromUser && lastComplete) {
-    const newly = now.findIndex((c, i) => c && !lastComplete[i]);
-    if (newly >= 0 && !S.seen[newly]) { S.seen[newly] = isoOf(today()); save(); setTimeout(() => celebrate(newly), reduced ? 0 : 450); }
+    const newly = now.map((c, i) => c && !lastComplete[i] && !S.seen[i] ? i : -1).filter(i => i >= 0);
+    if (newly.length) { for (const i of newly) S.seen[i] = isoOf(today()); save(); setTimeout(() => celebrate(newly), reduced ? 0 : 450); }
   }
   lastComplete = now;
 }
@@ -476,12 +745,46 @@ const afterLaunch = [];
 })();
 
 // A tick that gets checked pops and sends out a ring (only when you tick it, never on a redraw).
-document.addEventListener("change", (e) => {
-  const t = e.target, ck = t && t.type === "checkbox" ? t.nextElementSibling : null;
-  if (reduced || !ck || !ck.classList.contains("ck") || !t.checked) return;
+function popCk(inp) {
+  const ck = inp && inp.nextElementSibling;
+  if (reduced || !ck || !ck.classList.contains("ck") || !inp.checked) return;
   ck.classList.remove("pop"); void ck.offsetWidth; ck.classList.add("pop");
   setTimeout(() => ck.classList.remove("pop"), 1000);
+}
+document.addEventListener("change", (e) => {
+  const t = e.target;
+  if (t && t.type === "checkbox") requestAnimationFrame(() => popCk(t));
 }, true);
+
+// An iPhone-style alert for the few moments that need a clear yes or no. Resolves true or false.
+function confirmBox(o) {
+  return new Promise((resolve) => {
+    const before = document.activeElement;
+    const no = h("button", { type: "button", text: o.cancel || "Cancel" });
+    const yes = h("button", { type: "button", class: o.danger ? "danger" : null, text: o.ok });
+    const box = h("div", { class: "alert", role: "alertdialog", "aria-modal": "true", "aria-label": o.title },
+      h("b", { text: o.title }), o.text ? h("p", { text: o.text }) : null, h("div", { class: "alert-btns" }, no, yes));
+    const wrap = h("div", { class: "alert-wrap" }, box);
+    document.body.append(wrap);
+    anim(wrap, [{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: "ease-out" });
+    anim(box, [{ transform: "scale(1.12)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 420, easing: EASE.soft });
+    let over = false;
+    const key = (e) => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); done(false); } };
+    const done = (v) => {
+      if (over) return;
+      over = true;
+      document.removeEventListener("keydown", key, true);
+      wrap.style.pointerEvents = "none";
+      settled(anim(wrap, [{ opacity: 1 }, { opacity: 0 }], { duration: 170, easing: "ease-in", fill: "forwards" })).then(() => wrap.remove());
+      if (before && before.isConnected) try { before.focus({ preventScroll: true }); } catch (e) {}
+      resolve(v);
+    };
+    document.addEventListener("keydown", key, true);
+    no.addEventListener("click", () => done(false));
+    yes.addEventListener("click", () => done(true));
+    no.focus({ preventScroll: true });
+  });
+}
 
 // <details> open and close with their height instead of snapping (the Guide's folds, "What one pouch costs you").
 document.addEventListener("click", (e) => {
@@ -615,14 +918,18 @@ function glide(inp, to, apply, dur = 460) {
 
 /* ---------- toast and sheet ---------- */
 let toastT = 0;
-function toast(msg) {
+function toast(msg, opt = {}) {
   const t = $("#toast"), was = t.classList.contains("on");
-  t.textContent = msg; t.classList.add("on");
+  const hide = () => { clearTimeout(toastT); t.classList.remove("on", "has-act"); };
+  t.replaceChildren(h("span", { text: msg }));
+  if (opt.action) t.append(h("button", { class: "toast-act", type: "button", text: opt.action, onclick: () => { hide(); opt.run(); } }));
+  t.classList.toggle("has-act", !!opt.action);
+  t.classList.add("on");
   if (was) anim(t, [{ transform: "scale(.95)" }, { transform: "none" }], { duration: 600, easing: EASE.spring });
-  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 2600);
+  clearTimeout(toastT); toastT = setTimeout(hide, opt.action ? 6000 : 2600);
 }
 const sheetEl = $("#sheet"), scrim = $("#scrim"), sheetBodyEl = $("#sheetBody");
-let sheetOnClose = null, sheetFocus = null, sheetOpen = false, sheetAnims = [];
+let sheetOnClose = null, sheetFocus = null, sheetOpen = false, sheetAnims = [], sheetGuard = null;
 const sheetY = (y) => "translateY(" + y.toFixed(1) + "px)";
 function sheetMove(y0, y1, s0, s1, dur, easing) {
   for (const a of sheetAnims) if (a) a.cancel();
@@ -632,21 +939,30 @@ function sheetMove(y0, y1, s0, s1, dur, easing) {
   return settled(sheetAnims[0]);
 }
 function openSheet(title, body, opts = {}) {
-  if (sheetOpen) closeSheet(true);
+  if (sheetOpen) closeSheet(true, null, true);
   sheetFocus = document.activeElement;
   $("#sheetTitle").textContent = title;
   $("#sheetX").textContent = opts.done || "Done";
   sheetBodyEl.replaceChildren(body);
   sheetOnClose = opts.onClose || null;
+  sheetGuard = opts.guard || null; // returns true when closing now would lose something typed
+  sheetEl.inert = false; sheetEl.style.pointerEvents = "";
   scrim.hidden = false; sheetEl.hidden = false; sheetOpen = true;
   sheetBodyEl.scrollTop = 0;
   document.documentElement.style.overflow = "hidden";
   sheetMove(sheetEl.offsetHeight + 30, 0, 0, 1, 600, EASE.sheet);
   setTimeout(() => { if (!sheetOpen) return; const f = opts.focus && $(opts.focus, sheetEl); (f || $("#sheetX")).focus({ preventScroll: true }); }, reduced ? 0 : 380);
 }
-function closeSheet(instant, fling) {
+function closeSheet(instant, fling, force) {
   if (!sheetOpen) return;
-  sheetOpen = false;
+  if (!force && sheetGuard && sheetGuard()) {
+    if (fling) sheetMove(Math.max(0, fling.y), 0, Number(scrim.style.opacity || 1), 1, 520, EASE.soft); // put it back while we ask
+    confirmBox({ title: "Discard changes?", text: "What you typed here isn't saved yet.", ok: "Discard", cancel: "Keep editing", danger: true })
+      .then((ok) => { if (ok) closeSheet(instant, null, true); });
+    return;
+  }
+  sheetOpen = false; sheetGuard = null;
+  sheetEl.inert = true; sheetEl.style.pointerEvents = "none"; // no second tap lands on a sheet that is leaving
   const ae = document.activeElement;
   if (ae && sheetEl.contains(ae) && ae.blur) ae.blur();
   document.documentElement.style.overflow = "";
@@ -655,7 +971,7 @@ function closeSheet(instant, fling) {
     if (sheetOpen) return;
     for (const a of sheetAnims) if (a) a.cancel();
     sheetAnims = [];
-    scrim.hidden = true; sheetEl.hidden = true;
+    scrim.hidden = true; sheetEl.hidden = true; sheetEl.inert = false; sheetEl.style.pointerEvents = "";
     sheetEl.style.transform = ""; sheetEl.style.bottom = ""; sheetEl.style.maxHeight = ""; scrim.style.opacity = "";
     sheetBodyEl.replaceChildren();
   };
@@ -749,13 +1065,14 @@ document.addEventListener("keydown", e => { if (e.key === "Escape" && sheetOpen)
 })();
 
 function armed(btn, label, armedLabel, action) {
-  let t = 0;
+  let t = 0, at = 0;
   btn.addEventListener("click", () => {
     if (!btn.classList.contains("armed")) {
-      btn.classList.add("armed"); btn.textContent = armedLabel;
+      btn.classList.add("armed"); btn.textContent = armedLabel; at = performance.now();
       t = setTimeout(() => { btn.classList.remove("armed"); btn.textContent = label; }, 3500);
       return;
     }
+    if (performance.now() - at < 450) return; // a quick double tap is a slip, not a yes
     clearTimeout(t); btn.classList.remove("armed"); btn.textContent = label; action();
   });
   return btn;
@@ -842,7 +1159,8 @@ function route() {
   if (navT) navT.end(true);
   const prev = view, prevCh = chapter, yOut = scrollY;
   if (prev && prev !== "chapter") scrolls[prev] = yOut;
-  if (sheetOpen) closeSheet(true);
+  if (sheetOpen) closeSheet(reduced, null, true);
+  if (r.v === "contacts" && CTYPES[r.sub]) { UI.conTab = r.sub; saveUI(); }
   if (r.v === "numbers" && r.sub) {
     if (r.sub === "checkin" || r.sub === "tests") UI.numTab = r.sub;
     else if (["order", "budget", "value", "round"].includes(r.sub)) { UI.numTab = "calc"; UI.calcTab = r.sub; }
@@ -1042,7 +1360,7 @@ function badgeSvg(n, cls) {
 }
 
 /* ---------- Today ---------- */
-let nextTimer = 0, heroRefs = null, heroSeen = false;
+let nextTimer = 0, heroRefs = null, heroSeen = false, safariOK = false;
 const fmtPct = (v) => Math.round(v) + "%";
 const heroMeta = (st, x) => x.d + " of " + x.steps.length + " steps in this stage" + (st.gate && x.d === x.steps.length ? ", gate next" : "");
 function renderToday() {
@@ -1072,7 +1390,22 @@ function renderToday() {
     heroRefs = { pct: pctEl, bar: null, meta: null, stage: STAGES.length };
   }
   hero.append(cupWrap, info);
+  // opened in Safari instead of the home-screen app: progress here would live in a separate place
+  if (navigator.standalone === false && !safariOK) root.append(h("div", { class: "card note-card", data: { k: "t-safari" } },
+    h("b", { text: "You're in the browser, not the app" }),
+    h("p", { text: "Anything you tick here stays in this browser and won't show in the Fowm Plan app on your home screen. Open the app from your home screen instead. No app yet? In Safari, tap Share, then Add to Home Screen." }),
+    h("button", { class: "linkbtn", type: "button", text: "Got it", onclick: (e) => { safariOK = true; const c = e.currentTarget.closest(".card"); foldAway(c).then(() => c.remove()); } })));
   root.append(hero);
+  const due = backupDue();
+  if (due) {
+    const card = h("div", { class: "card note-card", data: { k: "t-backup", enter: "expand" } },
+      h("b", { text: "Back up your progress" }),
+      h("p", { text: (due.days == null ? "You haven't saved a backup yet." : "Your last backup was " + plural(due.days, "day", "days") + " ago.") + " If the app is deleted or your phone is lost, a backup file in iCloud Drive brings everything back." }),
+      h("div", { class: "row-btns" },
+        h("button", { class: "btn small", type: "button", text: "Save backup file", onclick: async () => { if (await saveBackupFile()) foldAway(card).then(() => rerenderKeepScroll()); } }),
+        h("button", { class: "linkbtn", type: "button", text: "Not now", onclick: () => { S.snooze = isoOf(today()); save(); foldAway(card).then(() => rerenderKeepScroll()); } })));
+    root.append(card);
+  }
   // The one big moment: the cup fills and the number counts up, the first time you see Today.
   const refs = heroRefs, startHero = () => {
     foamTo(p.done / p.total, true);
@@ -1136,27 +1469,65 @@ function streakCount() {
 }
 
 /* ---------- steps (shared by Today and Plan) ---------- */
+const short = (t, n = 44) => t.length > n ? t.slice(0, n - 1).trimEnd() + "…" : t;
 function stepRow(x, where) {
   const doneNow = !!S.tasks[x.id];
   const inp = h("input", { class: "vh", type: "checkbox", "aria-label": "Done: " + x.text });
   inp.checked = doneNow;
-  inp.addEventListener("change", () => toggleStep(x.id, inp.checked, where, li));
-  const body = h("button", { class: "step-body", type: "button", onclick: () => openStep(x.id) },
-    h("span", { class: "t", text: x.text }, x.own ? h("span", { class: "step-own", text: "Yours" }) : null),
-    S.notes[x.id] ? h("span", { class: "n", text: S.notes[x.id] }) : null);
+  inp.addEventListener("change", () => tickStep(x, inp, where, li));
+  // the whole text is a button that opens the step: what to do, how, and when it counts as done
+  const body = h("button", { class: "step-body", type: "button", "aria-label": x.text + (x.own ? "" : ". How to do it"), onclick: () => openStep(x.id) },
+    h("span", { class: "sb" },
+      h("span", { class: "t", text: x.text }, x.own ? h("span", { class: "step-own", text: "Yours" }) : null),
+      S.notes[x.id] ? h("span", { class: "n", text: S.notes[x.id] }) : null),
+    svgEl(ICON.chev));
   const li = h("li", { class: "step" + (doneNow ? " done" : ""), data: { step: x.id, k: "s:" + x.id, enter: "expand" } }, h("label", { class: "tick" }, inp, h("span", { class: "ck", "aria-hidden": "true" })), body);
   return li;
+}
+// Ticking a step from a later stage asks first, so a stray tap can't fake progress.
+function confirmAhead(stage, gate) {
+  const cur = progress().current;
+  if (stage <= cur) return Promise.resolve(true);
+  return confirmBox({ title: gate ? "Gate hit early?" : "Done early?",
+    text: (gate ? "This is the gate for Stage " + stage : "This is a Stage " + stage + " step") + ", and you're in Stage " + cur + ". Only tick it if you've really " + (gate ? "hit it." : "done it."),
+    ok: gate ? "Yes, it's hit" : "Yes, it's done" });
+}
+function tickStep(x, inp, where, li) {
+  if (inp.checked && x.stage > progress().current) {
+    inp.checked = false;
+    return confirmAhead(x.stage).then((ok) => { if (!ok || !inp.isConnected) return; inp.checked = true; popCk(inp); toggleStep(x.id, true, where, li); });
+  }
+  toggleStep(x.id, inp.checked, where, li);
+  return Promise.resolve();
 }
 function toggleStep(id, on, where, li) {
   if (on) S.tasks[id] = true; else delete S.tasks[id];
   save();
   if (li) li.classList.toggle("done", on);
+  // a ticked step leaves Today's list, so say what happened and offer a way back
+  if (on && where === "today") { const x = findStep(id); if (x) toast("Done: " + short(x.text), { action: "Undo", run: () => { delete S.tasks[id]; save(); afterProgress("undo"); } }); }
   afterProgress(where);
 }
 function gateToggle(n) {
   const inp = h("input", { class: "vh", type: "checkbox", "aria-label": "Stage " + n + " gate hit" });
   inp.checked = !!S.gates[n];
-  inp.addEventListener("change", () => { if (inp.checked) S.gates[n] = true; else delete S.gates[n]; save(); afterProgress(view === "today" ? "today-gate" : "plan"); });
+  const where = () => view === "today" ? "today-gate" : "plan";
+  const set = (on) => { if (on) S.gates[n] = true; else delete S.gates[n]; save(); afterProgress(where()); };
+  inp.addEventListener("change", () => {
+    if (inp.checked && n > progress().current) {
+      inp.checked = false;
+      confirmAhead(n, true).then((ok) => { if (!ok || !inp.isConnected) return; inp.checked = true; popCk(inp); set(true); });
+      return;
+    }
+    if (!inp.checked && progress().per[n].complete) {
+      // unticking a finished stage's gate also undoes every stage after it, so ask
+      inp.checked = true;
+      confirmBox({ title: "Untick this gate?", text: "Stage " + n + (n < 5 ? " and every stage after it" : "") + " will count as not done.", ok: "Untick", danger: true })
+        .then((ok) => { if (!ok || !inp.isConnected) return; inp.checked = false; set(false); });
+      return;
+    }
+    set(inp.checked);
+  });
   return h("label", { class: "tick-row" }, inp, h("span", { class: "ck", "aria-hidden": "true" }), h("span", { class: "t", style: "font-weight:600", text: "We hit this gate" }));
 }
 function afterProgress(where) {
@@ -1185,47 +1556,74 @@ function updateHero(p) {
   }
 }
 
+const GO_ARROW = '<svg viewBox="0 0 28 28" aria-hidden="true"><path d="M7 14h13m-5-5.5L20.5 14 15 19.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function openStep(id) {
   const x = findStep(id); if (!x) return;
   const st = STAGES[x.stage];
   const body = h("div");
   body.append(h("p", { class: "sheet-note", text: "Stage " + st.n + ": " + st.title }));
-  let textInp = null;
+  let textInp = null, textErr = null;
   if (x.own) {
     textInp = h("textarea", { class: "inp", rows: "3", maxlength: "400", "aria-label": "Step" });
     textInp.value = x.text;
-    body.append(h("label", { class: "field" }, h("span", { text: "Your step" }), textInp));
-  } else body.append(h("p", { class: "sheet-step", text: x.text }));
+    textErr = h("span", { class: "err", hidden: true, text: "A step needs some words. The old text stays until you type new ones." });
+    body.append(h("label", { class: "field" }, h("span", { text: "Your step" }), textInp, textErr));
+  } else {
+    // what to do, exactly how, and when it counts as done
+    body.append(h("p", { class: "sheet-step", text: x.text }),
+      h("p", { class: "how-h", text: "How to do it" }),
+      h("ol", { class: "how" }, x.how.map(t => h("li", { text: t }))),
+      h("p", { class: "done-when" }, h("b", { text: "Done when: " }), x.done));
+    if (x.go.length) body.append(h("div", { class: "list go-list" }, x.go.map(([label, href]) => {
+      const ch = href.startsWith("#guide/") ? href.slice(7) : null;
+      return h("a", { class: "row", href }, h("span", { class: "row-ic" }, ch && CH_ICON[ch] ? chIcon(ch) : svgEl(GO_ARROW)),
+        h("span", { class: "row-main" }, h("span", { class: "row-title", text: label }), h("span", { class: "row-sub", text: ch ? "Read it in the Guide" : "Open it in the app" })), svgEl(ICON.chev));
+    })));
+  }
+  // one clear switch for "I've done this", separate from closing the sheet
   const doneInp = h("input", { class: "vh", type: "checkbox" }); doneInp.checked = !!S.tasks[id];
-  doneInp.addEventListener("change", () => { toggleStep(id, doneInp.checked, "sheet"); });
-  body.append(h("div", { class: "card", style: "background:var(--cream);box-shadow:none;padding:14px" }, h("label", { class: "tick-row" }, doneInp, h("span", { class: "ck", "aria-hidden": "true" }), h("span", { class: "t", style: "font-weight:600", text: "Done" }))));
+  const doneT = h("span", { class: "t", style: "font-weight:600" });
+  const doneLabel = () => { doneT.textContent = doneInp.checked ? "Done. Tap to untick." : "Mark as done"; };
+  doneLabel();
+  doneInp.addEventListener("change", () => { tickStep(x, doneInp, "sheet", null).then(doneLabel); doneLabel(); });
+  body.append(h("div", { class: "card done-card" }, h("label", { class: "tick-row" }, doneInp, h("span", { class: "ck", "aria-hidden": "true" }), doneT)));
   const note = h("textarea", { class: "inp", rows: "5", maxlength: "3000", placeholder: "Quotes, names, what you learned, what's next" });
   note.value = S.notes[id] || "";
   note.addEventListener("input", () => { const t = note.value; if (t.trim()) S.notes[id] = t; else delete S.notes[id]; save(); });
-  body.append(h("label", { class: "field" }, h("span", { text: "Note" }), note));
+  body.append(h("label", { class: "field" }, h("span", { text: "Note (saves as you type)" }), note));
   if (x.own) {
-    textInp.addEventListener("input", () => { const t = textInp.value.trim(); const c = (S.custom[x.stage] || []).find(c => c.id === id); if (c && t) { c.text = textInp.value.slice(0, 400); save(); } });
+    textInp.addEventListener("input", () => {
+      const t = textInp.value.trim(), c = (S.custom[x.stage] || []).find(c => c.id === id);
+      textErr.hidden = !!t; textInp.classList.toggle("bad", !t);
+      if (c && t) { c.text = textInp.value.slice(0, 400); save(); }
+    });
     const del = h("button", { class: "btn danger", type: "button", text: "Delete this step" });
     armed(del, "Delete this step", "Tap again to delete", () => {
-      S.custom[x.stage] = (S.custom[x.stage] || []).filter(c => c.id !== id);
+      const list = S.custom[x.stage] || [], at = list.findIndex(c => c.id === id), item = list[at], was = { tick: S.tasks[id], note: S.notes[id] };
+      S.custom[x.stage] = list.filter(c => c.id !== id);
       if (!S.custom[x.stage].length) delete S.custom[x.stage];
-      delete S.tasks[id]; delete S.notes[id]; save(); closeSheet(); toast("Step deleted");
+      delete S.tasks[id]; delete S.notes[id]; save(); closeSheet(false, null, true);
+      toast("Step deleted", { action: "Undo", run: () => {
+        const l = (S.custom[x.stage] = S.custom[x.stage] || []); l.splice(Math.min(at, l.length), 0, item);
+        if (was.tick) S.tasks[id] = true; if (was.note) S.notes[id] = was.note; save(); rerenderKeepScroll(); } });
     });
     body.append(h("div", { class: "danger-zone" }, del));
   }
-  openSheet("Step", body, { onClose: () => { checkBadges(false); RENDER[view] && view !== "chapter" && rerenderKeepScroll(); } });
+  openSheet(x.own ? "Your step" : "Step", body, { done: "Close", onClose: () => { checkBadges(false); RENDER[view] && view !== "chapter" && rerenderKeepScroll(); } });
 }
 function addStep(n) {
   const inp = h("textarea", { class: "inp", rows: "3", maxlength: "400", placeholder: "What needs doing?", id: "newStep" });
   const btn = h("button", { class: "btn", type: "button", text: "Add step", disabled: true });
   inp.addEventListener("input", () => { btn.disabled = !inp.value.trim(); });
+  let added = false;
   btn.addEventListener("click", () => {
-    const t = inp.value.trim(); if (!t) return;
+    const t = inp.value.trim(); if (!t || added || !sheetOpen) return;
+    added = true;
     (S.custom[n] = S.custom[n] || []).push({ id: uid(), text: t.slice(0, 400) });
-    save(); closeSheet(); toast("Step added to Stage " + n);
+    save(); closeSheet(false, null, true); toast("Step added to Stage " + n);
   });
   openSheet("New step", h("div", null, h("p", { class: "sheet-note", text: "Stage " + n + ": " + STAGES[n].title }), h("label", { class: "field" }, h("span", { text: "Step" }), inp), btn),
-    { focus: "#newStep", onClose: () => { checkBadges(false); rerenderKeepScroll(); } });
+    { focus: "#newStep", guard: () => !added && !!inp.value.trim(), onClose: () => { checkBadges(false); rerenderKeepScroll(); } });
 }
 // Redraw the open screen without it jumping. Before the redraw, note where keyed blocks ([data-k]) sat,
 // how state-coloured controls looked and how long the bars were; after it, slide the blocks from their
@@ -1399,13 +1797,14 @@ function renderCheckin(box) {
         placeholder: last && finite(last.v[f.k]) ? "last: " + fmtNum(last.v[f.k]) : "" });
       inp.value = finite(cur.v[f.k]) ? String(cur.v[f.k]) : "";
       inp.dataset.k = f.k;
-      inp.addEventListener("input", () => {
-        const raw = inp.value.replace(",", ".").trim(), n = raw === "" ? NaN : Number(raw);
+      const err = h("span", { class: "err", hidden: true });
+      numField(inp, err, f.min, f.max, (n) => {
+        if (n === undefined && !(S.checkins[wk] && f.k in S.checkins[wk].v)) return;
         const e = entry();
-        if (raw !== "" && isFinite(n)) e.v[f.k] = Math.min(f.max, Math.max(f.min, n)); else delete e.v[f.k];
+        if (n === undefined) delete e.v[f.k]; else e.v[f.k] = n;
         e.d = isoOf(today()); save(); refresh();
       });
-      ins.append(h("label", null, h("span", { text: f.label }), h("span", { class: "inp-unit" + (f.pre ? " pre" : "") }, inp, f.unit ? h("em", { text: f.unit }) : null)));
+      ins.append(h("label", null, h("span", { text: f.label }), h("span", { class: "inp-unit" + (f.pre ? " pre" : "") }, inp, f.unit ? h("em", { text: f.unit }) : null), err));
     }
     const card = h("div", { class: "card kpi" }, h("div", { class: "kpi-h" }, h("b", { text: K.name }), st), ins, h("p", { class: "kpi-lines", text: K.lines }));
     // suggestions from other parts of the app
@@ -1526,7 +1925,10 @@ function openWeek(w) {
   if (e.note) body.append(h("div", { class: "field" }, h("span", { text: "Plan for that week" }), h("p", { style: "margin:0", text: e.note })));
   if (w === thisWeek()) body.append(h("p", { class: "hint", text: "Edit this week's numbers on the check-in screen." }));
   const del = h("button", { class: "btn danger", type: "button", text: "Delete this week" });
-  armed(del, "Delete this week", "Tap again to delete", () => { delete S.checkins[w]; save(); closeSheet(); toast("Week deleted"); rerenderKeepScroll(); });
+  armed(del, "Delete this week", "Tap again to delete", () => {
+    const was = S.checkins[w]; delete S.checkins[w]; save(); closeSheet(false, null, true); rerenderKeepScroll();
+    toast("Week deleted", { action: "Undo", run: () => { S.checkins[w] = was; save(); rerenderKeepScroll(); } });
+  });
   body.append(h("div", { class: "danger-zone" }, del));
   openSheet("Week of " + dShort(parseISO(w)), body);
 }
@@ -1585,10 +1987,14 @@ function renderTests(box) {
     const list = h("div", { style: "margin-top:12px" });
     for (const t of L.slice().reverse()) {
       const x = h("button", { class: "x", type: "button", "aria-label": "Delete this taster", html: ICON.x });
-      let armedT = 0;
+      let armedT = 0, armedAt = 0;
       x.addEventListener("click", () => {
-        if (!x.classList.contains("armed")) { x.classList.add("armed"); x.style.color = "var(--stop)"; x.setAttribute("aria-label", "Tap again to delete"); armedT = setTimeout(() => { x.classList.remove("armed"); x.style.color = ""; }, 3000); return; }
-        clearTimeout(armedT); S.tasters = S.tasters.filter(z => z.id !== t.id); save(); toast("Taster deleted");
+        if (!x.classList.contains("armed")) { x.classList.add("armed"); armedAt = performance.now(); x.style.color = "var(--stop)"; x.setAttribute("aria-label", "Tap again to delete"); armedT = setTimeout(() => { x.classList.remove("armed"); x.style.color = ""; x.setAttribute("aria-label", "Delete this taster"); }, 3000); return; }
+        if (performance.now() - armedAt < 450) return; // a quick double tap is a slip
+        clearTimeout(armedT);
+        const at = S.tasters.findIndex(z => z.id === t.id), item = S.tasters[at];
+        S.tasters = S.tasters.filter(z => z.id !== t.id); save();
+        toast("Taster deleted", { action: "Undo", run: () => { S.tasters.splice(Math.min(at, S.tasters.length), 0, item); save(); rerenderKeepScroll(); } });
         foldAway(x.closest(".mini-row")).then(() => rerenderKeepScroll());
       });
       list.append(h("div", { class: "mini-row", data: { k: "tr:" + t.id, enter: "expand" } }, h("span", { class: "score", text: String(t.score) }),
@@ -1619,15 +2025,15 @@ function renderTests(box) {
     const num = (f, label, unit, max) => {
       const inp = h("input", { class: "inp", type: "text", inputmode: "decimal", autocomplete: "off", "aria-label": label, placeholder: unit });
       inp.value = finite(t[f]) ? String(t[f]) : "";
-      inp.addEventListener("input", () => {
-        const raw = inp.value.replace(",", ".").trim(), n = raw === "" ? NaN : Number(raw);
+      const err = h("span", { class: "err", hidden: true });
+      numField(inp, err, 0, max, (n) => {
         const o = Object.assign({}, S.tests[T.v]);
-        if (raw !== "" && isFinite(n)) o[f] = Math.min(max, Math.max(0, n)); else delete o[f];
+        if (n === undefined) delete o[f]; else o[f] = n;
         if (Object.keys(o).length) S.tests[T.v] = o; else delete S.tests[T.v];
         save();
       });
-      inp.addEventListener("change", () => rerenderKeepScroll());
-      return h("div", { class: "t-field" }, h("span", { text: label }), inp);
+      inp.addEventListener("change", () => { inp._check(true); if (!inp.classList.contains("bad")) rerenderKeepScroll(); });
+      return h("div", { class: "t-field-w" }, h("div", { class: "t-field" }, h("span", { text: label }), inp), err);
     };
     b.append(num("h", "Foam height after 20 seconds", "cm", 30));
     for (const [f, q] of KYN) {
@@ -1943,35 +2349,39 @@ function editContact(id, type) {
     const inp = h("input", { class: "inp", autocomplete: "off", "aria-label": fd.label, placeholder: fd.ph || "",
       type: fd.type === "num" ? "text" : fd.type, inputmode: fd.type === "num" ? "decimal" : (fd.type === "tel" ? "tel" : fd.type === "email" ? "email" : null) });
     inp.value = d.f[fd.k] != null ? String(d.f[fd.k]) : "";
-    inp.addEventListener("input", () => {
-      const raw = inp.value.trim();
-      if (fd.type === "num") { const n = Number(raw.replace(",", ".")); if (raw !== "" && isFinite(n)) d.f[fd.k] = n; else delete d.f[fd.k]; }
-      else if (raw) d.f[fd.k] = fd.type === "date" ? raw : raw.slice(0, 160); else delete d.f[fd.k];
-    });
+    const err = h("span", { class: "err", hidden: true });
+    if (fd.type === "num") numField(inp, err, 0, fd.max, (n) => { if (n === undefined) delete d.f[fd.k]; else d.f[fd.k] = n; });
+    else inp.addEventListener("input", () => { const raw = inp.value.trim(); if (raw) d.f[fd.k] = fd.type === "date" ? raw : raw.slice(0, 160); else delete d.f[fd.k]; });
     const wrapped = fd.pre || fd.unit ? h("span", { class: "inp-unit" + (fd.pre ? " pre" : "") }, inp, h("em", { text: fd.pre || fd.unit })) : inp;
-    body.append(h("label", { class: "field" }, h("span", { text: fd.label }), wrapped));
+    body.append(h("label", { class: "field" }, h("span", { text: fd.label }), wrapped, err));
   }
   const note = h("textarea", { class: "inp", rows: "4", maxlength: "3000", placeholder: "What they said, next step, dates" });
   note.value = d.note;
   note.addEventListener("input", () => { d.note = note.value; });
   body.append(h("label", { class: "field" }, h("span", { text: "Notes" }), note));
   const saveBtn = h("button", { class: "btn", type: "button", text: existing ? "Save changes" : "Add " + T.one, disabled: !d.name.trim() });
+  const start = JSON.stringify(d); let saved = false;
   name.addEventListener("input", () => { d.name = name.value; saveBtn.disabled = !name.value.trim(); });
   saveBtn.addEventListener("click", () => {
-    if (!d.name.trim()) return;
+    if (!d.name.trim() || saved || !sheetOpen) return;
+    saved = true;
     d.name = d.name.trim().slice(0, 80); d.t = new Date().toISOString();
     const clean = cleanState({ contacts: [d] }).contacts[0];
     const i = S.contacts.findIndex(c => c.id === d.id);
     if (i >= 0) S.contacts[i] = clean; else S.contacts.push(clean);
-    save(); closeSheet(); toast(existing ? "Saved" : clean.name + " added"); if (view === "contacts") rerenderKeepScroll();
+    save(); closeSheet(false, null, true); toast(existing ? "Saved" : clean.name + " added"); if (view === "contacts") rerenderKeepScroll();
   });
   body.append(saveBtn);
   if (existing) {
     const del = h("button", { class: "btn danger", type: "button", text: "Delete " + T.one });
-    armed(del, "Delete " + T.one, "Tap again to delete", () => { S.contacts = S.contacts.filter(c => c.id !== id); save(); closeSheet(); toast("Deleted"); if (view === "contacts") rerenderKeepScroll(); });
+    armed(del, "Delete " + T.one, "Tap again to delete", () => {
+      const at = S.contacts.findIndex(c => c.id === id), item = S.contacts[at];
+      saved = true; S.contacts = S.contacts.filter(c => c.id !== id); save(); closeSheet(false, null, true); if (view === "contacts") rerenderKeepScroll();
+      toast(item.name + " deleted", { action: "Undo", run: () => { S.contacts.splice(Math.min(at, S.contacts.length), 0, item); save(); if (view === "contacts") rerenderKeepScroll(); } });
+    });
     body.append(h("div", { class: "danger-zone" }, del));
   }
-  openSheet(existing ? existing.name : "New " + T.one, body, { done: "Cancel", focus: existing ? null : "#cName" });
+  openSheet(existing ? existing.name : "New " + T.one, body, { done: "Cancel", focus: existing ? null : "#cName", guard: () => !saved && JSON.stringify(d) !== start });
 }
 
 /* ---------- Guide ---------- */
@@ -2005,38 +2415,119 @@ for (const inp of $$("input[data-raise]")) inp.addEventListener("change", () => 
 })();
 for (const a of $$('article.chapter a[href^="http"]')) { a.target = "_blank"; a.rel = "noopener"; }
 
+/* ---------- backups ---------- */
+const UNDOKEY = "fowm-plan/undo";
+const hasData = () => ["tasks", "gates", "custom", "notes", "raise", "checkins", "tests"].some(k => Object.keys(S[k]).length) || S.tasters.length > 0 || S.contacts.length > 0;
+const daysSince = (iso) => Math.round((parseISO(isoOf(today())) - parseISO(iso)) / 864e5);
+const backupText = () => JSON.stringify({ app: "fowm-plan", v: 2, saved: isoOf(today()), data: S });
+function markBackedUp() { S.backup = isoOf(today()); delete S.snooze; save(); flush(); }
+// One tap: the share sheet opens, "Save to Files" puts it in iCloud Drive. Elsewhere it downloads.
+async function saveBackupFile() {
+  const text = backupText(), base = "Fowm Plan backup " + isoOf(today());
+  for (const [type, ext] of [["application/json", ".json"], ["text/plain", ".txt"]]) {
+    let file = null;
+    try { file = new File([text], base + ext, { type }); } catch (e) {}
+    if (!file || !navigator.canShare || !navigator.canShare({ files: [file] })) continue;
+    try { await navigator.share({ files: [file], title: base }); markBackedUp(); toast("Backup saved"); return true; }
+    catch (e) { if (e && e.name === "AbortError") return false; break; }
+  }
+  try {
+    const url = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+    const a = h("a", { href: url, download: base + ".json" });
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    markBackedUp(); toast("Backup downloaded"); return true;
+  } catch (e) { toast("Couldn't save a file here. Use Copy backup as text instead."); return false; }
+}
+function backupDue() {
+  if (!hasData()) return null;
+  if (S.backup && daysSince(S.backup) < 14) return null;
+  if (S.snooze && daysSince(S.snooze) < 3) return null;
+  return { days: S.backup ? daysSince(S.backup) : null };
+}
+// Before a restore or a start-over replaces everything, the old data is kept so it can come back.
+function keepSafetyCopy(what) { try { localStorage.setItem(UNDOKEY, JSON.stringify({ at: isoOf(today()), what, data: S })); } catch (e) {} }
+function readSafetyCopy() { const u = readLS(UNDOKEY); return isObj(u) && isObj(u.data) && RE_DATE.test(u.at) ? u : null; }
+function replaceAll(data, what, done) {
+  keepSafetyCopy(what);
+  S = cleanState(data); save(); flush(); lastComplete = null; checkBadges(false);
+  closeSheet(false, null, true); rerenderKeepScroll();
+  toast(done, { action: "Undo", run: bringBack });
+}
+function bringBack() {
+  const u = readSafetyCopy(); if (!u) return;
+  S = cleanState(u.data); save(); flush(); lastComplete = null; checkBadges(false);
+  try { localStorage.removeItem(UNDOKEY); } catch (e) {}
+  if (sheetOpen) closeSheet(false, null, true);
+  rerenderKeepScroll(); toast("Everything is back as it was");
+}
+function backupSummary(d) {
+  const bits = [plural(Object.keys(d.tasks).length, "step ticked", "steps ticked"), plural(Object.keys(d.gates).length, "gate", "gates"),
+    plural(d.contacts.length, "contact", "contacts"), plural(Object.keys(d.checkins).length, "check-in", "check-ins"), plural(d.tasters.length, "taster", "tasters")];
+  return bits.join(", ");
+}
+const longDate = (iso) => { const d = parseISO(iso); return d.getDate() + " " + MONTHS[d.getMonth()] + " " + d.getFullYear(); };
+
 /* ---------- settings: backup, restore, start over ---------- */
 function openSettings() {
   const body = h("div");
-  const payload = () => JSON.stringify({ app: "fowm-plan", v: 2, saved: isoOf(today()), data: S });
-  const copy = h("button", { class: "btn", type: "button", text: "Copy backup" });
+  const last = S.backup ? "Last backup: " + longDate(S.backup) + (daysSince(S.backup) > 0 ? " (" + plural(daysSince(S.backup), "day", "days") + " ago)." : " (today).") : "No backup yet.";
+  const fileBtn = h("button", { class: "btn", type: "button", text: "Save backup file", onclick: async () => { if (await saveBackupFile()) { lastP.textContent = "Last backup: " + longDate(S.backup) + " (today)."; if (view === "today") rerenderKeepScroll(); } } });
+  const copy = h("button", { class: "btn soft", type: "button", text: "Copy backup as text", style: "margin-top:8px" });
   copy.addEventListener("click", async () => {
-    try { await navigator.clipboard.writeText(payload()); toast("Backup copied. Paste it into Notes to keep it safe."); }
-    catch (e) { area.value = payload(); area.select(); toast("Select all and copy the text below"); }
+    try { await navigator.clipboard.writeText(backupText()); markBackedUp(); lastP.textContent = "Last backup: " + longDate(S.backup) + " (today)."; toast("Copied. Paste it into Notes to keep it safe."); }
+    catch (e) { area.value = backupText(); pasteBox.open = true; area.focus(); area.select(); toast("Select all and copy the text in the box"); }
   });
-  const share = navigator.share ? h("button", { class: "btn soft", type: "button", text: "Share backup", style: "margin-top:8px" }) : null;
-  if (share) share.addEventListener("click", async () => { try { await navigator.share({ title: "Fowm Plan backup " + isoOf(today()), text: payload() }); } catch (e) {} });
-  body.append(h("p", { class: "card-title", text: "Back up your progress" }), h("p", { class: "sheet-note", text: "Your ticks, numbers, tests and contacts live on this phone only. Save a backup now and then, so you never lose them." }), copy);
-  if (share) body.append(share);
-  const area = h("textarea", { class: "inp", rows: "4", placeholder: "Paste a backup here", style: "margin-top:22px", "aria-label": "Backup to restore" });
-  const restore = h("button", { class: "btn soft", type: "button", text: "Restore this backup", style: "margin-top:8px" });
-  armed(restore, "Restore this backup", "Tap again: this replaces everything", () => {
-    let obj = null; try { obj = JSON.parse(area.value.trim()); } catch (e) {}
-    const data = obj && obj.app === "fowm-plan" && isObj(obj.data) ? obj.data : null;
-    if (!data) { toast("That isn't a Fowm Plan backup"); return; }
-    S = cleanState(data); save(); flush(); lastComplete = null; checkBadges(false); closeSheet(); toast("Backup restored"); rerenderKeepScroll();
-  });
-  body.append(h("p", { class: "card-title", style: "margin-top:26px", text: "Restore a backup" }), area, restore);
+  const lastP = h("p", { class: "hint", style: "margin:10px 2px 0", text: last });
+  body.append(h("p", { class: "card-title", text: "Back up your progress" }),
+    h("p", { class: "sheet-note", text: "Your ticks, numbers, tests and contacts live on this phone only. If the app is deleted or the phone is lost, a backup file is the only way back. Tap Save backup file, then Save to Files, and keep it in iCloud Drive." }),
+    fileBtn, copy, lastP);
+
+  // restore: check what's in the file first, then two taps to replace
+  const preview = h("div", { class: "preview", hidden: true });
+  const check = (text) => {
+    let obj = null; try { obj = JSON.parse(String(text || "").trim()); } catch (e) {}
+    const data = obj && obj.app === "fowm-plan" && isObj(obj.data) ? cleanState(obj.data) : null;
+    preview.hidden = false;
+    if (!data) { preview.replaceChildren(h("p", { class: "preview-bad", text: "That isn't a Fowm Plan backup. Choose the file called Fowm Plan backup and a date." })); return; }
+    const when = RE_DATE.test(obj.saved) ? longDate(obj.saved) : "an unknown date";
+    const go = h("button", { class: "btn danger", type: "button", text: "Replace everything with this backup" });
+    armed(go, "Replace everything with this backup", "Tap again: this replaces what's on this phone", () => replaceAll(data, "restore", "Backup from " + when + " restored"));
+    preview.replaceChildren(h("p", null, h("b", { text: "Backup from " + when }), backupSummary(data) + "."),
+      h("p", { class: "hint", style: "margin:0 0 12px", text: "Now on this phone: " + backupSummary(S) + ". You can undo a restore." }), go);
+    anim(preview, [{ opacity: 0, transform: "translateY(-6px)" }, { opacity: 1, transform: "none" }], { duration: 320, easing: EASE.out });
+  };
+  const fileInp = h("input", { type: "file", class: "vh", accept: ".json,.txt,application/json,text/plain", "aria-label": "Choose a backup file" });
+  fileInp.addEventListener("change", async () => { const f = fileInp.files && fileInp.files[0]; let t = ""; if (f) try { t = await f.text(); } catch (e) {} fileInp.value = ""; if (f) check(t); });
+  const pick = h("button", { class: "btn soft", type: "button", text: "Choose a backup file", onclick: () => fileInp.click() });
+  const area = h("textarea", { class: "inp", rows: "4", placeholder: "Paste a backup here", "aria-label": "Backup to restore" });
+  const pasteBox = h("details", { class: "more" }, h("summary", { text: "Paste a backup instead" }), area,
+    h("button", { class: "btn soft", type: "button", text: "Check this backup", style: "margin-top:8px", onclick: () => check(area.value) }));
+  body.append(h("p", { class: "card-title", style: "margin-top:28px", text: "Restore a backup" }), fileInp, pick, pasteBox, preview);
+
+  // saved data the app once couldn't read is never thrown away; it can be copied out to recover it
+  let unreadable = null; try { unreadable = localStorage.getItem(KEY + "/unreadable"); } catch (e) {}
+  if (unreadable) body.append(h("div", { class: "danger-zone" },
+    h("p", { class: "sheet-note", style: "margin-bottom:10px", text: "Some saved data on this phone couldn't be read, so the app kept a copy instead of deleting it. Copy it and send it to Claude to recover it." }),
+    h("button", { class: "btn soft", type: "button", text: "Copy unreadable data", onclick: async () => { try { await navigator.clipboard.writeText(unreadable); toast("Copied"); } catch (e) { toast("Couldn't copy it on this phone"); } } })));
+  // the last restore or start-over can be taken back
+  const u = readSafetyCopy();
+  if (u) {
+    const back = h("button", { class: "btn soft", type: "button", text: "Bring it back" });
+    armed(back, "Bring it back", "Tap again to bring it back", bringBack);
+    body.append(h("div", { class: "danger-zone" }, h("p", { class: "sheet-note", style: "margin-bottom:10px", text: "Before you " + (u.what === "restore" ? "restored a backup" : "started over") + " on " + longDate(u.at) + ", you had " + backupSummary(cleanState(u.data)) + "." }), back));
+  }
   const reset = h("button", { class: "btn danger", type: "button", text: "Start over" });
-  armed(reset, "Start over", "Tap again to erase everything", () => { S = blank(); save(); flush(); lastComplete = null; checkBadges(false); closeSheet(); toast("Everything erased"); rerenderKeepScroll(); });
-  body.append(h("div", { class: "danger-zone" }, reset));
-  body.append(h("p", { class: "hint", style: "margin-top:22px", html: 'Fowm Plan 2.1. Built from your <a href="https://claude.ai/artifact/8CgYjH2Runv6Se3pEPD6qs" target="_blank" rel="noopener">Fowm blueprint</a>, 17 November 2026. Numbers marked "my estimate" or "my rule" are mine. Not legal, tax or financial advice.' }));
+  armed(reset, "Start over", "Tap again to erase everything", () => replaceAll(blank(), "start over", "Everything erased"));
+  body.append(h("div", { class: "danger-zone" }, reset, h("p", { class: "hint", text: "Start over erases everything on this phone. You can undo it right after." })));
+  body.append(h("p", { class: "hint", style: "margin-top:22px", html: 'Fowm Plan 2.2. Built from your <a href="https://claude.ai/artifact/8CgYjH2Runv6Se3pEPD6qs" target="_blank" rel="noopener">Fowm blueprint</a>, 17 November 2026. Numbers marked "my estimate" or "my rule" are mine. Not legal, tax or financial advice.' }));
   openSheet("Settings", body);
 }
 
 /* ---------- celebration ---------- */
-function celebrate(n) {
-  const st = STAGES[n], next = STAGES[n + 1];
+function celebrate(list) {
+  if (!Array.isArray(list)) list = [list];
+  const n = list[list.length - 1], st = STAGES[n], next = STAGES[n + 1];
   // a burst of foam dots around the badge as it springs in
   const sparks = Array.from({ length: 12 }, (_, i) => {
     const a = (i / 12) * Math.PI * 2 + 0.26, r = 62 + (i % 3) * 7, col = ["var(--brown)", "var(--latte)", "var(--fix)"][i % 3];
@@ -2047,7 +2538,8 @@ function celebrate(n) {
       ${sparks}
       <g class="badge-big"><path d="${scallop(75, 75, 52, 11)}" fill="var(--brown)"/><text x="75" y="75" dy="0.36em" text-anchor="middle" style="font:600 48px var(--display);fill:var(--foam)">${n}</text></g>
     </svg>`);
-  const body = h("div", { class: "celebrate" }, art, h("b", { text: "Stage " + n + " done" }), h("p", { text: st.title + (next ? ". Next up: Stage " + next.n + ", " + next.title.toLowerCase() + "." : ". Every stage is done.") }),
+  const head = list.length > 1 ? "Stages " + list[0] + "–" + n + " done" : "Stage " + n + " done";
+  const body = h("div", { class: "celebrate" }, art, h("b", { text: head }), h("p", { text: (list.length > 1 ? "Up to " + st.title.toLowerCase() : st.title) + (next ? ". Next up: Stage " + next.n + ", " + next.title.toLowerCase() + "." : ". Every stage is done.") }),
     h("button", { class: "btn", type: "button", text: "Keep going", onclick: () => closeSheet() }));
   openSheet("Badge earned", body);
 }
@@ -2060,6 +2552,8 @@ RENDER.contacts = renderContacts;
 RENDER.guide = renderGuide;
 checkBadges(false);
 route();
+shownDay = isoOf(today());
+try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) {}
 (() => { // the cover matches the iPhone launch screen; it lifts off as the first screen comes up
   const reveal = () => {
     const L = $("#launch");
