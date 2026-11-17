@@ -6,100 +6,48 @@
   <title>Fowm Plan</title>
   <meta name="description" content="The Fowm blueprint: every step from kitchen tests to selling the brand.">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#F7F7F4" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#1A110C" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#4A2615">
+  <meta name="color-scheme" content="light">
+  <meta name="format-detection" content="telephone=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Fowm Plan">
-  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="application-name" content="Fowm Plan">
+  <link rel="manifest" href="manifest.webmanifest?v=2">
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png?v=1">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=1">
+  <link rel="apple-touch-startup-image" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash-1320x2868.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash-1206x2622.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 420px) and (device-height: 912px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash-1260x2736.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash-1290x2796.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash-1179x2556.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash-1170x2532.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash-1284x2778.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash-1125x2436.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash-1242x2688.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="img/splash-828x1792.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="img/splash-750x1334.png">
   <link rel="preload" href="fonts/fredoka-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/figtree-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=1">
+  <link rel="stylesheet" href="styles.css?v=2">
 </head>
 <body>
-<header class="bar">
-  <div class="bar-in">
-    <nav class="tabs" aria-label="Blueprint sections">
-      <a href="#plan">Plan</a>
-      <a href="#product">Product</a>
-      <a href="#money">Money</a>
-      <a href="#grow">Grow</a>
-      <a href="#exit">Exit</a>
-      <a href="#legal">Legal</a>
-      <a href="#words">Words</a>
-    </nav>
-    <a class="meter" href="#plan" id="meter" aria-label="Plan progress: 0%"><i id="meterFill"></i><b id="meterPct">0%</b></a>
-  </div>
+<div class="strip" aria-hidden="true"></div>
+<header class="nav" id="nav">
+  <button class="nav-back" id="navBack" type="button" hidden><svg viewBox="0 0 13 21" aria-hidden="true"><path d="M11 2L3 10.5 11 19" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Guide</span></button>
+  <span class="nav-title" id="navTitle"></span>
 </header>
 
-<main id="main">
-
-<!-- ============ PLAN ============ -->
-<section class="view" data-view="plan" aria-label="Plan">
-  <div class="wrap wide">
-    <div class="hero">
-      <div>
-        <h1>The Fowm blueprint</h1>
-        <p class="lead">Tick each step as you do it. Every tick adds foam to the cup, and a full cup means Fowm is ready to sell.</p>
-        <p class="pin">Fowm = protein foam for your freddo. Athens first. €29.90 for 20 servings.</p>
-        <p class="count"><b id="doneN">0</b> of <span id="totalN">46</span> steps done</p>
-        <p class="save" data-save-status>Progress saves on this phone.</p>
-      </div>
-      <figure class="cupfig">
-        <svg class="cup" viewBox="0 -12 300 448" role="img" aria-labelledby="cupT">
-          <title id="cupT">A freddo cup. The foam rises as you finish steps.</title>
-          <defs>
-            <clipPath id="cupIn"><path d="M40,-12 L240,-12 L240,70 L208,420 L72,420 L40,70 Z"/></clipPath>
-            <linearGradient id="espG" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#7A4A2E"/><stop offset=".22" stop-color="#4A2A1A"/><stop offset="1" stop-color="#26150D"/>
-            </linearGradient>
-            <linearGradient id="cremaG" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#D9A877" stop-opacity="0"/><stop offset=".55" stop-color="#D9A877"/><stop offset="1" stop-color="#9A6440"/>
-            </linearGradient>
-          </defs>
-          <ellipse class="shadow" cx="140" cy="426" rx="84" ry="6"/>
-          <line class="straw" x1="178" y1="405" x2="230" y2="-2"/>
-          <line class="straw-hi" x1="175.5" y1="396.4" x2="226" y2="1.6"/>
-          <g clip-path="url(#cupIn)">
-            <g id="foam" transform="translate(0 280)">
-              <path class="foam" d="M30,30 A21,21 0 0 1 66.7,14 A21,21 0 0 1 103.3,4 A21,21 0 0 1 140,0 A21,21 0 0 1 176.7,4 A21,21 0 0 1 213.3,14 A21,21 0 0 1 250,30 L250,470 L30,470 Z"/>
-              <g class="bubbles"><circle cx="84" cy="38" r="5"/><circle cx="118" cy="26" r="3.5"/><circle cx="162" cy="40" r="4.5"/><circle cx="200" cy="34" r="3"/><circle cx="104" cy="62" r="3"/><circle cx="150" cy="72" r="4"/><circle cx="188" cy="90" r="3.2"/><circle cx="92" cy="106" r="4"/><circle cx="132" cy="128" r="3"/></g>
-            </g>
-            <rect x="0" y="284" width="300" height="18" fill="url(#cremaG)"/>
-            <rect x="0" y="300" width="300" height="130" fill="url(#espG)"/>
-            <g class="ice">
-              <rect x="86" y="318" width="36" height="36" rx="7" transform="rotate(-12 104 336)"/>
-              <rect x="136" y="346" width="32" height="32" rx="6" transform="rotate(10 152 362)"/>
-              <rect x="100" y="372" width="34" height="34" rx="7" transform="rotate(24 117 389)"/>
-              <rect x="152" y="310" width="28" height="28" rx="6" transform="rotate(-6 166 324)"/>
-            </g>
-          </g>
-          <line class="shine" x1="58" y1="98" x2="82" y2="372"/>
-          <path class="cup-line" d="M40,70 L72,420 L208,420 L240,70"/>
-          <rect class="lip" x="33" y="62" width="214" height="13" rx="6.5"/>
-          <g id="ruler"></g>
-        </svg>
-        <figcaption><b id="cupStage">You're in Stage 0: Decide and protect</b><span id="cupSub">The numbers on the side are the seven stages.</span></figcaption>
-      </figure>
-    </div>
-  </div>
-
-  <div class="wrap">
-    <section class="next" aria-labelledby="nextH">
-      <h2 id="nextH">Next up</h2>
-      <p class="muted" id="nextIntro">The open steps in your current stage.</p>
-      <ul class="checks" id="nextList"></ul>
-      <div class="gate" id="gatePrompt" hidden>
-        <p id="gateText"></p>
-        <label class="check"><input class="vh" type="checkbox" id="gateBox" data-gate="0"><span class="box" aria-hidden="true"></span><span class="txt">We hit this gate</span></label>
-      </div>
-    </section>
-
-    <section class="block">
-      <h2>The whole plan in eight lines</h2>
+<main>
+  <section class="view" data-view="today" aria-label="Today"><div class="wrap" id="todayRoot"></div></section>
+  <section class="view" data-view="plan" aria-label="Plan"><div class="wrap" id="planRoot"></div></section>
+  <section class="view" data-view="numbers" aria-label="Numbers"><div class="wrap" id="numRoot"></div></section>
+  <section class="view" data-view="contacts" aria-label="Contacts"><div class="wrap" id="conRoot"></div></section>
+  <section class="view" data-view="guide" aria-label="Guide"><div class="wrap" id="guideRoot"></div></section>
+  <section class="view" data-view="chapter" aria-labelledby="chTitle"><div class="wrap">
+    <header class="lt"><div><p class="lt-kicker">Guide</p><h1 id="chTitle">Chapter</h1></div></header>
+<article class="chapter" data-ch="start" hidden>
+      
       <p>Fowm can become a multi-million brand, but only if one thing comes true first: people who try it on their freddo buy it again. This plan proves that cheaply, before you spend big.</p>
       <dl class="eight">
         <div><dt>Product</dt><dd>Protein foam for your freddo. 15g of protein, 20 seconds, your own coffee.</dd></div>
@@ -109,183 +57,21 @@
         <div><dt>Growth</dt><dd>Creators on commission and cafés serving protein freddos, then Skroutz, then shops.</dd></div>
         <div><dt>Money</dt><dd>Your own money until it's proven, then prizes and loans, then angel investors.</dd></div>
         <div><dt>Protection</dt><dd>A trademark, formula ownership in writing, and clean books from day one.</dd></div>
-        <div><dt>The sale</dt><dd>Hot brands have sold for about 3–4 × yearly sales (<a href="#grow">Grow</a>). Small brands sell for 2.5–4.5 × yearly profit (<a href="#exit">Exit</a>).</dd></div>
+        <div><dt>The sale</dt><dd>Hot brands have sold for about 3–4 × yearly sales (<a href="#guide/brands">Winning brands</a>). Small brands sell for 2.5–4.5 × yearly profit (<a href="#guide/exit">Selling the company</a>).</dd></div>
       </dl>
       <div class="note">
-        <p><b>The honest odds.</b> The brands in <a href="#grow">Grow</a> are the winners, not the average, and most food brands never reach a sale. A realistic ladder looks like this: a solid small brand might sell for €100–250k, a real brand for €0.7–2M, and a big one for €5–19M. Billions took Poppi more than $500M in yearly sales. Treat billions as the dream, millions as the goal, and the next 90 days as the job.</p>
+        <p><b>The honest odds.</b> The brands in <a href="#guide/brands">Winning brands</a> are the winners, not the average, and most food brands never reach a sale. A realistic ladder looks like this: a solid small brand might sell for €100–250k, a real brand for €0.7–2M, and a big one for €5–19M. Billions took Poppi more than $500M in yearly sales. Treat billions as the dream, millions as the goal, and the next 90 days as the job.</p>
       </div>
       <h3>Still open, and not mine to answer</h3>
       <ul class="rows">
-        <li><b>Is Fowm taxed at 13% or 24% VAT?</b>Ask your accountant. The difference is worth about €2.35 a pouch (<a href="#money">Money</a>).</li>
-        <li><b>Can "Fowm" be registered as a trademark?</b>Ask a trademark attorney before you print pouches (<a href="#legal">Legal</a>).</li>
-        <li><b>Who packs orders in Greece once you move for university?</b>Decide by summer 2027 (Stage 4 below).</li>
+        <li><b>Is Fowm taxed at 13% or 24% VAT?</b>Ask your accountant. The difference is worth about €2.35 a pouch (<a href="#guide/money">The money math</a>).</li>
+        <li><b>Can "Fowm" be registered as a trademark?</b>Ask a trademark attorney before you print pouches (<a href="#guide/legal">Legal</a>).</li>
+        <li><b>Who packs orders in Greece once you move for university?</b>Decide by summer 2027 (<a href="#plan">Stage 4 in Plan</a>).</li>
       </ul>
-    </section>
-
-    <section class="block">
-      <h2>Seven stages, from your kitchen to a sale</h2>
-      <p>Each stage ends with a gate: numbers you must hit before moving on. If you miss a gate, stay in that stage and fix it, using the red-number fixes in <a href="#money">Money</a>. Dates assume 15–30 hours a week.</p>
-      <ol class="stages" id="stages">
-
-        <li class="stage" data-stage="0" data-title="Decide and protect">
-          <details>
-            <summary><div class="st-row"><span class="st-num">0</span><span><span class="st-title">Decide and protect</span><span class="here">You're here</span><span class="st-when">17 Nov – 15 Dec 2026</span></span><span class="st-count">0/6</span></div></summary>
-            <div class="st-body">
-              <ul class="checks">
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s0-1"><span class="box" aria-hidden="true"></span><span class="txt">Write one line and pin it above your desk: <i>"Fowm = protein foam for your freddo. Athens first. €29.90 for 20 servings."</i></span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s0-2"><span class="box" aria-hidden="true"></span><span class="txt">Book a trademark attorney's opinion on "Fowm" (see Legal). Decide: file the word, file the logo, or adjust the name.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s0-3"><span class="box" aria-hidden="true"></span><span class="txt">Get quotes from 2 food technologists. Confirm Fowm is sold as a food, not a supplement.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s0-4"><span class="box" aria-hidden="true"></span><span class="txt">Order unflavoured whey isolate and run kitchen tests A–D (log them in Product). Film every test for content.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s0-5"><span class="box" aria-hidden="true"></span><span class="txt">Write the one-page manufacturer brief and email 8 manufacturers.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s0-6"><span class="box" aria-hidden="true"></span><span class="txt">Change the planned website price to €29.90 and the subscription to a 2-pouch pack at 10% off. Keep "launching soon".</span></label></li>
-              </ul>
-              <div class="gate"><p class="gate-text"><b>Gate:</b> you've picked the best kitchen recipe, emailed 8 manufacturers and decided how to protect the name.</p><label class="check"><input class="vh" type="checkbox" data-gate="0"><span class="box" aria-hidden="true"></span><span class="txt">We hit this gate</span></label></div>
-            </div>
-          </details>
-        </li>
-
-        <li class="stage" data-stage="1" data-title="Samples and blind tests">
-          <details>
-            <summary><div class="st-row"><span class="st-num">1</span><span><span class="st-title">Samples and blind tests</span><span class="here">You're here</span><span class="st-when">Mid-Dec 2026 – mid-Feb 2027</span></span><span class="st-count">0/6</span></div></summary>
-            <div class="st-body">
-              <ul class="checks">
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s1-1"><span class="box" aria-hidden="true"></span><span class="txt">Get samples from at least 3 manufacturers and run the foam test on each.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s1-2"><span class="box" aria-hidden="true"></span><span class="txt">Run a blind test with 30–50 people in real freddos: at the gym, at school, at a friendly café.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s1-3"><span class="box" aria-hidden="true"></span><span class="txt">Collect an email from every taster. Post the journey 3 times a week on @getfowm.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s1-4"><span class="box" aria-hidden="true"></span><span class="txt">Choose the manufacturer. Get the price per kg at 250, 500 and 1,000 kg, the minimum order and the lead time, plus formula ownership in writing.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s1-5"><span class="box" aria-hidden="true"></span><span class="txt">Line up 10 creators (your girlfriend first) and 3 cafés that say "yes, we'll try it".</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s1-6"><span class="box" aria-hidden="true"></span><span class="txt">Get courier quotes from BOX NOW and ACS, and put the real shipping cost into the calculator in Money.</span></label></li>
-              </ul>
-              <div class="gate"><p class="gate-text"><b>Gate:</b> one sample scores 7/10 or more, 6 in 10 tasters would buy at €29.90, and 300+ people are on the waitlist.</p><label class="check"><input class="vh" type="checkbox" data-gate="1"><span class="box" aria-hidden="true"></span><span class="txt">We hit this gate</span></label></div>
-            </div>
-          </details>
-        </li>
-
-        <li class="stage" data-stage="2" data-title="Company and first batch">
-          <details>
-            <summary><div class="st-row"><span class="st-num">2</span><span><span class="st-title">Company and first batch</span><span class="here">You're here</span><span class="st-when">Mid-Feb – mid-Apr 2027</span></span><span class="st-count">0/7</span></div></summary>
-            <div class="st-body">
-              <ul class="checks">
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s2-1"><span class="box" aria-hidden="true"></span><span class="txt">Set up the IKE, the accountant, a business bank account and myDATA.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s2-2"><span class="box" aria-hidden="true"></span><span class="txt">File the trademark if it isn't filed yet. If you filed before the company existed, ask the attorney how to move it into the company.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s2-3"><span class="box" aria-hidden="true"></span><span class="txt">Register with EFET, and with the EOAN packaging register and a recycling scheme.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s2-4"><span class="box" aria-hidden="true"></span><span class="txt">Get the Greek back label approved by the technologist, then print 500 pouches.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s2-5"><span class="box" aria-hidden="true"></span><span class="txt">Order the first batch of 250–500 pouches. Get the lab test and the shelf-life data.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s2-6"><span class="box" aria-hidden="true"></span><span class="txt">Set up Shopify Payments, the BOX NOW plugin, the legal pages, and product pages with all mandatory food information.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s2-7"><span class="box" aria-hidden="true"></span><span class="txt">Open pre-orders to the waitlist at a founder price no lower than €27.90, so you still keep about €4 a pouch.</span></label></li>
-              </ul>
-              <div class="gate"><p class="gate-text"><b>Gate:</b> the stock is in your hands, the lab result matches the label, and 100 pre-orders are paid.</p><label class="check"><input class="vh" type="checkbox" data-gate="2"><span class="box" aria-hidden="true"></span><span class="txt">We hit this gate</span></label></div>
-            </div>
-          </details>
-        </li>
-
-        <li class="stage" data-stage="3" data-title="Launch in Athens">
-          <details>
-            <summary><div class="st-row"><span class="st-num">3</span><span><span class="st-title">Launch in Athens</span><span class="here">You're here</span><span class="st-when">Mid-Apr – Jul 2027, freddo season</span></span><span class="st-count">0/6</span></div></summary>
-            <div class="st-body">
-              <ul class="checks">
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s3-1"><span class="box" aria-hidden="true"></span><span class="txt">Ship every pre-order within 48 hours, and message every customer personally.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s3-2"><span class="box" aria-hidden="true"></span><span class="txt">Ask every customer for a review and a 10-second video.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s3-3"><span class="box" aria-hidden="true"></span><span class="txt">Start the creator programme: 30 creators on 10% commission.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s3-4"><span class="box" aria-hidden="true"></span><span class="txt">Start the café pilots: 5 cafés with a "Protein Freddo" menu card.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s3-5"><span class="box" aria-hidden="true"></span><span class="txt">Turn on subscriptions.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s3-6"><span class="box" aria-hidden="true"></span><span class="txt">Every Monday, fill in the weekly number check in Money.</span></label></li>
-              </ul>
-              <div class="gate"><p class="gate-text"><b>Gate:</b> you have 500 customers, 30%+ reorder within 90 days, you keep €5+ per order, and 3 cafés sell 20+ a week.</p><label class="check"><input class="vh" type="checkbox" data-gate="3"><span class="box" aria-hidden="true"></span><span class="txt">We hit this gate</span></label></div>
-            </div>
-          </details>
-        </li>
-
-        <li class="stage" data-stage="4" data-title="Prove repeat, prepare the move">
-          <details>
-            <summary><div class="st-row"><span class="st-num">4</span><span><span class="st-title">Prove repeat, prepare the move</span><span class="here">You're here</span><span class="st-when">Aug – Dec 2027</span></span><span class="st-count">0/6</span></div></summary>
-            <div class="st-body">
-              <ul class="checks">
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s4-1"><span class="box" aria-hidden="true"></span><span class="txt">Before you leave for university, hand daily packing to a fulfilment warehouse or a paid helper. Keep customers, creators and cafés yourself.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s4-2"><span class="box" aria-hidden="true"></span><span class="txt">List on Skroutz, sign 20 more cafés and pitch one café chain.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s4-3"><span class="box" aria-hidden="true"></span><span class="txt">Launch the second flavour.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s4-4"><span class="box" aria-hidden="true"></span><span class="txt">Order a bigger second batch of 1,000–2,000 pouches to cut the cost per pouch.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s4-5"><span class="box" aria-hidden="true"></span><span class="txt">Meet a Greece–Canada tax adviser before you become a Canadian resident.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s4-6"><span class="box" aria-hidden="true"></span><span class="txt">Apply to the Elevate Greece registry.</span></label></li>
-              </ul>
-              <div class="gate"><p class="gate-text"><b>Gate:</b> 40%+ reorder within 90 days, sales have grown 3 months in a row, and you keep €7+ per order.</p><label class="check"><input class="vh" type="checkbox" data-gate="4"><span class="box" aria-hidden="true"></span><span class="txt">We hit this gate</span></label></div>
-            </div>
-          </details>
-        </li>
-
-        <li class="stage" data-stage="5" data-title="Raise and expand">
-          <details>
-            <summary><div class="st-row"><span class="st-num">5</span><span><span class="st-title">Raise and expand</span><span class="here">You're here</span><span class="st-when">2028</span></span><span class="st-count">0/5</span></div></summary>
-            <div class="st-body">
-              <ul class="checks">
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s5-1"><span class="box" aria-hidden="true"></span><span class="txt">Raise a small angel round if your numbers are green (the ready-to-raise check is in Grow).</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s5-2"><span class="box" aria-hidden="true"></span><span class="txt">If you're in Montreal, apply to the Dobson Cup and Futurpreneur.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s5-3"><span class="box" aria-hidden="true"></span><span class="txt">Launch in Canada with English and French labels.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s5-4"><span class="box" aria-hidden="true"></span><span class="txt">Get into gyms, pharmacies and health shops in Greece.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s5-5"><span class="box" aria-hidden="true"></span><span class="txt">Hire your first person, for operations.</span></label></li>
-              </ul>
-              <div class="gate"><p class="gate-text"><b>Gate:</b> shops reorder without you chasing them, and your first investors are in.</p><label class="check"><input class="vh" type="checkbox" data-gate="5"><span class="box" aria-hidden="true"></span><span class="txt">We hit this gate</span></label></div>
-            </div>
-          </details>
-        </li>
-
-        <li class="stage" data-stage="6" data-title="Scale and sell">
-          <details>
-            <summary><div class="st-row"><span class="st-num">6</span><span><span class="st-title">Scale and sell</span><span class="here">You're here</span><span class="st-when">2029 onward</span></span><span class="st-count">0/4</span></div></summary>
-            <div class="st-body">
-              <ul class="checks">
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s6-1"><span class="box" aria-hidden="true"></span><span class="txt">Enter supermarkets once your cost per pouch is low enough (see Grow).</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s6-2"><span class="box" aria-hidden="true"></span><span class="txt">Enter the US.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s6-3"><span class="box" aria-hidden="true"></span><span class="txt">Build a team that runs Fowm without you.</span></label></li>
-                <li><label class="check"><input class="vh" type="checkbox" data-task="s6-4"><span class="box" aria-hidden="true"></span><span class="txt">Spend 12–24 months preparing the sale (see Exit), then run an auction for buyers.</span></label></li>
-              </ul>
-            </div>
-          </details>
-        </li>
-      </ol>
-    </section>
-
-    <section class="block">
-      <h2>Your weekly routine</h2>
-      <p>About 20 hours a week, until university.</p>
-      <ul class="bars">
-        <li><span>Fill in the number check and pick this week's one fix<span class="when">Monday</span></span><span class="amt">1 h</span><span class="track"><i data-w="20"></i></span></li>
-        <li><span>Film and post content<span class="when">Twice a week</span></span><span class="amt">5 h</span><span class="track"><i data-w="100"></i></span></li>
-        <li><span>Answer customers, creators and messages<span class="when">Daily</span></span><span class="amt">5 h</span><span class="track"><i data-w="100"></i></span></li>
-        <li><span>Visit cafés and gyms<span class="when">Once a week</span></span><span class="amt">4 h</span><span class="track"><i data-w="80"></i></span></li>
-        <li><span>Manufacturer, stock, recipe work<span class="when">Once a week</span></span><span class="amt">3 h</span><span class="track"><i data-w="60"></i></span></li>
-        <li><span>Money, accountant, admin<span class="when">Friday</span></span><span class="amt">2 h</span><span class="track"><i data-w="40"></i></span></li>
-      </ul>
-    </section>
-
-    <section class="block">
-      <h2>Mistakes that kill brands</h2>
-      <p>Most young brands don't die from competitors. They die from a mistake they made themselves. Read this list before every big decision.</p>
-      <ul class="rows">
-        <li><b>Restarting.</b>Every new name, country or product puts you back at zero. Fowm, Athens and protein foam are now fixed until the numbers say otherwise.</li>
-        <li><b>Polishing before proving.</b>Logos, packaging and websites don't matter until the foam tastes great and people reorder.</li>
-        <li><b>Splitting your time.</b>15–30 hours a week is enough for Fowm, but only if Fowm gets most of it.</li>
-        <li><b>Pricing too low.</b>At €24.90 you'd work for about €1.64 a pouch (<a href="#money">Money</a>). Cheap prices are very hard to raise later.</li>
-        <li><b>Big discounts.</b>A 15% subscription discount or a 25% launch code can wipe out everything you keep.</li>
-        <li><b>Ads before reorders.</b>Paying for strangers before your friends reorder burns cash fast.</li>
-        <li><b>Raising too much, too early.</b>Super Coffee raised over $100M, then had to cut marketing by 80% and staff by 70% to survive (<a href="https://www.bevnet.com/?p=222959">BevNET</a>).</li>
-        <li><b>Going EU-wide on day one.</b>Each country brings its own packaging registration, VAT and language rules (<a href="#legal">Legal</a>).</li>
-        <li><b>Illegal claims.</b>"Fat burner", "boosts metabolism" or any health claim not on the EU list can get you fined or pulled.</li>
-        <li><b>Not owning your brand.</b>No trademark or no written formula ownership means nothing to sell.</li>
-        <li><b>Copying another brand's look.</b>Packaging that's too close to Grüns or anyone else invites legal letters. Stay clearly yourself.</li>
-        <li><b>One sales channel.</b>Brands that only sell on Amazon are valued 1–2 points lower (<a href="https://eightx.co/blog/average-sde-multiple-by-revenue-band">Eightx</a>).</li>
-        <li><b>Fake reviews or fake "was €X" prices.</b>Both are illegal in the EU and destroy trust.</li>
-        <li><b>Ignoring cash.</b>Whey prices swing, and stock eats cash before it makes any. Know your months of cash left, every week.</li>
-      </ul>
-    </section>
-  </div>
-</section>
-
-<!-- ============ PRODUCT ============ -->
-<section class="view" data-view="product" aria-label="Product">
-  <div class="wrap">
-    <section class="block">
-      <h2>The market and Fowm's edge</h2>
+    
+</article>
+<article class="chapter" data-ch="market" hidden>
+      
       <p class="lead">Protein is the number one food trend of 2026, and cold foam is the fastest-growing way people add it to coffee. But almost nobody sells protein cold foam you make at home. That gap is Fowm.</p>
 
       <h3>The wave is real</h3>
@@ -324,13 +110,13 @@
       <h3>Three threats to watch</h3>
       <ul class="rows">
         <li><b>A big brand copies you.</b>Starbucks, Coffee Island or More Nutrition could sell an at-home version. Your defence is speed, a brand people love, and café partners who already use Fowm.</li>
-        <li><b>Whey prices jump.</b>Whey is your main cost (<a href="#money">Money</a>). Lock prices with your manufacturer when you can.</li>
+        <li><b>Whey prices jump.</b>Whey is your main cost (<a href="#numbers/order">per-order calculator</a>). Lock prices with your manufacturer when you can.</li>
         <li><b>The trend cools.</b>Euromonitor expects protein demand to keep growing from people with lasting needs: older adults, GLP-1 users and people who lift weights (<a href="https://www.euromonitor.com/newsroom/press-releases/july-2026/wellness-trends-and-glp-1s-fuel-protein-market">Euromonitor</a>). Build Fowm around taste and foam, not just protein, so it survives either way.</li>
       </ul>
-    </section>
-
-    <section class="block">
-      <h2>Making Fowm foam</h2>
+    
+</article>
+<article class="chapter" data-ch="foam" hidden>
+      
       <p class="lead">Fowm lives or dies on one test: does one scoop whip into thick foam in 20 seconds and taste great on a freddo? Nothing else matters until the answer is yes.</p>
 
       <h3>How protein foam works</h3>
@@ -344,11 +130,14 @@
 
       <h3>Your kitchen tests (do these first)</h3>
       <p>You need: a handheld frother, a scale that reads 0.01g, cold milk, water, oat milk, freddo espresso and a timer. For 15g of protein you need about 17g of 90% whey isolate, so one serving is 20–25g of powder. That fits your 500g pouch with 20 servings.</p>
-      <p>Log each version here as you test it. Try it with milk, water and oat milk. The winner's instructions become your pack's "how to use" line.</p>
-      <div class="leader" id="leader"><span id="leaderText">Log a test to see which version is winning.</span></div>
-      <div class="tests" id="tests"></div>
-      <p class="hint">How the leader is picked (my rule): no clumps, still foamy after 5 minutes, then the best taste. Ties go to the taller foam.</p>
-      <p class="hint" data-save-status></p>
+      <p>Make four versions and froth each one in a freddo. Try them with milk, water and oat milk. The winner's instructions become your pack's "how to use" line.</p>
+      <ul class="rows">
+        <li><b>A: whey isolate + flavour</b>Should foam best.</li>
+        <li><b>B: version A + a tiny pinch of xanthan gum</b>Thicker foam that lasts longer.</li>
+        <li><b>C: your current 50/50 whey and pea + coconut</b>The control to beat.</li>
+        <li><b>D: the winner, lightly sweetened</b>Plain may taste flat on a freddo.</li>
+      </ul>
+      <a class="go-card" href="#numbers/tests"><span class="row-ic"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M7 14h13m-5-5.5L20.5 14 15 19.5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="row-main"><b>Log your kitchen tests</b><small>Foam height, how long it lasts, clumps and taste. The app picks the leader.</small></span><svg class="chev" viewBox="0 0 9 15" aria-hidden="true"><path d="M1.5 1.5l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
 
       <h3>Choosing a manufacturer</h3>
       <p>Send one short brief to 5–8 manufacturers. Ask each for samples of your winning recipe.</p>
@@ -373,7 +162,7 @@
       <ul>
         <li><b>Pouches:</b> digital printing needs no plates, so small runs are possible. <a href="https://packhelp.com/p/recyclable-doypack/custom/">Packhelp</a> prints doypacks from 500 pieces. Switch to cheaper plate printing only when you order 10,000+.</li>
         <li><b>Sachets come later.</b> Stick-pack minimums usually run 5,000–25,000 units (<a href="https://wonnda.com/magazine/top-supplement-trends/">Wonnda</a>). Your €2 single-serve idea becomes product two, once pouches sell.</li>
-        <li><b>Your design is done.</b> Only the back label is left: the legal text in <a href="#legal">Legal</a>.</li>
+        <li><b>Your design is done.</b> Only the back label is left: the legal text in <a href="#guide/legal">Legal</a>.</li>
       </ul>
 
       <h3>Before you sell a single pouch</h3>
@@ -382,78 +171,13 @@
         <li><span class="rt">Shelf life</span>Get the manufacturer's shelf-life test, and print the best-before date it supports.</li>
         <li><span class="rt">Blind taste test</span>30–50 people try a freddo with Fowm against a normal freddo cappuccino, without knowing which is which. Pass mark (my rule): an average taste of 7/10 or more, and at least 6 in 10 saying they'd buy it at €29.90.</li>
       </ol>
-    </section>
-  </div>
-</section>
-
-<!-- ============ MONEY ============ -->
-<section class="view" data-view="money" aria-label="Money">
-  <div class="wrap">
-    <section class="block">
-      <h2>The money math</h2>
+    
+</article>
+<article class="chapter" data-ch="money" hidden>
+      
       <p class="lead">At the old €24.90 price, Fowm would make about €1.64 per pouch before any advertising, because whey is at record prices. List it at €29.90 and sell two pouches per order. That multiplies what you keep about 4–6 times.</p>
 
-      <div class="panel" id="calc">
-        <h3>What you keep per order</h3>
-        <p class="hint">Tap an example, then move the sliders. Subscription means 2 pouches at 10% off with free delivery.</p>
-        <div class="presets" role="group" aria-label="Examples to load">
-          <button type="button" class="chipbtn" data-preset="old">€24.90 (old)</button>
-          <button type="button" class="chipbtn" data-preset="single">€29.90</button>
-          <button type="button" class="chipbtn" data-preset="double">2 × €29.90</button>
-          <button type="button" class="chipbtn" data-preset="sub">Subscription</button>
-        </div>
-        <div class="out"><span class="big" id="cKept" aria-live="polite">€0.00</span><span class="pill none" id="cPill">…</span></div>
-        <p class="out-sub" id="cPer"></p>
-        <div class="stack" id="cStack" aria-hidden="true"></div>
-        <ul class="legend" id="cLegend"></ul>
-
-        <div class="ctrl">
-          <div class="ctrl-head"><label for="cPrice">Price per pouch</label><output id="oPrice" for="cPrice"></output></div>
-          <input type="range" id="cPrice" min="19.9" max="39.9" step="1" value="29.9">
-          <p class="hint" id="cServing"></p>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-head"><span class="lab" id="lUnits">Pouches per order</span></div>
-          <div class="seg" role="radiogroup" aria-labelledby="lUnits">
-            <label><input class="vh" type="radio" name="units" value="1"><span>1</span></label>
-            <label><input class="vh" type="radio" name="units" value="2"><span>2</span></label>
-            <label><input class="vh" type="radio" name="units" value="3"><span>3</span></label>
-          </div>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-head"><span class="lab" id="lDisc">Discount</span></div>
-          <div class="seg" role="radiogroup" aria-labelledby="lDisc">
-            <label><input class="vh" type="radio" name="disc" value="0"><span>None</span></label>
-            <label><input class="vh" type="radio" name="disc" value="10"><span>10%</span></label>
-            <label><input class="vh" type="radio" name="disc" value="15"><span>15%</span></label>
-            <label><input class="vh" type="radio" name="disc" value="20"><span>20%</span></label>
-            <label><input class="vh" type="radio" name="disc" value="25"><span>25%</span></label>
-          </div>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-head"><span class="lab" id="lVat">VAT rate</span></div>
-          <div class="seg" role="radiogroup" aria-labelledby="lVat">
-            <label><input class="vh" type="radio" name="vat" value="24"><span>24%</span></label>
-            <label><input class="vh" type="radio" name="vat" value="13"><span>13%</span></label>
-          </div>
-          <p class="hint">Not settled yet. Your accountant decides which one applies.</p>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-head"><label for="cWhey">Whey isolate price</label><output id="oWhey" for="cWhey"></output></div>
-          <input type="range" id="cWhey" min="15" max="40" step="0.5" value="27">
-          <p class="hint">€27 a kilo is the 2026 record range. Whey is most of what a pouch costs.</p>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-head"><label for="cShip">Shipping and box, per order</label><output id="oShip" for="cShip"></output></div>
-          <input type="range" id="cShip" min="0" max="6" step="0.25" value="3.5">
-          <p class="hint">€3.50 until you get a courier quote from BOX NOW or ACS.</p>
-        </div>
-        <details class="more">
-          <summary>What one pouch costs you</summary>
-          <ul id="cCost"></ul>
-          <p class="hint">My estimate until manufacturers quote. Card fees on Shopify Payments run about 2.1% + €0.30 per order in Germany (<a href="https://qualimero.com/blog/shopify-gebuehren">Qualimero</a>).</p>
-        </details>
-      </div>
+      <a class="go-card" href="#numbers/order"><span class="row-ic"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M7 14h13m-5-5.5L20.5 14 15 19.5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="row-main"><b>Open the per-order calculator</b><small>Move the price, VAT, whey cost and shipping to see what you keep.</small></span><svg class="chev" viewBox="0 0 9 15" aria-hidden="true"><path d="M1.5 1.5l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
 
       <p class="formula">Kept = price ÷ (1 + VAT) − product cost − card fee − shipping</p>
       <div class="note"><p><b>Open question for your accountant: is Fowm taxed at 24% or 13% VAT?</b> Greek VAT is 24%, 13% or 6% (<a href="https://www.aade.gr/sites/default/files/2020-01/%CE%A4%CE%95%CE%9B%CE%99%CE%9A%CE%9F_%CF%80%CE%B1%CF%81%CE%B1%CF%81%CF%84%CE%B7%CE%BC%CE%B1%20%CE%99%CE%99%CE%99_4646.pdf">AADE</a>). Food preparations can land at 13% or 24% depending on their customs code (<a href="https://www.aade.gr/sites/default/files/2020-12/1144152_2020.pdf">AADE</a>). The difference is worth about €2.35 per pouch.</p></div>
@@ -472,42 +196,23 @@
         <li><b>Before you know people reorder</b>Spend at most what the first order keeps, about €5–8.</li>
         <li><b>Once 30%+ of customers reorder</b>You can spend up to what the first three orders keep, about €15–24.</li>
       </ul>
-      <p class="hint" id="cCac"></p>
+      
 
       <h3>How to spend the €3–15k (first 6 months)</h3>
-      <div class="seg" role="radiogroup" aria-label="Budget">
-        <label><input class="vh" type="radio" name="budget" value="3"><span>€3k: prove it</span></label>
-        <label><input class="vh" type="radio" name="budget" value="15"><span>€15k: launch properly</span></label>
-      </div>
-      <ul class="bars" id="budget"></ul>
-      <p class="hint">Only the trademark fees are official prices (<a href="https://www.dury.de/en/european-tradmark-law/1077-eu-trademark-registration-2026-a-complete-guide-for-international-businesses">EUIPO fees</a>). Everything else is my estimate, so swap in real quotes as you get them. With €3k you can't produce stock yet, but you can prove people want Fowm and take pre-orders. Around €8k is the smallest real launch (about 250 pouches).</p>
-    </section>
-
-    <section class="block">
+      <p>Only the trademark fees are official prices (<a href="https://www.dury.de/en/european-tradmark-law/1077-eu-trademark-registration-2026-a-complete-guide-for-international-businesses">EUIPO fees</a>). Everything else is my estimate, so swap in real quotes as you get them. With €3k you can't produce stock yet, but you can prove people want Fowm and take pre-orders. Around €8k is the smallest real launch (about 250 pouches).</p>
+      <a class="go-card" href="#numbers/budget"><span class="row-ic"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M7 14h13m-5-5.5L20.5 14 15 19.5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="row-main"><b>See both budgets line by line</b><small>€3k to prove it, or €15k to launch properly.</small></span><svg class="chev" viewBox="0 0 9 15" aria-hidden="true"><path d="M1.5 1.5l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    
       <h2>Numbers to watch</h2>
+      
       <p class="lead">The single most important number is how many customers buy again within 90 days. For coffee, food and supplements, healthy brands get 30–45% (<a href="https://topgrowthmarketing.com/ecommerce-customer-retention-90-day-guide/">Top Growth Marketing</a>).</p>
       <p>Every Monday, type in this week's numbers. Each one turns green, yellow or red and tells you what to do next.</p>
-      <div class="panel">
-        <div class="kpi-sum">
-          <div class="tally" id="tally"></div>
-          <p class="small" id="oneFix"></p>
-          <p class="hint" id="kpiDate"></p>
-        </div>
-        <ul class="kpi" id="kpi"></ul>
-        <button type="button" class="textbtn" id="kpiClear">Clear this week's numbers</button>
-        <p class="hint" data-save-status></p>
-      </div>
+      <a class="go-card" href="#numbers/checkin"><span class="row-ic"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M7 14h13m-5-5.5L20.5 14 15 19.5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="row-main"><b>Do this week's check-in</b><small>Eight numbers, each green, yellow or red, with the fix.</small></span><svg class="chev" viewBox="0 0 9 15" aria-hidden="true"><path d="M1.5 1.5l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       <p class="small muted">Where the lines come from: median Shopify stores convert 2.5% of visitors in supplements and 2.3% in food (<a href="https://sherocommerce.com/blogs/insights/dtc-growth-flywheel">Littledata via Shero</a>). Supplement subscriptions typically lose 5–8% of subscribers a month (<a href="https://eightx.co/blog/supplement-subscription-churn-rate-benchmark">Eightx</a>). The taste, café, kept-money and cash lines are my own rules for Fowm.</p>
       <div class="note"><p>Most second orders, 76%, happen within 90 days of the first (<a href="https://topgrowthmarketing.com/ecommerce-customer-retention-90-day-guide/">Top Growth Marketing</a>). So your first three months with each customer decide almost everything.</p></div>
-    </section>
-  </div>
-</section>
-
-<!-- ============ GROW ============ -->
-<section class="view" data-view="grow" aria-label="Grow">
-  <div class="wrap">
-    <section class="block">
-      <h2>How to sell it</h2>
+    
+</article>
+<article class="chapter" data-ch="selling" hidden>
+      
       <p class="lead">Win customers in this order: 100 fans who reorder, then creators, then cafés, then Skroutz, then gyms and pharmacies, then supermarkets. Only move to the next step once the one before it works.</p>
 
       <h3>Who buys Fowm (start with two groups)</h3>
@@ -515,7 +220,7 @@
         <li><b>Freddo cappuccino drinkers who train</b>18–35, in Athens. They already love the foam and already want protein.</li>
         <li><b>People who want more protein but hate shakes</b>More Nutrition built a billion-euro brand mostly on women aged 25–40, who are 80–85% of its customers (<a href="https://www.uamr.de/?p=7837">UAMR</a>).</li>
       </ul>
-      <p>Later, add the groups Euromonitor expects to keep buying protein: older adults and people on weight-loss drugs (<a href="#product">Product</a>).</p>
+      <p>Later, add the groups Euromonitor expects to keep buying protein: older adults and people on weight-loss drugs (<a href="#guide/market">The market</a>).</p>
 
       <h3>The six steps, in order</h3>
       <ol class="steps">
@@ -548,7 +253,7 @@
           <ul>
             <li><b>Your own site comes first.</b> It keeps the customer's email and the subscription.</li>
             <li><b>Skroutz next,</b> once you have reviews. It gets about 12 million visits a month and has 500,000+ Skroutz Plus members (<a href="https://www.zunapro.com/greece/el/blog/poliseis-sto-skroutz-plires-odigos-polites">Zunapro</a>). Commission depends on the category, so check the seller page.</li>
-            <li><b>Amazon in Germany or Italy</b> only when you expand there (<a href="#legal">Legal</a>).</li>
+            <li><b>Amazon in Germany or Italy</b> only when you expand there (<a href="#guide/legal">Legal</a>).</li>
           </ul>
         </li>
         <li><span class="rt">Gyms, pharmacies and health shops</span>
@@ -566,10 +271,10 @@
         <li><b>Flavour drops every 2–3 months:</b> vanilla, salted caramel, mocha, then something Greek.</li>
         <li><b>Reviews:</b> ask after the second use. Never fake one.</li>
       </ul>
-    </section>
-
-    <section class="block">
-      <h2>What winning brands did</h2>
+    
+</article>
+<article class="chapter" data-ch="brands" hidden>
+      
       <p class="lead">The brands below with a public price sold for roughly 3–4 × their yearly sales. Each one fixed one annoying problem with one hero product that people used every day, then grew it with creators and shops.</p>
       <div class="brands" tabindex="0" aria-label="Brand stories, scroll sideways">
         <article class="brand">
@@ -689,28 +394,28 @@
         <summary>Ride a wave</summary>
         <div class="acc-body pair">
           <div><b>What they did</b><p>Each rode a trend that was just starting: gut health, greens, protein.</p></div>
-          <div class="us"><b>The Fowm version</b><p>Protein is the wave right now, and cold foam is its most visible form (<a href="#product">Product</a>).</p></div>
+          <div class="us"><b>The Fowm version</b><p>Protein is the wave right now, and cold foam is its most visible form (<a href="#guide/market">The market</a>).</p></div>
         </div>
       </details>
       <div class="note"><p><b>The honest part.</b> Most of these founders had an unfair advantage. Grüns' founder came from private equity. Poppi got a famous investor on Shark Tank. More Nutrition's founder already had a big audience. Your unfair advantages are different: Greece's freddo foam culture, four languages for expansion, real café work experience, and time on your side.</p></div>
-    </section>
-
-    <section class="block">
-      <h2>Raising money</h2>
+    
+</article>
+<article class="chapter" data-ch="raising" hidden>
+      
       <p class="lead">Don't ask anyone for money until customers reorder. Then take the cheapest money first: sales, prizes and loans before investors. Each investor round usually costs 15–20% of the company (<a href="https://retailisnotdead.beehiiv.com/p/issue-59-how-can-cpg-brands-get-vc-funding">Retail Is Not Dead</a>).</p>
       <p><b>Raising is hard for food brands right now.</b> Investors now say revenue and shop partnerships are what count (<a href="https://angelinvestorsnetwork.com/capital-raising/how-to-raise-capital-for-consumer-brand-cpg-2025-playbook">Angel Investors Network</a>). The typical consumer seed round fell below $1 million, and the gap between seed and the next round stretched to about three years (<a href="https://www.peony.ink/blog/cpg-fundraising-data-room">Peony, citing Carta</a>). That's why your "self-fund first, then raise" plan is right.</p>
 
-      <div class="panel">
-        <div class="ready-head"><h3 class="flush">Ready to raise?</h3><span class="pill none" id="readyPill">0 of 6</span></div>
-        <div class="ready-bar"><i id="readyBar"></i></div>
+      <div class="card ready">
+        <div class="kpi-h"><b>Ready to raise?</b><span class="st none" id="readyPill">0 of 6</span></div>
+        <div class="bar"><i id="readyBar"></i></div>
         <p class="hint">My rules. Raise only when all six are true.</p>
-        <ul class="checks">
-          <li><label class="check"><input class="vh" type="checkbox" data-raise="r1"><span class="box" aria-hidden="true"></span><span class="txt">40%+ of customers reorder within 90 days</span></label></li>
-          <li><label class="check"><input class="vh" type="checkbox" data-raise="r2"><span class="box" aria-hidden="true"></span><span class="txt">Sales have grown for 3 months in a row</span></label></li>
-          <li><label class="check"><input class="vh" type="checkbox" data-raise="r3"><span class="box" aria-hidden="true"></span><span class="txt">At least one shop or café chain sells Fowm</span></label></li>
-          <li><label class="check"><input class="vh" type="checkbox" data-raise="r4"><span class="box" aria-hidden="true"></span><span class="txt">You keep €7+ per order before ads</span></label></li>
-          <li><label class="check"><input class="vh" type="checkbox" data-raise="r5"><span class="box" aria-hidden="true"></span><span class="txt">The trademark is filed, and you own the formula in writing</span></label></li>
-          <li><label class="check"><input class="vh" type="checkbox" data-raise="r6"><span class="box" aria-hidden="true"></span><span class="txt">Your accountant can show clean monthly numbers</span></label></li>
+        <ul class="steps-l">
+          <li class="step"><label class="tick-row"><input class="vh" type="checkbox" data-raise="r1"><span class="ck" aria-hidden="true"></span><span class="t">40%+ of customers reorder within 90 days</span></label></li>
+          <li class="step"><label class="tick-row"><input class="vh" type="checkbox" data-raise="r2"><span class="ck" aria-hidden="true"></span><span class="t">Sales have grown for 3 months in a row</span></label></li>
+          <li class="step"><label class="tick-row"><input class="vh" type="checkbox" data-raise="r3"><span class="ck" aria-hidden="true"></span><span class="t">At least one shop or café chain sells Fowm</span></label></li>
+          <li class="step"><label class="tick-row"><input class="vh" type="checkbox" data-raise="r4"><span class="ck" aria-hidden="true"></span><span class="t">You keep €7+ per order before ads</span></label></li>
+          <li class="step"><label class="tick-row"><input class="vh" type="checkbox" data-raise="r5"><span class="ck" aria-hidden="true"></span><span class="t">The trademark is filed, and you own the formula in writing</span></label></li>
+          <li class="step"><label class="tick-row"><input class="vh" type="checkbox" data-raise="r6"><span class="ck" aria-hidden="true"></span><span class="t">Your accountant can show clean monthly numbers</span></label></li>
         </ul>
       </div>
 
@@ -729,38 +434,17 @@
         <li><b>Never more than 20% in one round.</b>Keep more than half the company until a big round.</li>
         <li><b>Watch "SAFE" notes.</b>Several of them stacked can quietly cost another 15–25% before real investors even arrive (<a href="https://eightx.co/blog/average-dilution-per-round-for-consumer-brands">Eightx</a>).</li>
       </ul>
-      <div class="panel" id="dil">
-        <h3>Try a round</h3>
-        <div class="out"><span class="big" id="dInv">13%</span><span class="pill none" id="dPill">…</span></div>
-        <p class="out-sub" id="dText"></p>
-        <div class="ctrl">
-          <div class="ctrl-head"><label for="dRaise">Money you raise</label><output id="oRaise" for="dRaise"></output></div>
-          <input type="range" id="dRaise" min="25000" max="2000000" step="25000" value="150000">
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-head"><label for="dPre">What Fowm is worth before the money</label><output id="oPre" for="dPre"></output></div>
-          <input type="range" id="dPre" min="0" max="1000" step="1" value="316">
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-head"><label for="dOwn">How much you own today</label><output id="oDOwn" for="dOwn"></output></div>
-          <input type="range" id="dOwn" min="10" max="100" step="1" value="100">
-        </div>
-      </div>
+      <a class="go-card" href="#numbers/round"><span class="row-ic"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M7 14h13m-5-5.5L20.5 14 15 19.5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="row-main"><b>Try an investor round</b><small>See how much of Fowm investors get, and what you keep.</small></span><svg class="chev" viewBox="0 0 9 15" aria-hidden="true"><path d="M1.5 1.5l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
 
       <h3>What to prepare</h3>
       <ul>
         <li><b>A 10-slide deck:</b> problem, product, proof (sales and reorders), money per order, market, competitors, how you sell, you, how much you're raising, and what you'll spend it on.</li>
         <li><b>A folder of proof:</b> monthly profit and loss, reorder rates by month of first purchase, cost to win a customer per channel, formula ownership papers, trademark filing, supplier contracts.</li>
       </ul>
-    </section>
-  </div>
-</section>
-
-<!-- ============ EXIT ============ -->
-<section class="view" data-view="exit" aria-label="Exit">
-  <div class="wrap">
-    <section class="block">
-      <h2>How a brand becomes worth millions</h2>
+    
+</article>
+<article class="chapter" data-ch="exit" hidden>
+      
       <p class="lead">A company sells for its yearly profit (or yearly sales) times a number called the multiple. So to sell Fowm for millions, it has to make millions in sales, from customers who keep coming back every year.</p>
       <p class="formula">Sale price = yearly profit (or sales) × multiple</p>
       <div class="note"><p><b>The lemonade-stand version.</b> Someone buys your lemonade stand because it makes money every year. If it makes €10k profit a year and they pay 3 years' worth, the stand sells for €30k. Nobody pays for a stand that has not sold any lemonade yet. That's why Fowm is worth €0 today, and why this whole plan is about sales that repeat.</p></div>
@@ -770,40 +454,11 @@
         <li><b>Small: under about €5M sales a year, run by you</b>2.5–4.5 × yearly owner profit (<a href="https://eightx.co/blog/what-is-sde-sellers-discretionary-earnings">Eightx</a>). <span class="meta">Example: €60k profit sells for €150–270k.</span></li>
         <li><b>Medium: €5–15M sales, with a team</b>3.5–5.5 × yearly profit (<a href="https://eightx.co/blog/how-ecommerce-brands-are-valued">Eightx</a>). <span class="meta">Example: €1M profit sells for €3.5–5.5M.</span></li>
         <li><b>Big and growing, bought by a food giant</b>0.5–1.9 × yearly sales (<a href="https://eightx.co/blog/average-ecommerce-acquisition-multiple-by-vertical-ev-rev-and-ev-ebitda">Eightx</a>). <span class="meta">Example: €20M sales sells for €10–38M.</span></li>
-        <li><b>Hot brand, several giants competing to buy it</b>3–4 × yearly sales or more (<a href="#grow">Grow</a>). <span class="meta">This is where billion-dollar deals come from.</span></li>
+        <li><b>Hot brand, several giants competing to buy it</b>3–4 × yearly sales or more (<a href="#guide/brands">Winning brands</a>). <span class="meta">This is where billion-dollar deals come from.</span></li>
       </ul>
       <p>The big jump happens when a giant like Nestlé or PepsiCo buys you. They pay for your <b>sales and your growth</b>, not just your profit, because they can push your product into thousands of shops overnight.</p>
 
-      <div class="panel" id="val">
-        <h3>What could Fowm sell for?</h3>
-        <div class="out"><span class="big mid" id="vVal" aria-live="polite">€0</span></div>
-        <p class="out-sub" id="vHow"></p>
-        <p class="out-sub" id="vShare"></p>
-        <div class="ctrl">
-          <div class="ctrl-head"><label for="vSales">Yearly sales</label><output id="oSales" for="vSales"></output></div>
-          <input type="range" id="vSales" min="0" max="1000" step="1" value="325">
-          <div class="presets" role="group" aria-label="Quick picks for yearly sales">
-            <button type="button" class="chipbtn" data-sales="250000">€250k</button>
-            <button type="button" class="chipbtn" data-sales="1000000">€1M</button>
-            <button type="button" class="chipbtn" data-sales="10000000">€10M</button>
-            <button type="button" class="chipbtn" data-sales="100000000">€100M</button>
-          </div>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-head"><label for="vMargin">Profit, as a share of sales</label><output id="oMargin" for="vMargin"></output></div>
-          <input type="range" id="vMargin" min="0" max="40" step="1" value="15">
-          <p class="hint">15% is my starting guess. Use your real number once your accountant has one.</p>
-        </div>
-        <div class="ctrl">
-          <label class="switch"><input class="vh" type="checkbox" id="vHot"><span class="track" aria-hidden="true"></span><span>Several giants want to buy it</span></label>
-          <p class="hint" id="vHotHint">Bidding wars happen for big, fast-growing brands, so this only counts from €15M of sales a year.</p>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-head"><label for="vOwn">How much of Fowm you own</label><output id="oOwn" for="vOwn"></output></div>
-          <input type="range" id="vOwn" min="5" max="100" step="1" value="100">
-          <p class="hint">Lower this once investors own a part (try a round in <a href="#grow">Grow</a>).</p>
-        </div>
-      </div>
+      <a class="go-card" href="#numbers/value"><span class="row-ic"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M7 14h13m-5-5.5L20.5 14 15 19.5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="row-main"><b>What could Fowm sell for?</b><small>Pick yearly sales and profit to see the price range.</small></span><svg class="chev" viewBox="0 0 9 15" aria-hidden="true"><path d="M1.5 1.5l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
 
       <h3>What makes buyers pay a higher multiple</h3>
       <ul class="rows">
@@ -817,17 +472,16 @@
       </ul>
       <p><b>Timing matters too.</b> Food deal prices dropped hard in 2025: the median food and drink takeover fell to 1.4 × sales, down from 1.9 × the year before (<a href="https://eightx.co/blog/average-ecommerce-acquisition-multiple-by-vertical-ev-rev-and-ev-ebitda">Eightx</a>). You can't control the market, so build a brand that's worth buying in a bad year too.</p>
       <div class="note"><p><b>The ladder in one line.</b> €1M in yearly sales makes Fowm worth roughly €0.3–1M. €10M makes it worth €5–19M. €100M makes it worth €50–190M or more. Billions need hundreds of millions in yearly sales, plus a bidding war.</p></div>
-    </section>
-
-    <section class="block">
+    
       <h2>Montreal, the US and selling Fowm</h2>
+      
       <p class="lead">Prove Fowm in Greece, carry it to Canada when you move for university, and enter the US only once it's working. Plan the company structure 2–3 years before you sell, because Canada's best tax breaks need that long to qualify.</p>
 
       <h3>The country path</h3>
       <ol class="steps tight">
         <li><span class="rt">Greece, now to 2028</span>Win Athens, then the rest of Greece.</li>
-        <li><span class="rt">Canada, from fall 2027 if you move</span>Canadian labels need English and French, and your fluent French is a real edge in Montreal. Canada has its own rules for protein products, so hire a Canadian regulatory consultant before you sell there. Futurpreneur and the Dobson Cup become available once you live there (<a href="#grow">Grow</a>).</li>
-        <li><span class="rt">The US, later</span>It's the biggest market, and Starbucks is already teaching Americans what protein cold foam is (<a href="#product">Product</a>). It's also the most competitive. Go once Canada proves the model.</li>
+        <li><span class="rt">Canada, from fall 2027 if you move</span>Canadian labels need English and French, and your fluent French is a real edge in Montreal. Canada has its own rules for protein products, so hire a Canadian regulatory consultant before you sell there. Futurpreneur and the Dobson Cup become available once you live there (<a href="#guide/raising">Raising money</a>).</li>
+        <li><span class="rt">The US, later</span>It's the biggest market, and Starbucks is already teaching Americans what protein cold foam is (<a href="#guide/market">The market</a>). It's also the most competitive. Go once Canada proves the model.</li>
       </ol>
 
       <h3>Tax: set it up years before you sell</h3>
@@ -857,15 +511,10 @@
         <li><span class="rt">Closing</span>Part of the money is paid at once, and part later if targets are hit. PepsiCo's Poppi deal included extra payments for hitting sales goals after closing (<a href="https://www.nbcdfw.com/news/business/money-report/pepsico-buys-prebiotic-soda-brand-poppi-for-more-than-1-6-billion/3793866/?amp=1">NBC</a>).</li>
         <li><span class="rt">You may stay on</span>Grenade's founders kept a minority stake and kept running it under Mondelēz (<a href="https://www.just-food.com/?p=57259">Just Food</a>).</li>
       </ol>
-    </section>
-  </div>
-</section>
-
-<!-- ============ LEGAL ============ -->
-<section class="view" data-view="legal" aria-label="Legal">
-  <div class="wrap">
-    <section class="block">
-      <h2>Legal setup in Greece and the EU</h2>
+    
+</article>
+<article class="chapter" data-ch="legal" hidden>
+      
       <p class="lead">Before your first sale you need nine things in place. Sell in Greece only at first: since August 2026, every extra EU country adds its own packaging registration.</p>
       <div class="note"><p><b>The biggest legal risk is your name.</b> EU examiners refuse trademarks that describe the product. An obvious misspelling of a descriptive word is not enough to avoid that (<a href="https://www.citma.org.uk/resources/clearly-cannabis.html">CITMA</a>). "Fowm" sounds like "foam", and Fowm makes foam. Pay a trademark attorney for an opinion <b>before you print pouches</b>. If the word alone is too risky, you may need to register the logo, or adjust the name. A buyer will only pay millions for a brand you legally own.</p></div>
 
@@ -925,15 +574,31 @@
           </ul>
         </div>
       </details>
-    </section>
-  </div>
-</section>
-
-<!-- ============ WORDS ============ -->
-<section class="view" data-view="words" aria-label="Words and sources">
-  <div class="wrap">
-    <section class="block">
-      <h2>Word list</h2>
+    
+</article>
+<article class="chapter" data-ch="mistakes" hidden>
+      
+      <p>Most young brands don't die from competitors. They die from a mistake they made themselves. Read this list before every big decision.</p>
+      <ul class="rows">
+        <li><b>Restarting.</b>Every new name, country or product puts you back at zero. Fowm, Athens and protein foam are now fixed until the numbers say otherwise.</li>
+        <li><b>Polishing before proving.</b>Logos, packaging and websites don't matter until the foam tastes great and people reorder.</li>
+        <li><b>Splitting your time.</b>15–30 hours a week is enough for Fowm, but only if Fowm gets most of it.</li>
+        <li><b>Pricing too low.</b>At €24.90 you'd work for about €1.64 a pouch (<a href="#guide/money">The money math</a>). Cheap prices are very hard to raise later.</li>
+        <li><b>Big discounts.</b>A 15% subscription discount or a 25% launch code can wipe out everything you keep.</li>
+        <li><b>Ads before reorders.</b>Paying for strangers before your friends reorder burns cash fast.</li>
+        <li><b>Raising too much, too early.</b>Super Coffee raised over $100M, then had to cut marketing by 80% and staff by 70% to survive (<a href="https://www.bevnet.com/?p=222959">BevNET</a>).</li>
+        <li><b>Going EU-wide on day one.</b>Each country brings its own packaging registration, VAT and language rules (<a href="#guide/legal">Legal</a>).</li>
+        <li><b>Illegal claims.</b>"Fat burner", "boosts metabolism" or any health claim not on the EU list can get you fined or pulled.</li>
+        <li><b>Not owning your brand.</b>No trademark or no written formula ownership means nothing to sell.</li>
+        <li><b>Copying another brand's look.</b>Packaging that's too close to Grüns or anyone else invites legal letters. Stay clearly yourself.</li>
+        <li><b>One sales channel.</b>Brands that only sell on Amazon are valued 1–2 points lower (<a href="https://eightx.co/blog/average-sde-multiple-by-revenue-band">Eightx</a>).</li>
+        <li><b>Fake reviews or fake "was €X" prices.</b>Both are illegal in the EU and destroy trust.</li>
+        <li><b>Ignoring cash.</b>Whey prices swing, and stock eats cash before it makes any. Know your months of cash left, every week.</li>
+      </ul>
+    
+</article>
+<article class="chapter" data-ch="words" hidden>
+      
       <p>Every business word in this blueprint, explained simply.</p>
       <label class="search"><span class="vh">Find a word</span><input type="search" id="gq" placeholder="Find a word, like churn or IKE" autocomplete="off" enterkeyhint="search"></label>
       <dl class="gloss" id="gloss">
@@ -976,11 +641,11 @@
         <div><dt>VAT</dt><dd>The sales tax inside the price: 24%, 13% or 6% in Greece.</dd></div>
         <div><dt>WPI / WPC</dt><dd>Whey protein isolate (purer, best foam) and whey protein concentrate.</dd></div>
       </dl>
-      <p class="empty" id="glossEmpty" hidden>No word matches that. Try a shorter search.</p>
-    </section>
-
-    <section class="block">
-      <h2>Sources</h2>
+      <p class="empty-g" id="glossEmpty" hidden>No word matches that. Try a shorter search.</p>
+    
+</article>
+<article class="chapter" data-ch="sources" hidden>
+      
       <p>Every figure is linked where it appears. These are the main pages behind each part, checked in November 2026.</p>
       <details class="acc">
         <summary>Valuations and sales of brands</summary>
@@ -1054,18 +719,20 @@
           <li><a href="https://taxsummaries.pwc.com/greece/individual/income-determination">PwC: Greek capital gains tax</a></li>
         </ul>
       </details>
-    </section>
-  </div>
-</section>
-
+    
+</article>
+  </div></section>
 </main>
 
-<footer class="wrap foot">
-  <p>Built from your <a href="https://claude.ai/artifact/8CgYjH2Runv6Se3pEPD6qs">Fowm blueprint doc</a>, 17 November 2026. Numbers marked "my estimate" or "my rule" are mine, so replace them with real quotes as you get them.</p>
-  <p>Not legal, tax or financial advice. Check big decisions with an accountant, a lawyer or an adviser.</p>
-</footer>
-
+<nav class="tabbar" aria-label="Sections"><div class="tabbar-in"><a class="tab" href="#today" data-tab="today"><svg viewBox="0 0 28 28" aria-hidden="true"><path class="fill" d="M6.5 12h13.5v5.2a5.8 5.8 0 0 1-5.8 5.8h-1.9a5.8 5.8 0 0 1-5.8-5.8z"/><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M6.5 12h13.5v5.2a5.8 5.8 0 0 1-5.8 5.8h-1.9a5.8 5.8 0 0 1-5.8-5.8z"/><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M20 13.5h1.4a2.6 2.6 0 0 1 0 5.2H20"/><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M6.9 12c-1.5-.5-2.1-2.2-1.3-3.5.6-1 1.9-1.4 3-1 .5-1.8 2.3-2.9 4.2-2.6 1.4.2 2.5 1.1 3 2.4 1.3-.7 3-.3 3.8.9.9 1.3.6 3-.6 3.8"/></svg><span>Today</span></a><a class="tab" href="#plan" data-tab="plan"><svg viewBox="0 0 28 28" aria-hidden="true"><rect class="fill" x="5" y="4.5" width="18" height="19" rx="4"/><rect fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" x="5" y="4.5" width="18" height="19" rx="4"/><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M9 10.5l1.7 1.7 3.1-3.2M16 11h3.5M9 17.5l1.7 1.7 3.1-3.2M16 18h3.5"/></svg><span>Plan</span></a><a class="tab" href="#numbers" data-tab="numbers"><svg viewBox="0 0 28 28" aria-hidden="true"><rect class="fill" x="6.5" y="14" width="4" height="8" rx="1.4"/><rect class="fill" x="12" y="9" width="4" height="13" rx="1.4"/><rect class="fill" x="17.5" y="5" width="4" height="17" rx="1.4"/><rect fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" x="6.5" y="14" width="4" height="8" rx="1.4"/><rect fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" x="12" y="9" width="4" height="13" rx="1.4"/><rect fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" x="17.5" y="5" width="4" height="17" rx="1.4"/><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M4.5 23.5h19"/></svg><span>Numbers</span></a><a class="tab" href="#contacts" data-tab="contacts"><svg viewBox="0 0 28 28" aria-hidden="true"><circle class="fill" cx="11" cy="9.6" r="3.7"/><circle fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" cx="11" cy="9.6" r="3.7"/><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M4.6 22.5c.6-3.7 3.2-6.2 6.4-6.2s5.8 2.5 6.4 6.2"/><circle fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" cx="19.3" cy="10.6" r="2.8"/><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M18.3 15.7c2.7.1 4.6 2.1 5.2 5"/></svg><span>Contacts</span></a><a class="tab" href="#guide" data-tab="guide"><svg viewBox="0 0 28 28" aria-hidden="true"><path class="fill" d="M14 7.8c-2.2-1.8-5.2-2.5-9-2.2v15.2c3.8-.3 6.8.4 9 2.2 2.2-1.8 5.2-2.5 9-2.2V5.6c-3.8-.3-6.8.4-9 2.2z"/><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M14 7.8c-2.2-1.8-5.2-2.5-9-2.2v15.2c3.8-.3 6.8.4 9 2.2 2.2-1.8 5.2-2.5 9-2.2V5.6c-3.8-.3-6.8.4-9 2.2zM14 7.8v15.2"/></svg><span>Guide</span></a></div></nav>
+<div class="scrim" id="scrim" hidden></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div class="sheet-grab" id="sheetGrab"></div>
+  <div class="sheet-h"><b id="sheetTitle"></b><button class="sheet-x" id="sheetX" type="button">Done</button></div>
+  <div class="sheet-b" id="sheetBody"></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 <noscript><p style="padding:40px;text-align:center">Fowm Plan needs JavaScript.</p></noscript>
-<script src="app.js?v=1" defer></script>
+<script src="app.js?v=2" defer></script>
 </body>
 </html>

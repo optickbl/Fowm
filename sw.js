@@ -1,10 +1,11 @@
 /* Fowm Plan service worker: works offline after the first visit. */
-const VERSION = 'fowm-v1';
+const VERSION = 'fowm-v2';
 const SHELL = [
-  './', 'index.html', 'styles.css?v=1', 'app.js?v=1', 'manifest.webmanifest',
+  './', 'index.html', 'styles.css?v=2', 'app.js?v=2', 'manifest.webmanifest?v=2',
   'icons/icon-192.png?v=1', 'icons/icon-512.png?v=1', 'icons/apple-touch-icon.png?v=1',
+  'img/mascot-sm.png',
   'fonts/fredoka-latin-wght-normal.woff2', 'fonts/fredoka-latin-ext-wght-normal.woff2',
-  'fonts/figtree-latin-wght-normal.woff2', 'fonts/figtree-latin-ext-wght-normal.woff2', 'fonts/figtree-latin-wght-italic.woff2'
+  'fonts/figtree-latin-wght-normal.woff2', 'fonts/figtree-latin-ext-wght-normal.woff2'
 ];
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
