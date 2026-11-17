@@ -115,6 +115,7 @@ const ICON = {
 };
 const CH_ICON = {
   start: '<path d="M8 23.5V5.5m0 0h11.5l-2.6 4 2.6 4H8"/>',
+  run: '<circle cx="14" cy="14" r="9"/><path d="M14 9v5.2l3.4 2.2"/>',
   market: '<circle cx="14" cy="14" r="9"/><path d="M5 14h18M14 5c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S11.4 7.6 14 5z"/>',
   foam: '<path d="M11.5 4.5h5M12.5 4.5v6.2l-5.4 9.4a2 2 0 0 0 1.7 3h10.4a2 2 0 0 0 1.7-3l-5.4-9.4V4.5M9.6 17.2h8.8"/>',
   money: '<path d="M19.5 8.8a7 7 0 1 0 0 10.4M6.5 12.6h8.8M6.5 15.6h7.6"/>',
@@ -539,6 +540,7 @@ const CTYPES = {
 
 const CHAPTERS = [
   ["start", "Start here", "The plan in eight lines, and the honest odds"],
+  ["run", "Running Fowm", "Your week, stock, cash, customers, and what never to do"],
   ["market", "The market", "Why protein foam, why Greece, and who else is out there"],
   ["foam", "Making the foam", "How foam works, manufacturers, packaging, first checks"],
   ["money", "The money math", "Price, VAT, what you keep and the numbers to watch"],
@@ -2544,7 +2546,7 @@ function openSettings() {
   const reset = h("button", { class: "btn danger", type: "button", text: "Start over" });
   armed(reset, "Start over", "Tap again to erase everything", () => replaceAll(blank(), "start over", "Everything erased"));
   body.append(h("div", { class: "danger-zone" }, reset, h("p", { class: "hint", text: "Start over erases everything on this phone. You can undo it right after." })));
-  body.append(h("p", { class: "hint", style: "margin-top:22px", html: 'Fowm Plan 2.3. Built from your <a href="https://claude.ai/artifact/8CgYjH2Runv6Se3pEPD6qs" target="_blank" rel="noopener">Fowm blueprint</a>, 17 November 2026. Numbers marked "my estimate" or "my rule" are mine. Not legal, tax or financial advice.' }));
+  body.append(h("p", { class: "hint", style: "margin-top:22px", html: 'Fowm Plan 2.4. Built from your <a href="https://claude.ai/artifact/8CgYjH2Runv6Se3pEPD6qs" target="_blank" rel="noopener">Fowm blueprint</a>, 17 November 2026. Numbers marked "my estimate" or "my rule" are mine. Not legal, tax or financial advice.' }));
   openSheet("Settings", body);
 }
 
