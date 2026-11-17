@@ -191,8 +191,8 @@ const STAGES = [
       { id: "s1-2", t: "Run a blind taste test with 30–50 people",
         how: ["Make 2 freddos that look the same: a normal freddo cappuccino, and one topped with Fowm foam. Mark the cups so only you know which is which.",
           "Ask people at the gym, at school and at a friendly café to try both.",
-          'Ask 2 questions about the Fowm one: "From 1 to 10, how good is it?" and "Would you buy it at €29.90 for 20 servings?"',
-          "Log each person in Numbers, under Tests: tap the score, tap Would buy or Wouldn't buy, then Add taster. Use one sample number per manufacturer."],
+          "Ask them to score both cups from 1 to 10, without saying which is which. Then tell them which cup had Fowm, and ask: \"Would you buy it at €29.90 for 20 servings?\"",
+          "Log each person in Numbers, under Tests: tap the Fowm cup's score, tap Would buy or Wouldn't buy, then Add taster. Use one sample number per manufacturer."],
         done: "One sample has 30 or more tasters logged.",
         go: [["Taste test", "#numbers/tests"]] },
       { id: "s1-3", t: "Grow the waitlist and post 3 times a week",
@@ -421,17 +421,20 @@ STAGES.forEach(st => st.steps.forEach(x => BUILTIN.set(x.id, { id: x.id, text: x
 // Ready-to-send messages for the steps where you contact someone. Fill in the [brackets] before sending.
 const MSGS = {
   "s0-2": { label: "Email to trademark attorneys", text: "Hello,\n\nI'm starting Fowm, a protein coffee foam powder: whey protein you froth into cold foam for coffee. I'd like to register \"Fowm\" as an EU trademark in classes 29 and 30.\n\nCould you give me a written opinion on whether it can be registered (I know it sounds like \"foam\"), and a fixed price for the opinion and for filing?\n\nThank you,\nFaris Keblawi" },
-  "s0-3": { label: "Email to food technologists", text: "Hello,\n\nI'm launching Fowm in Athens: a whey protein powder you froth into cold foam for coffee, sold in 500 g pouches with 20 servings (15 g of protein a serving).\n\nCould you send me a price for:\n1. Confirming it is sold as a food (EFET), not a food supplement\n2. Checking the Greek back label\n3. Filing the company's EFET registration once the company is set up\n\nThank you,\nFaris Keblawi" },
+  "s0-3": [{ label: "Email to food technologists", text: "Hello,\n\nI'm launching Fowm in Athens: a whey protein powder you froth into cold foam for coffee, sold in 500 g pouches with 20 servings (15 g of protein a serving).\n\nCould you send me a price for:\n1. Confirming it is sold as a food (EFET), not a food supplement\n2. Checking the Greek back label\n3. Filing the company's EFET registration once the company is set up\n\nThank you,\nFaris Keblawi" },
+    { label: "Στα ελληνικά", text: "Καλησπέρα σας,\n\nΕτοιμάζω το Fowm στην Αθήνα: σκόνη πρωτεΐνης ορού γάλακτος που χτυπιέται σε κρύο αφρό για τον καφέ, σε συσκευασίες των 500 g με 20 δόσεις (15 g πρωτεΐνη ανά δόση).\n\nΘα μπορούσατε να μου στείλετε προσφορά για:\n1. Επιβεβαίωση ότι κατατάσσεται ως τρόφιμο (ΕΦΕΤ) και όχι ως συμπλήρωμα διατροφής\n2. Έλεγχο της ελληνικής ετικέτας\n3. Την καταχώριση της εταιρείας στον ΕΦΕΤ, όταν συσταθεί η εταιρεία\n\nΕυχαριστώ,\nFaris Keblawi" }],
   "s0-5": { label: "Email to manufacturers", text: "Hello,\n\nI'm launching Fowm, a protein coffee foam powder: whey protein isolate with flavour that you froth into cold foam for coffee. 500 g pouches, 20 servings, 15 g of protein a serving. First order: 250–500 pouches.\n\nCould you tell me:\n1. Your minimum order, and the price per kg at 250, 500 and 1,000 kg\n2. What samples cost and how fast you can send them\n3. Whether you can buy the whey isolate and fix its price for 6–12 months\n4. Your food-safety certificates (ISO 22000, FSSC 22000 or HACCP)\n5. Whether you test protein per serving and shelf life\n6. Whether you can pack single-serve sachets later, and the minimum\n7. That I would own the formula, in writing\n\nThank you,\nFaris Keblawi\ngetfowm.com" },
-  "s1-2": { label: "What to say to each taster", text: "Got one minute for a blind taste test? Try these two freddos.\n\nFrom 1 to 10, how good is the one with the foam on top?\n\nWould you buy it at €29.90 for 20 servings?\n\nWant first access when it launches? Scan the code to join the waitlist." },
+  "s1-2": [{ label: "What to say to each taster", text: "Got one minute for a blind taste test? Try cup A and cup B.\n\nFrom 1 to 10, how good is each one?\n\nCup [B] had Fowm: a protein foam, 15 g of protein a serving. Would you buy it at €29.90 for 20 servings?\n\nWant first access when it launches? Scan the code to join the waitlist." },
+    { label: "Στα ελληνικά", text: "Έχεις ένα λεπτό για ένα τυφλό τεστ γεύσης; Δοκίμασε το ποτήρι Α και το ποτήρι Β.\n\nΑπό το 1 έως το 10, πόσο καλό είναι το καθένα;\n\nΤο ποτήρι [Β] είχε Fowm: αφρό πρωτεΐνης, 15 g πρωτεΐνη ανά δόση. Θα το αγόραζες με €29,90 για 20 δόσεις;\n\nΘες να το μάθεις πρώτος όταν βγει; Σκάναρε τον κωδικό για τη λίστα αναμονής." }],
   "s1-5": { label: "Message to creators", text: "Hey [name]! I'm launching Fowm in Athens: protein foam for your freddo, 15 g of protein in 20 seconds.\n\nWant your own discount code? You'd get 10% of every sale it brings, paid monthly, with no fixed fee. I'll send you a pouch to try.\n\nIf you like it, I'd love to use your best videos as ads too, with your OK in writing." },
   "s1-6": { label: "Email to BOX NOW and ACS", text: "Hello,\n\nI'm opening an online shop (getfowm.com) selling 500 g pouches in small boxes, shipped within Greece.\n\nCould you send me your e-shop prices per parcel, for lockers and home delivery if you offer both, and what you need to open a business account?\n\nThank you,\nFaris Keblawi" },
   "s2-7": { label: "Email to the waitlist", text: "Subject: Fowm is here: founder price for the first 100\n\nHi! You joined the Fowm waitlist, so you get first access.\n\nFowm turns your freddo into a protein freddo: one scoop, 20 seconds of frothing, 15 g of protein.\n\nFounder price for the first 100 people: €27.90 instead of €29.90, with the code [CODE]. Pouches ship on [DATE].\n\nOrder at getfowm.com\n\nThank you for being first,\nFaris" },
   "s3-2": { label: "Message asking for a review", text: "Hi [name]! How are you finding Fowm?\n\nIf you like it, could you leave a short review on getfowm.com? And if you film a 10-second video of the foam pour, I'd love to repost it, with your OK.\n\nThank you!" },
   "s3-3": { label: "Brief for creators", text: "Your code: [CODE]. You get 10% of every sale it brings, paid monthly.\n\nVideo ideas that work:\n- The slow foam pour\n- Plain freddo vs protein freddo\n- 15 g of protein in 20 seconds\n- A café's €4.60 protein freddo vs yours\n\nPlease say Fowm is a protein coffee foam, and don't claim anything beyond \"high protein\": no fat burning, no metabolism, no weight loss." },
-  "s3-4": { label: "What to say to cafés", text: "Hi! I'm Faris, and I'm launching Fowm, a protein foam for freddo. One scoop, 20 seconds in the frother, and the freddo gets 15 g of protein.\n\nI'd like to give you a free first bag and a \"Protein Freddo, made with Fowm\" menu card to try it. Cafés can charge about €1.50 extra per freddo.\n\nCan I show you how it works? It takes two minutes." }
+  "s3-4": [{ label: "What to say to cafés", text: "Hi! I'm Faris, and I'm launching Fowm, a protein foam for freddo. One scoop, 20 seconds in the frother, and the freddo gets 15 g of protein.\n\nI'd like to give you a free first bag and a \"Protein Freddo, made with Fowm\" menu card to try it. Cafés can charge about €1.50 extra per freddo.\n\nCan I show you how it works? It takes two minutes." },
+    { label: "Στα ελληνικά", text: "Γεια σας! Είμαι ο Φάρης και ετοιμάζω το Fowm, έναν αφρό πρωτεΐνης για φρέντο. Μία δόση, 20 δευτερόλεπτα χτύπημα, και ο φρέντο έχει 15 g πρωτεΐνη.\n\nΘα ήθελα να σας δώσω δωρεάν την πρώτη συσκευασία και μια κάρτα για το μενού «Protein Freddo, made with Fowm» για να το δοκιμάσετε. Μπορείτε να χρεώνετε περίπου €1,50 επιπλέον ανά φρέντο.\n\nΜπορώ να σας δείξω πώς γίνεται; Παίρνει δύο λεπτά." }]
 };
-for (const [id, m] of Object.entries(MSGS)) if (BUILTIN.has(id)) BUILTIN.get(id).msg = m;
+for (const [id, m] of Object.entries(MSGS)) if (BUILTIN.has(id)) BUILTIN.get(id).msg = Array.isArray(m) ? m : [m];
 
 
 const ROUTINE = [
@@ -1591,14 +1594,14 @@ function openStep(id) {
       h("p", { class: "how-h", text: "How to do it" }),
       h("ol", { class: "how" }, x.how.map(t => h("li", { text: t }))),
       h("p", { class: "done-when" }, h("b", { text: "Done when: " }), x.done));
-    if (x.msg) {
+    for (const m of x.msg || []) {
       // a message ready to send: copy it, fill in the [brackets], send
+      const msgP = h("p", { class: "msg-text", text: m.text });
       const copyBtn = h("button", { class: "btn small", type: "button", text: "Copy message", onclick: async () => {
-        try { await navigator.clipboard.writeText(x.msg.text); toast("Copied. Fill in any [brackets] before you send it."); }
+        try { await navigator.clipboard.writeText(m.text); toast("Copied. Fill in any [brackets] before you send it."); }
         catch (e) { const r = document.createRange(); r.selectNodeContents(msgP); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); toast("Selected. Tap Copy."); }
       } });
-      const msgP = h("p", { class: "msg-text", text: x.msg.text });
-      body.append(h("div", { class: "msg-card" }, h("p", { class: "how-h", text: x.msg.label }), msgP, copyBtn));
+      body.append(h("div", { class: "msg-card" }, h("p", { class: "how-h", text: m.label }), msgP, copyBtn));
     }
     if (x.go.length) body.append(h("div", { class: "list go-list" }, x.go.map(([label, href]) => {
       const ch = href.startsWith("#guide/") ? href.slice(7) : null;
@@ -2546,7 +2549,7 @@ function openSettings() {
   const reset = h("button", { class: "btn danger", type: "button", text: "Start over" });
   armed(reset, "Start over", "Tap again to erase everything", () => replaceAll(blank(), "start over", "Everything erased"));
   body.append(h("div", { class: "danger-zone" }, reset, h("p", { class: "hint", text: "Start over erases everything on this phone. You can undo it right after." })));
-  body.append(h("p", { class: "hint", style: "margin-top:22px", html: 'Fowm Plan 2.4. Built from your <a href="https://claude.ai/artifact/8CgYjH2Runv6Se3pEPD6qs" target="_blank" rel="noopener">Fowm blueprint</a>, 17 November 2026. Numbers marked "my estimate" or "my rule" are mine. Not legal, tax or financial advice.' }));
+  body.append(h("p", { class: "hint", style: "margin-top:22px", html: 'Fowm Plan 2.5. Built from your <a href="https://claude.ai/artifact/8CgYjH2Runv6Se3pEPD6qs" target="_blank" rel="noopener">Fowm blueprint</a>, 17 November 2026. Numbers marked "my estimate" or "my rule" are mine. Not legal, tax or financial advice.' }));
   openSheet("Settings", body);
 }
 
