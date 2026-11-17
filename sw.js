@@ -1,9 +1,9 @@
 /* Fowm Plan service worker: works offline after the first visit. */
-const VERSION = 'fowm-v2';
+const VERSION = 'fowm-v3';
 const SHELL = [
-  './', 'index.html', 'styles.css?v=2', 'app.js?v=2', 'manifest.webmanifest?v=2',
+  './', 'index.html', 'styles.css?v=3', 'app.js?v=3', 'manifest.webmanifest?v=3',
   'icons/icon-192.png?v=1', 'icons/icon-512.png?v=1', 'icons/apple-touch-icon.png?v=1',
-  'img/mascot-sm.png',
+  'img/mascot.png', 'img/mascot-sm.png',
   'fonts/fredoka-latin-wght-normal.woff2', 'fonts/fredoka-latin-ext-wght-normal.woff2',
   'fonts/figtree-latin-wght-normal.woff2', 'fonts/figtree-latin-ext-wght-normal.woff2'
 ];

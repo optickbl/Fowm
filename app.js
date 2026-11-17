@@ -421,35 +421,252 @@ function checkBadges(fromUser) {
   lastComplete = now;
 }
 
+/* ---------- motion ----------
+   One feel everywhere: presses answer on touch and spring back, screens and sheets move on springs,
+   content that changes slides or fades instead of jumping. Only transform, opacity and colour animate
+   on big things; heights animate only on small rows. Reduce Motion turns all of it off. */
+const cssVar = (n, d) => { try { return getComputedStyle(document.documentElement).getPropertyValue(n).trim() || d; } catch (e) { return d; } };
+const EASE = {
+  spring: cssVar("--spring", "cubic-bezier(.2,.9,.3,1.15)"),       // 700ms
+  soft: cssVar("--spring-soft", "cubic-bezier(.22,1,.36,1)"),       // 550ms
+  pop: cssVar("--spring-pop", "cubic-bezier(.3,1.5,.5,1)"),         // 1000ms
+  sheet: cssVar("--ease-sheet", "cubic-bezier(.32,.72,0,1)"),       // 600ms
+  out: "cubic-bezier(.22,1,.36,1)",
+  inOut: "cubic-bezier(.4,0,.2,1)"
+};
+function anim(el, frames, o) {
+  if (reduced || !el || typeof el.animate !== "function") return null;
+  try { return el.animate(frames, o); }
+  catch (e) { try { return el.animate(frames, Object.assign({}, o, { easing: EASE.out })); } catch (e2) { return null; } }
+}
+const settled = (a) => a ? a.finished.then(() => true, () => false) : Promise.resolve(true);
+// The launch cover (see index.html) stays until the first screen is drawn; the Today moment waits for it.
+let launching = !!document.getElementById("launch");
+const afterLaunch = [];
+
+// Press feedback. Like UIKit: a touch lights up after a beat, so scrolling past a row doesn't flash it;
+// a quick tap still shows a short press; moving or scrolling cancels it. Styles live on .is-pressed.
+(() => {
+  const SEL = "button, a[href], label.tick, label.tick-row, label.switch, summary";
+  let el = null, x0 = 0, y0 = 0, timer = 0, at = 0;
+  const press = () => { timer = 0; if (el) { el.classList.add("is-pressed"); at = performance.now(); } };
+  const release = (tap) => {
+    const e = el; el = null;
+    if (!e) return;
+    if (timer) {
+      clearTimeout(timer); timer = 0;
+      if (tap) { e.classList.add("is-pressed"); setTimeout(() => e.classList.remove("is-pressed"), 110); }
+      return;
+    }
+    const left = 90 - (performance.now() - at);
+    if (left > 0) setTimeout(() => e.classList.remove("is-pressed"), left); else e.classList.remove("is-pressed");
+  };
+  addEventListener("pointerdown", (ev) => {
+    if (!ev.isPrimary || ev.button > 0) return;
+    const t = ev.target instanceof Element ? ev.target.closest(SEL) : null;
+    if (!t || t.matches(":disabled")) return;
+    release(false);
+    el = t; x0 = ev.clientX; y0 = ev.clientY;
+    if (ev.pointerType === "mouse") press(); else timer = setTimeout(press, 55);
+  }, { capture: true, passive: true });
+  addEventListener("pointermove", (ev) => { if (el && Math.abs(ev.clientX - x0) + Math.abs(ev.clientY - y0) > 12) release(false); }, { capture: true, passive: true });
+  addEventListener("pointerup", () => release(true), { capture: true });
+  addEventListener("pointercancel", () => release(false), { capture: true });
+  addEventListener("scroll", () => release(false), { capture: true, passive: true });
+})();
+
+// A tick that gets checked pops and sends out a ring (only when you tick it, never on a redraw).
+document.addEventListener("change", (e) => {
+  const t = e.target, ck = t && t.type === "checkbox" ? t.nextElementSibling : null;
+  if (reduced || !ck || !ck.classList.contains("ck") || !t.checked) return;
+  ck.classList.remove("pop"); void ck.offsetWidth; ck.classList.add("pop");
+  setTimeout(() => ck.classList.remove("pop"), 1000);
+}, true);
+
+// <details> open and close with their height instead of snapping (the Guide's folds, "What one pouch costs you").
+document.addEventListener("click", (e) => {
+  const sum = e.target instanceof Element ? e.target.closest("details > summary") : null;
+  if (!sum || reduced) return;
+  const d = sum.parentElement;
+  e.preventDefault();
+  const h0 = d.getBoundingClientRect().height, opening = !d.open || d.classList.contains("shut");
+  if (d._da) { d._da.cancel(); d._da = null; }
+  d.style.overflow = "hidden";
+  let h1;
+  if (opening) { d.classList.remove("shut"); d.open = true; h1 = d.getBoundingClientRect().height; }
+  else { const cs = getComputedStyle(d); h1 = sum.getBoundingClientRect().height + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth); d.classList.add("shut"); }
+  const a = d._da = anim(d, [{ height: h0 + "px" }, { height: h1 + "px" }], { duration: opening ? 460 : 320, easing: opening ? EASE.out : EASE.inOut });
+  settled(a).then((ok) => { if (!ok || d._da !== a) return; d._da = null; d.style.overflow = ""; if (!opening) { d.open = false; d.classList.remove("shut"); } });
+});
+
+// While typing on a phone, the tab bar steps aside for the keyboard.
+(() => {
+  let mq = null; try { mq = matchMedia("(pointer: coarse)"); } catch (e) {}
+  if (!mq || !mq.matches) return;
+  const typing = (el) => el instanceof Element && el.matches("input:not([type=checkbox]):not([type=range]):not([type=radio]), textarea, select");
+  let t = 0;
+  document.addEventListener("focusin", (e) => { if (typing(e.target)) { clearTimeout(t); document.documentElement.classList.add("typing"); } });
+  document.addEventListener("focusout", () => { clearTimeout(t); t = setTimeout(() => { if (!typing(document.activeElement)) document.documentElement.classList.remove("typing"); }, 160); });
+})();
+
+// Open or close a small block by animating its height (rows, step lists, test cards).
+function heightAnim(el, open, dur) {
+  if (reduced || !el || !el.isConnected || typeof el.animate !== "function") return Promise.resolve(true);
+  const box = (cs, h) => ({ height: h + "px", paddingTop: cs.paddingTop, paddingBottom: cs.paddingBottom, marginTop: cs.marginTop, marginBottom: cs.marginBottom, opacity: cs.opacity, minHeight: "0px" });
+  let live = null;
+  if (el._ha) { live = box(getComputedStyle(el), el.getBoundingClientRect().height); el._ha.cancel(); el._ha = null; }
+  const full = box(getComputedStyle(el), el.getBoundingClientRect().height); full.opacity = 1;
+  const zero = { height: "0px", paddingTop: "0px", paddingBottom: "0px", marginTop: "0px", marginBottom: "0px", opacity: 0, minHeight: "0px" };
+  el.style.overflow = "hidden";
+  const a = el._ha = anim(el, [live || (open ? zero : full), open ? full : zero],
+    { duration: dur || (open ? 480 : 300), easing: open ? EASE.out : EASE.inOut, fill: open ? "none" : "forwards" });
+  return settled(a).then((ok) => { if (el._ha === a) { el._ha = null; if (open) el.style.overflow = ""; } return ok; });
+}
+
+// Fold a row away; if it was the first row, its neighbour's top line fades instead of vanishing at the end.
+function foldAway(el, dur) {
+  if (!el) return Promise.resolve(true);
+  const next = el.nextElementSibling;
+  if (next && !el.previousElementSibling) { next.style.transition = "border-color .3s ease"; next.style.borderTopColor = "transparent"; }
+  return heightAnim(el, false, dur || 300);
+}
+
+// Swap what a box shows: the old content slips out, the new slides in from the side you went.
+function swapContent(box, fill, dir, resize) {
+  const id = box._swap = (box._swap || 0) + 1;
+  if (reduced) { box.replaceChildren(); fill(); return; }
+  let o0 = 1;
+  if (box._si) { o0 = Number(getComputedStyle(box).opacity); box._si.cancel(); box._si = null; }
+  let out = box._so;
+  if (!out || out.playState !== "running") out = box._so = anim(box, [{ opacity: o0, transform: "none" }, { opacity: 0, transform: `translateX(${-dir * 14}px)` }], { duration: 120, easing: "ease-in", fill: "forwards" });
+  settled(out).then(() => {
+    if (box._swap !== id || !box.isConnected) return;
+    const h0 = resize ? resize.getBoundingClientRect().height : 0;
+    if (box._so) { box._so.cancel(); box._so = null; }
+    box.replaceChildren(); fill();
+    box._si = anim(box, [{ opacity: 0, transform: `translateX(${dir * 18}px)` }, { opacity: 1, transform: "none" }], { duration: 420, easing: EASE.out });
+    if (resize) {
+      const h1 = resize.getBoundingClientRect().height;
+      if (Math.abs(h1 - h0) > 1) { resize.style.overflow = "hidden"; settled(anim(resize, [{ height: h0 + "px" }, { height: h1 + "px" }], { duration: 480, easing: EASE.soft })).then(() => { resize.style.overflow = ""; }); }
+    }
+  });
+}
+
+// Segmented control with a sliding thumb. onPick(key, direction) runs after the thumb starts moving.
+function segControl(label, opts, cur, onPick) {
+  const seg = h("div", { class: "seg", role: "tablist", "aria-label": label });
+  seg.style.setProperty("--n", String(opts.length));
+  seg.append(h("span", { class: "seg-thumb", "aria-hidden": "true" }));
+  let at = Math.max(0, opts.findIndex(o => o[0] === cur));
+  const btns = opts.map(([k, t], i) => h("button", { type: "button", role: "tab", text: t, onclick: () => {
+    if (i === at) return;
+    const dir = i > at ? 1 : -1; at = i; sync(); onPick(k, dir);
+  } }));
+  const sync = () => { seg.style.setProperty("--i", String(at)); btns.forEach((b, i) => b.setAttribute("aria-selected", String(i === at))); };
+  seg.append(...btns); sync();
+  return seg;
+}
+
+// Numbers that roll to their new value instead of jumping. One counter per key, so it survives redraws.
+const COUNTERS = new Map();
+function counter(el, key, value, fmt, opt = {}) {
+  let c = COUNTERS.get(key);
+  if (!c) { const v0 = opt.from != null ? opt.from : value; c = { v: v0, to: v0, raf: 0 }; COUNTERS.set(key, c); }
+  c.el = el; c.fmt = fmt;
+  if (reduced) { cancelAnimationFrame(c.raf); c.raf = 0; c.v = c.to = value; }
+  else if (value !== c.to) {
+    c.from = c.v; c.to = value; c.t0 = performance.now(); c.dur = opt.dur || 600;
+    cancelAnimationFrame(c.raf);
+    const tick = (now) => {
+      const k = Math.min(1, (now - c.t0) / c.dur), e = 1 - Math.pow(1 - k, 3);
+      c.v = k < 1 ? c.from + (c.to - c.from) * e : c.to;
+      if (c.el.isConnected) c.el.textContent = c.fmt(c.v);
+      c.raf = k < 1 ? requestAnimationFrame(tick) : 0;
+    };
+    c.raf = requestAnimationFrame(tick);
+  }
+  el.textContent = fmt(c.v);
+}
+
+// Glide a slider to a value (a preset or a quick pick), feeding every frame to apply(value, landed).
+// While it glides the slider moves freely between its steps; a finger on it stops the glide.
+function stopGlide(inp) {
+  if (!inp._g) return;
+  cancelAnimationFrame(inp._g); inp._g = 0;
+  if (inp._step) inp.setAttribute("step", inp._step); else inp.removeAttribute("step");
+}
+function glide(inp, to, apply, dur = 460) {
+  stopGlide(inp);
+  const from = Number(inp.value);
+  inp._step = inp.getAttribute("step");
+  const land = () => { inp._g = 0; if (inp._step) inp.setAttribute("step", inp._step); else inp.removeAttribute("step"); inp.value = String(to); fillRange(inp); apply(to, true); };
+  if (reduced || Math.abs(from - to) < 1e-9) { land(); return; }
+  inp.step = "any";
+  const t0 = performance.now();
+  const frame = (now) => {
+    const k = Math.min(1, (now - t0) / dur);
+    if (k >= 1) { land(); return; }
+    const e = 1 - Math.pow(1 - k, 3), v = from + (to - from) * e;
+    inp.value = String(v); fillRange(inp); apply(v, false);
+    inp._g = requestAnimationFrame(frame);
+  };
+  inp._g = requestAnimationFrame(frame);
+}
+
 /* ---------- toast and sheet ---------- */
 let toastT = 0;
 function toast(msg) {
-  const t = $("#toast"); t.textContent = msg; t.classList.add("on");
+  const t = $("#toast"), was = t.classList.contains("on");
+  t.textContent = msg; t.classList.add("on");
+  if (was) anim(t, [{ transform: "scale(.95)" }, { transform: "none" }], { duration: 600, easing: EASE.spring });
   clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 2600);
 }
-const sheetEl = $("#sheet"), scrim = $("#scrim");
-let sheetOnClose = null, sheetFocus = null, sheetOpen = false;
+const sheetEl = $("#sheet"), scrim = $("#scrim"), sheetBodyEl = $("#sheetBody");
+let sheetOnClose = null, sheetFocus = null, sheetOpen = false, sheetAnims = [];
+const sheetY = (y) => "translateY(" + y.toFixed(1) + "px)";
+function sheetMove(y0, y1, s0, s1, dur, easing) {
+  for (const a of sheetAnims) if (a) a.cancel();
+  sheetEl.style.transform = sheetY(y1); scrim.style.opacity = String(s1);
+  sheetAnims = [anim(sheetEl, [{ transform: sheetY(y0) }, { transform: sheetY(y1) }], { duration: dur, easing }),
+    anim(scrim, [{ opacity: s0 }, { opacity: s1 }], { duration: Math.min(dur, 420), easing: "ease-out" })];
+  return settled(sheetAnims[0]);
+}
 function openSheet(title, body, opts = {}) {
   if (sheetOpen) closeSheet(true);
   sheetFocus = document.activeElement;
   $("#sheetTitle").textContent = title;
   $("#sheetX").textContent = opts.done || "Done";
-  $("#sheetBody").replaceChildren(body);
+  sheetBodyEl.replaceChildren(body);
   sheetOnClose = opts.onClose || null;
   scrim.hidden = false; sheetEl.hidden = false; sheetOpen = true;
-  sheetEl.style.transform = "";
-  requestAnimationFrame(() => requestAnimationFrame(() => { scrim.classList.add("on"); sheetEl.classList.add("on"); }));
+  sheetBodyEl.scrollTop = 0;
   document.documentElement.style.overflow = "hidden";
-  setTimeout(() => { const f = opts.focus && $(opts.focus, sheetEl); (f || $("#sheetX")).focus({ preventScroll: true }); }, reduced ? 0 : 340);
+  sheetMove(sheetEl.offsetHeight + 30, 0, 0, 1, 600, EASE.sheet);
+  setTimeout(() => { if (!sheetOpen) return; const f = opts.focus && $(opts.focus, sheetEl); (f || $("#sheetX")).focus({ preventScroll: true }); }, reduced ? 0 : 380);
 }
-function closeSheet(instant) {
+function closeSheet(instant, fling) {
   if (!sheetOpen) return;
   sheetOpen = false;
-  scrim.classList.remove("on"); sheetEl.classList.remove("on"); sheetEl.style.bottom = ""; sheetEl.style.maxHeight = "";
+  const ae = document.activeElement;
+  if (ae && sheetEl.contains(ae) && ae.blur) ae.blur();
   document.documentElement.style.overflow = "";
   const cb = sheetOnClose; sheetOnClose = null;
-  const done = () => { if (!sheetOpen) { scrim.hidden = true; sheetEl.hidden = true; $("#sheetBody").replaceChildren(); } };
-  if (instant || reduced) done(); else setTimeout(done, 340);
+  const done = () => {
+    if (sheetOpen) return;
+    for (const a of sheetAnims) if (a) a.cancel();
+    sheetAnims = [];
+    scrim.hidden = true; sheetEl.hidden = true;
+    sheetEl.style.transform = ""; sheetEl.style.bottom = ""; sheetEl.style.maxHeight = ""; scrim.style.opacity = "";
+    sheetBodyEl.replaceChildren();
+  };
+  if (instant || reduced) done();
+  else {
+    const H = sheetEl.offsetHeight + 30, y0 = fling ? fling.y : 0, v = fling ? Math.max(0, fling.v) : 0;
+    const s0 = scrim.style.opacity === "" ? 1 : Number(scrim.style.opacity);
+    // a flick leaves at the finger's speed; a tap on Done uses the sheet's own curve
+    const dur = v > 0.3 ? Math.max(160, Math.min(380, (H - y0) / v * 1.6)) : 380;
+    sheetMove(y0, H, s0, 0, dur, v > 0.3 ? EASE.out : "cubic-bezier(.3,0,.2,1)").then(done);
+  }
   if (cb) cb();
   if (sheetFocus && sheetFocus.isConnected) try { sheetFocus.focus({ preventScroll: true }); } catch (e) {}
 }
@@ -466,12 +683,69 @@ if (window.visualViewport) {
 }
 scrim.addEventListener("click", () => closeSheet());
 document.addEventListener("keydown", e => { if (e.key === "Escape" && sheetOpen) closeSheet(); });
-(() => { // drag the handle down to close
-  const grab = $("#sheetGrab"); let y0 = null, dy = 0;
-  grab.addEventListener("pointerdown", e => { y0 = e.clientY; dy = 0; grab.setPointerCapture(e.pointerId); sheetEl.style.transition = "none"; });
-  grab.addEventListener("pointermove", e => { if (y0 == null) return; dy = Math.max(0, e.clientY - y0); sheetEl.style.transform = `translateY(${dy}px)`; });
-  const end = () => { if (y0 == null) return; y0 = null; sheetEl.style.transition = ""; sheetEl.style.transform = ""; if (dy > 90) closeSheet(); };
-  grab.addEventListener("pointerup", end); grab.addEventListener("pointercancel", end);
+// Drag the sheet down to close it: from the handle, the title bar, or the content once it's scrolled to the top.
+// It follows the finger, resists being pulled up, and a quick flick closes it even from a short drag.
+(() => {
+  let d = null;
+  const rubber = (x) => 28 * Math.log1p(x / 28);
+  const nowY = () => { const tf = getComputedStyle(sheetEl).transform; try { return tf && tf !== "none" ? new DOMMatrixReadOnly(tf).m42 : 0; } catch (e) { return 0; } };
+  const engage = (y, t) => {
+    const base = nowY(); // catch the sheet where it is, even halfway through opening
+    for (const a of sheetAnims) if (a) a.cancel();
+    sheetAnims = [];
+    d.on = true; d.base = Math.max(0, base); d.y0 = y - d.base; d.yl = y; d.t = t; d.H = sheetEl.offsetHeight;
+    const ae = document.activeElement;
+    if (ae && sheetEl.contains(ae) && ae.matches("input, textarea")) ae.blur();
+  };
+  // a finger on a sheet that is still sliding up stops it right there, like iOS
+  const catchIt = () => {
+    if (!sheetAnims.some(a => a && a.playState === "running")) return false;
+    const y = nowY(), op = getComputedStyle(scrim).opacity;
+    for (const a of sheetAnims) if (a) a.cancel();
+    sheetAnims = [];
+    sheetEl.style.transform = sheetY(y); scrim.style.opacity = op;
+    return true;
+  };
+  const down = (x, y, t, target) => {
+    d = null;
+    if (!sheetOpen || !(target instanceof Element) || target.closest("input[type=range]")) return;
+    d = { x0: x, y0: y, on: false, body: sheetBodyEl.contains(target), v: 0, dy: 0, yl: y, t, caught: catchIt() };
+  };
+  const move = (x, y, t) => { // returns true when the sheet owns this move
+    if (!d) return false;
+    if (!d.on) {
+      const dx = x - d.x0, dy = y - d.y0;
+      if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) { d = null; return false; }
+      if (d.body) {
+        if (sheetBodyEl.scrollTop > 0 || dy < 0) { if (Math.abs(dy) > 3) d = null; return false; }
+        if (dy < 5) return true; // hold the content still while we see which way this goes
+      } else if (Math.abs(dy) < 5) return false;
+      engage(y, t);
+    }
+    const dt = t - d.t;
+    if (dt > 0) { d.v = 0.7 * ((y - d.yl) / dt) + 0.3 * d.v; d.yl = y; d.t = t; }
+    d.dy = y - d.y0;
+    sheetEl.style.transform = sheetY(d.dy >= 0 ? d.dy : -rubber(-d.dy));
+    scrim.style.opacity = String(Math.max(0, 1 - Math.max(0, d.dy) / d.H));
+    return true;
+  };
+  const up = () => {
+    const s = d; d = null;
+    if (s && !s.on && s.caught && sheetOpen) { sheetMove(nowY(), 0, Number(scrim.style.opacity || 1), 1, 520, EASE.soft); return; }
+    if (!s || !s.on || !sheetOpen) return;
+    // closes when pulled a quarter of the way (or 60px past where a still-opening sheet was caught), or flicked down
+    const pulled = s.base > 0 ? s.dy - s.base > 60 : s.dy > s.H * 0.25;
+    if ((pulled || s.v > 0.5) && s.v > -0.1) closeSheet(false, { y: Math.max(0, s.dy), v: s.v });
+    else sheetMove(s.dy >= 0 ? s.dy : -rubber(-s.dy), 0, Number(scrim.style.opacity || 1), 1, 560, EASE.soft);
+  };
+  sheetEl.addEventListener("touchstart", (e) => { if (e.touches.length === 1) down(e.touches[0].clientX, e.touches[0].clientY, e.timeStamp, e.target); else d = null; }, { passive: true });
+  sheetEl.addEventListener("touchmove", (e) => { if (d && move(e.touches[0].clientX, e.touches[0].clientY, e.timeStamp) && e.cancelable) e.preventDefault(); }, { passive: false });
+  sheetEl.addEventListener("touchend", up); sheetEl.addEventListener("touchcancel", up);
+  for (const zone of [$("#sheetGrab"), $(".sheet-h", sheetEl)]) { // mouse: handle and title bar
+    zone.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse" || e.button !== 0 || e.target.closest("button")) return; down(e.clientX, e.clientY, e.timeStamp, zone); zone.setPointerCapture(e.pointerId); });
+    zone.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse") move(e.clientX, e.clientY, e.timeStamp); });
+    zone.addEventListener("pointerup", (e) => { if (e.pointerType === "mouse") up(); });
+  }
 })();
 
 function armed(btn, label, armedLabel, action) {
@@ -492,6 +766,11 @@ const TITLES = { today: "Today", plan: "Plan", numbers: "Numbers", contacts: "Co
 let view = null, chapter = null;
 const scrolls = {};
 const RENDER = {};
+const ROOTS = { today: "#todayRoot", plan: "#planRoot", numbers: "#numRoot", contacts: "#conRoot", guide: "#guideRoot" };
+const navEl = $("#nav"), navBack = $("#navBack"), navTitle = $("#navTitle"), dimEl = $("#dim");
+const glassAt = (y) => Math.min(1, Math.max(0, (y - 4) / 30)); // how much of the bar's glass shows at a scroll position
+const viewEl = (v) => $('.view[data-view="' + v + '"]');
+let navT = null, skipAnim = false;
 function parseRoute() {
   const raw = decodeURIComponent((location.hash || "").slice(1));
   const [a, b] = raw.split("/");
@@ -499,43 +778,175 @@ function parseRoute() {
   if (["today", "plan", "numbers", "contacts", "guide"].includes(a)) return { v: a, sub: b || "" };
   return { v: "today", sub: "" };
 }
+
+// Screen changes. A tab fades up in place. A chapter pushes in from the right over the Guide, which
+// slides back a little and dims, and pops back the same way (also by swiping in from the left edge).
+// While a screen moves, both screens are pinned to the glass at their own scroll position.
+function freeze(el, y, top) { el.classList.add("frozen"); if (top) el.classList.add("top", "edge"); el.scrollTop = y; }
+function thaw(el) { el.classList.remove("frozen", "top", "edge", "leaving"); el.style.transform = ""; el.style.opacity = ""; }
+function ghostOf(el, y) { // a still copy of a chapter, so one chapter can push over another
+  const g = el.cloneNode(true);
+  g.removeAttribute("data-view"); g.removeAttribute("aria-labelledby"); g.setAttribute("aria-hidden", "true"); g.inert = true;
+  for (const n of g.querySelectorAll("[id]")) n.removeAttribute("id");
+  g.dataset.ghost = "1";
+  el.after(g); freeze(g, y, false);
+  return g;
+}
+function startNav(kind, outEl, inEl, yOut, yIn, yNav) {
+  const t = { kind, yNav: yNav == null ? yIn : yNav, anims: [], over: false };
+  if (kind === "fade") {
+    if (outEl && outEl !== inEl) outEl.classList.remove("on");
+    inEl.classList.add("on"); freeze(inEl, yIn, false);
+    t.anims.push(anim(inEl, [{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 320, easing: EASE.out }));
+  } else {
+    // q is how much of the glass the chapter (the top layer) covers: 0 = the Guide, 1 = the chapter
+    const W = innerWidth, top = kind === "pop" ? outEl : inEl, under = kind === "pop" ? inEl : outEl;
+    outEl.classList.add("leaving"); outEl.classList.remove("on");
+    if (!outEl.classList.contains("frozen")) freeze(outEl, yOut, kind === "pop");
+    else if (kind === "pop") outEl.classList.add("top", "edge");
+    inEl.classList.add("on"); freeze(inEl, yIn, kind === "push");
+    dimEl.hidden = false; navBack.hidden = false;
+    const f = (q) => ({ top: "translateX(" + ((1 - q) * W).toFixed(1) + "px)", under: "translateX(" + (-q * 0.3 * W).toFixed(1) + "px)",
+      dim: q, back: q, backX: "translateX(" + ((1 - q) * 22).toFixed(1) + "px)" });
+    t.set = (q) => { const v = f(q); top.style.transform = v.top; under.style.transform = v.under; dimEl.style.opacity = String(v.dim); navBack.style.opacity = String(v.back); navBack.style.transform = v.backX; };
+    t.run = (q0, q1, dur, easing) => {
+      for (const a of t.anims) if (a) a.cancel();
+      const a0 = f(q0), a1 = f(q1), o = { duration: dur, easing };
+      t.set(q1);
+      t.anims = [anim(top, [{ transform: a0.top }, { transform: a1.top }], o), anim(under, [{ transform: a0.under }, { transform: a1.under }], o),
+        anim(dimEl, [{ opacity: a0.dim }, { opacity: a1.dim }], o), anim(navBack, [{ opacity: a0.back, transform: a0.backX }, { opacity: a1.back, transform: a1.backX }], o)];
+      return settled(t.anims[0]);
+    };
+    t.set(kind === "push" ? 0 : 1);
+  }
+  // land = true: finish on the new screen. land = false: go back to the old one (a swipe let go early).
+  t.end = (land = true) => {
+    if (t.over) return;
+    t.over = true;
+    for (const a of t.anims) if (a) a.cancel();
+    const keep = land ? inEl : outEl, drop = land ? outEl : inEl;
+    if (drop && drop !== keep) { thaw(drop); drop.classList.remove("on"); if (drop.dataset.ghost) drop.remove(); }
+    thaw(keep); keep.classList.add("on");
+    dimEl.hidden = true; dimEl.style.opacity = "";
+    navBack.style.opacity = ""; navBack.style.transform = ""; navBack.style.transition = ""; navBack.hidden = view !== "chapter";
+    navTitle.style.opacity = ""; navTitle.style.transition = "";
+    if (navT === t) navT = null;
+    window.scrollTo(0, land ? yIn : yOut);
+    applyScroll();
+  };
+  navT = t;
+  return t;
+}
 function route() {
   const r = parseRoute();
-  if (view && view !== "chapter") scrolls[view] = scrollY;
+  if (navT) navT.end(true);
+  const prev = view, prevCh = chapter, yOut = scrollY;
+  if (prev && prev !== "chapter") scrolls[prev] = yOut;
   if (sheetOpen) closeSheet(true);
   if (r.v === "numbers" && r.sub) {
     if (r.sub === "checkin" || r.sub === "tests") UI.numTab = r.sub;
     else if (["order", "budget", "value", "round"].includes(r.sub)) { UI.numTab = "calc"; UI.calcTab = r.sub; }
     saveUI();
   }
-  const prev = view;
-  view = r.v; chapter = r.v === "chapter" ? r.sub : null;
-  for (const sec of $$(".view")) {
-    const on = sec.dataset.view === view;
-    sec.classList.toggle("on", on);
-    sec.classList.toggle("push", on && view === "chapter" && prev !== "chapter");
+  const next = r.v, nextCh = r.v === "chapter" ? r.sub : null;
+  let kind = "none";
+  if (prev && !skipAnim && !reduced && !launching) {
+    if (next === "chapter" && (prev === "guide" || (prev === "chapter" && prevCh !== nextCh))) kind = "push";
+    else if (prev === "chapter" && next === "guide") kind = "pop";
+    else if (prev !== next) kind = "fade";
   }
+  skipAnim = false;
+  const outEl = !prev ? null : (kind === "push" && prev === "chapter") ? ghostOf(viewEl("chapter"), yOut) : viewEl(prev);
+  view = next; chapter = nextCh;
   const tabKey = view === "chapter" ? "guide" : view;
   for (const t of $$(".tab")) { if (t.dataset.tab === tabKey) t.setAttribute("aria-current", "page"); else t.removeAttribute("aria-current"); }
   if (view === "chapter") showChapter(chapter); else RENDER[view]();
-  $("#navBack").hidden = view !== "chapter";
-  $("#navTitle").textContent = view === "chapter" ? CHAPTERS.find(c => c[0] === chapter)[1] : TITLES[view];
-  const y = view === "chapter" ? 0 : (scrolls[view] || 0);
-  window.scrollTo(0, y);
-  onScroll();
+  const inEl = viewEl(view), yIn = view === "chapter" ? 0 : (scrolls[view] || 0);
+  // a title that is about to hide goes at once, so the new screen's name never fades out in its place
+  if (navEl.classList.contains("titled") && yIn <= 44) { navTitle.style.transition = "none"; navEl.classList.remove("titled"); void navTitle.offsetWidth; navTitle.style.transition = ""; }
+  navTitle.textContent = view === "chapter" ? CHAPTERS.find(c => c[0] === chapter)[1] : TITLES[view];
+  if (kind === "none") {
+    for (const sec of $$(".view[data-view]")) sec.classList.toggle("on", sec === inEl);
+    navBack.hidden = view !== "chapter";
+    window.scrollTo(0, yIn);
+    applyScroll();
+    return;
+  }
+  navEl.classList.add("ease"); setTimeout(() => navEl.classList.remove("ease"), 360);
+  const t = startNav(kind, outEl, inEl, yOut, yIn);
+  applyScroll();
+  if (kind === "fade") { navBack.hidden = view !== "chapter"; settled(t.anims[0]).then(() => t.end(true)); }
+  else t.run(kind === "push" ? 0 : 1, kind === "push" ? 1 : 0, 560, EASE.soft).then((ok) => { if (ok) t.end(true); });
 }
-function onScroll() {
-  const past = scrollY > 44;
-  $("#nav").classList.toggle("on", view === "chapter" || past);
-  $("#navTitle").style.opacity = past ? "1" : "0";
+// The bar's glass follows the scroll; the small title shows once the large one has slid under it.
+function applyScroll() {
+  const y = navT ? navT.yNav : scrollY;
+  navEl.style.setProperty("--k", Math.min(1, Math.max(0, (y - 4) / 30)).toFixed(3));
+  navEl.classList.toggle("titled", y > 44);
 }
-addEventListener("scroll", onScroll, { passive: true });
+addEventListener("scroll", applyScroll, { passive: true });
 addEventListener("hashchange", route);
-$("#navBack").addEventListener("click", () => { location.hash = "#guide"; });
+navBack.addEventListener("click", () => { location.hash = "#guide"; });
 for (const t of $$(".tab")) t.addEventListener("click", e => {
   const k = t.dataset.tab;
   if (view === k) { e.preventDefault(); window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" }); }
 });
+// Swipe in from the left edge of a chapter to go back to the Guide, like any iPhone app.
+// (In Safari itself the browser's own back swipe does this, so the app leaves the edge to it.)
+(() => {
+  const standalone = navigator.standalone === true || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+  if (!standalone && /iPhone|iPad|iPod/.test(navigator.userAgent)) return;
+  let g = null, lastSwipe = 0;
+  addEventListener("touchstart", (e) => {
+    g = null;
+    if (view !== "chapter" || sheetOpen || navT || reduced || e.touches.length !== 1) return;
+    const p = e.touches[0];
+    if (p.clientX > 24) return;
+    g = { x0: p.clientX, y0: p.clientY, on: false, x: p.clientX, t: e.timeStamp, v: 0 };
+  }, { passive: true });
+  addEventListener("touchmove", (e) => {
+    if (!g) return;
+    const p = e.touches[0], dx = p.clientX - g.x0, dy = p.clientY - g.y0;
+    if (!g.on) {
+      if (Math.abs(dy) > 8 && Math.abs(dy) > Math.abs(dx)) { g = null; return; }
+      if (dx < 6) return;
+      g.on = true;
+      g.kTop = glassAt(scrollY); g.kUnder = glassAt(scrolls.guide || 0); g.titled = scrollY > 44;
+      renderGuide();
+      startNav("pop", viewEl("chapter"), viewEl("guide"), scrollY, scrolls.guide || 0, scrollY);
+      navBack.style.transition = "none"; navTitle.style.transition = "none";
+    }
+    if (e.cancelable) e.preventDefault();
+    const dt = e.timeStamp - g.t;
+    if (dt > 0) { g.v = 0.6 * ((p.clientX - g.x) / dt) + 0.4 * g.v; g.x = p.clientX; g.t = e.timeStamp; }
+    if (navT && navT.set) {
+      const q = 1 - Math.max(0, dx) / innerWidth;
+      navT.set(q);
+      navEl.style.setProperty("--k", (g.kUnder + (g.kTop - g.kUnder) * q).toFixed(3));
+      navTitle.style.opacity = g.titled ? q.toFixed(3) : "0";
+    }
+  }, { passive: false });
+  const end = () => {
+    const s = g; g = null;
+    if (!s || !s.on || !navT || !navT.run) return;
+    lastSwipe = performance.now();
+    const t = navT, W = innerWidth, x = Math.max(0, s.x - s.x0), q = 1 - x / W;
+    const go = (x > W * 0.33 || s.v > 0.35) && s.v > -0.2;
+    const left = (go ? q : 1 - q) * W;
+    const dur = s.v > 0.3 && go ? Math.max(170, Math.min(420, left / s.v * 1.8)) : 260 + 220 * left / W;
+    // the bar finishes the move with the screens
+    navEl.classList.add("ease"); setTimeout(() => navEl.classList.remove("ease"), 380);
+    navTitle.style.transition = ""; navTitle.style.opacity = go || !s.titled ? "0" : "1";
+    navEl.style.setProperty("--k", (go ? s.kUnder : s.kTop).toFixed(3));
+    t.run(q, go ? 0 : 1, dur, EASE.out).then((ok) => {
+      if (!ok || navT !== t) return;
+      if (go) { skipAnim = true; history.pushState(null, "", "#guide"); route(); }
+      else t.end(false);
+    });
+  };
+  addEventListener("touchend", end); addEventListener("touchcancel", end);
+  addEventListener("click", (e) => { if (performance.now() - lastSwipe < 400) { e.preventDefault(); e.stopPropagation(); } }, true);
+})();
 
 function largeTitle(kicker, title, actions) {
   return h("header", { class: "lt" },
@@ -547,13 +958,20 @@ function sectionHead(title, link) { return h("div", { class: "sh" }, h("h2", { t
 /* ---------- the freddo cup ---------- */
 const FOAM0 = 280, FOAMR = 230;
 let foamY = FOAM0, foamRAF = 0, cupFoam = null;
+// The foam rides a damped spring (response 1s, damping .72): it rises, overshoots a hair and settles.
+const foamSpring = (() => { const w0 = 2 * Math.PI, z = 0.72, wd = w0 * Math.sqrt(1 - z * z); return (t) => 1 - Math.exp(-z * w0 * t) * (Math.cos(wd * t) + (z * w0 / wd) * Math.sin(wd * t)); })();
 function foamTo(p, animate) {
   const target = FOAM0 - FOAMR * p;
-  cancelAnimationFrame(foamRAF);
-  const apply = () => { if (cupFoam) cupFoam.setAttribute("transform", "translate(0 " + foamY.toFixed(1) + ")"); };
+  cancelAnimationFrame(foamRAF); foamRAF = 0;
+  const apply = () => { if (cupFoam) cupFoam.setAttribute("transform", "translate(0 " + foamY.toFixed(2) + ")"); };
   if (!animate || reduced || Math.abs(target - foamY) < 0.5) { foamY = target; apply(); return; }
-  const from = foamY, t0 = performance.now(), dur = 1100;
-  const step = (now) => { const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3); foamY = from + (target - from) * e; apply(); if (k < 1) foamRAF = requestAnimationFrame(step); };
+  const from = foamY, t0 = performance.now();
+  const step = (now) => {
+    const t = (now - t0) / 1000;
+    foamY = t >= 1.7 ? target : from + (target - from) * foamSpring(t);
+    apply();
+    foamRAF = t >= 1.7 ? 0 : requestAnimationFrame(step);
+  };
   foamRAF = requestAnimationFrame(step);
 }
 function buildCup(p) {
@@ -624,7 +1042,9 @@ function badgeSvg(n, cls) {
 }
 
 /* ---------- Today ---------- */
-let nextTimer = 0;
+let nextTimer = 0, heroRefs = null, heroSeen = false;
+const fmtPct = (v) => Math.round(v) + "%";
+const heroMeta = (st, x) => x.d + " of " + x.steps.length + " steps in this stage" + (st.gate && x.d === x.steps.length ? ", gate next" : "");
 function renderToday() {
   const root = $("#todayRoot"), now = today(), p = progress();
   const settingsBtn = h("button", { class: "round-btn", type: "button", "aria-label": "Settings and backup", html: ICON.settings, onclick: openSettings });
@@ -632,30 +1052,40 @@ function renderToday() {
 
   // hero
   const pct = Math.round(p.done / p.total * 100);
-  const hero = h("div", { class: "card hero" });
+  const hero = h("div", { class: "card hero", data: { k: "t-hero" } });
   const cupWrap = h("div", null, buildCup(p));
   let info;
   if (p.current < STAGES.length) {
     const st = STAGES[p.current], x = p.per[p.current];
-    const stepsDone = x.d, stepsAll = x.steps.length;
+    const pctEl = h("span", { class: "big md num" }), barI = h("i", { style: "width:" + (x.steps.length ? Math.round(x.d / x.steps.length * 100) : 0) + "%" });
+    const meta = h("p", { class: "hero-meta", text: heroMeta(st, x) });
     info = h("div", null,
       h("p", { class: "hero-k", text: "You're in Stage " + st.n }),
       h("p", { class: "hero-t", text: st.title }),
-      h("div", { class: "hero-pct" }, h("span", { class: "big md num", text: pct + "%" }), h("small", { text: "of the plan" })),
-      h("div", { class: "bar", "aria-hidden": "true" }, h("i", { style: "width:" + (stepsAll ? Math.round(stepsDone / stepsAll * 100) : 0) + "%" })),
-      h("p", { class: "hero-meta", text: stepsDone + " of " + stepsAll + " steps in this stage" + (st.gate && stepsDone === stepsAll ? ", gate next" : "") }));
+      h("div", { class: "hero-pct" }, pctEl, h("small", { text: "of the plan" })),
+      h("div", { class: "bar", "aria-hidden": "true", data: { k: "t-bar:" + p.current, enter: "none" } }, barI), meta);
+    heroRefs = { pct: pctEl, bar: barI, meta, stage: p.current };
   } else {
+    const pctEl = h("span", { class: "big md num" });
     info = h("div", null, h("p", { class: "hero-k", text: "All 7 stages" }), h("p", { class: "hero-t", text: "The cup is full" }),
-      h("div", { class: "hero-pct" }, h("span", { class: "big md num", text: "100%" })), h("p", { class: "hero-meta", text: "Time to prepare the sale." }));
+      h("div", { class: "hero-pct" }, pctEl), h("p", { class: "hero-meta", text: "Time to prepare the sale." }));
+    heroRefs = { pct: pctEl, bar: null, meta: null, stage: STAGES.length };
   }
   hero.append(cupWrap, info);
   root.append(hero);
-  foamTo(p.done / p.total, true);
+  // The one big moment: the cup fills and the number counts up, the first time you see Today.
+  const refs = heroRefs, startHero = () => {
+    foamTo(p.done / p.total, true);
+    counter(refs.pct, "pct", pct, fmtPct, { from: 0, dur: 1100 });
+    if (!heroSeen) { heroSeen = true; if (refs.bar) anim(refs.bar, [{ width: "0%" }, { width: refs.bar.style.width }], { duration: 1100, easing: EASE.soft }); }
+  };
+  if (launching) { refs.pct.textContent = fmtPct(COUNTERS.has("pct") ? COUNTERS.get("pct").v : 0); afterLaunch.push(startHero); }
+  else startHero();
 
   // check-in
   const wk = thisWeek(), entry = S.checkins[wk], doneWk = !!(entry && entry.done), streak = streakCount();
   const isMonday = now.getDay() === 1;
-  const ci = h("div", { class: "card checkin" },
+  const ci = h("div", { class: "card checkin", data: { k: "t-ci" } },
     h("div", { class: "streak" }, h("span", { class: "big num", text: String(streak) }), h("small", { text: streak === 1 ? "week in a row" : "weeks in a row" })),
     h("div", { class: "checkin-main" },
       h("b", { text: "Monday check-in" }),
@@ -665,14 +1095,14 @@ function renderToday() {
 
   // next up
   root.append(sectionHead("Next up", h("a", { href: "#plan", text: "All steps" })));
-  const nextBox = h("div", { class: "card" });
+  const nextBox = h("div", { class: "card", data: { k: "t-next" } });
   fillNext(nextBox, p);
   root.append(nextBox);
 
   // badges
   const earned = p.per.filter(x => x.complete).length;
   root.append(sectionHead("Stage badges", h("span", { class: "muted", style: "font-size:15px", text: earned + " of 7" })));
-  const bcard = h("div", { class: "card" });
+  const bcard = h("div", { class: "card", data: { k: "t-bdg" } });
   const row = h("div", { class: "badges" });
   p.per.forEach((x, i) => {
     const b = h("a", { class: "bdg" + (x.complete ? " on" : i === p.current ? " now" : ""), href: "#plan", "aria-label": "Stage " + x.n + (x.complete ? ", done" : i === p.current ? ", in progress" : ", locked"), onclick: () => { UI.open[x.n] = true; saveUI(); } },
@@ -714,7 +1144,7 @@ function stepRow(x, where) {
   const body = h("button", { class: "step-body", type: "button", onclick: () => openStep(x.id) },
     h("span", { class: "t", text: x.text }, x.own ? h("span", { class: "step-own", text: "Yours" }) : null),
     S.notes[x.id] ? h("span", { class: "n", text: S.notes[x.id] }) : null);
-  const li = h("li", { class: "step" + (doneNow ? " done" : ""), data: { step: x.id } }, h("label", { class: "tick" }, inp, h("span", { class: "ck", "aria-hidden": "true" })), body);
+  const li = h("li", { class: "step" + (doneNow ? " done" : ""), data: { step: x.id, k: "s:" + x.id, enter: "expand" } }, h("label", { class: "tick" }, inp, h("span", { class: "ck", "aria-hidden": "true" })), body);
   return li;
 }
 function toggleStep(id, on, where, li) {
@@ -733,10 +1163,26 @@ function afterProgress(where) {
   checkBadges(true);
   if (view === "today") {
     clearTimeout(nextTimer);
-    // let the tick finish before the list moves on
-    nextTimer = setTimeout(() => { if (view === "today") { const y = scrollY; renderToday(); window.scrollTo(0, y); } }, where === "today" || where === "today-gate" ? (reduced ? 200 : 750) : 0);
-    const p = progress(); foamTo(p.done / p.total, true);
+    updateHero(progress());
+    // let the tick finish, fold the done steps away, then let the next step slide in
+    nextTimer = setTimeout(() => {
+      if (view !== "today") return;
+      const lis = $$("#todayRoot .next-l > li"), gone = lis.filter(li => li.classList.contains("done"));
+      const first = lis.find(li => !li.classList.contains("done"));
+      if (first && first !== lis[0]) { first.style.transition = "border-color .3s ease"; first.style.borderTopColor = "transparent"; }
+      Promise.all(gone.map(li => heightAnim(li, false, 340))).then(() => { if (view === "today") rerenderKeepScroll(); });
+    }, where === "today" || where === "today-gate" ? (reduced ? 150 : 650) : 0);
   } else if (view === "plan") updatePlanHeaders();
+}
+function updateHero(p) {
+  if (!heroRefs || !heroRefs.pct.isConnected) return;
+  counter(heroRefs.pct, "pct", Math.round(p.done / p.total * 100), fmtPct, { dur: 700 });
+  foamTo(p.done / p.total, true);
+  if (heroRefs.bar && p.current === heroRefs.stage) {
+    const st = STAGES[p.current], x = p.per[p.current];
+    heroRefs.bar.style.width = (x.steps.length ? Math.round(x.d / x.steps.length * 100) : 0) + "%";
+    heroRefs.meta.textContent = heroMeta(st, x);
+  }
 }
 
 function openStep(id) {
@@ -781,7 +1227,61 @@ function addStep(n) {
   openSheet("New step", h("div", null, h("p", { class: "sheet-note", text: "Stage " + n + ": " + STAGES[n].title }), h("label", { class: "field" }, h("span", { text: "Step" }), inp), btn),
     { focus: "#newStep", onClose: () => { checkBadges(false); rerenderKeepScroll(); } });
 }
-function rerenderKeepScroll() { if (view === "chapter") return; const y = scrollY; RENDER[view](); window.scrollTo(0, y); }
+// Redraw the open screen without it jumping. Before the redraw, note where keyed blocks ([data-k]) sat,
+// how state-coloured controls looked and how long the bars were; after it, slide the blocks from their
+// old places, fold new rows open, fade new blocks in and let colours and bars travel to their new values.
+const LOOKS = "button[aria-pressed], button[aria-selected], .st, .stage, .stage-n, .test, .test-v, .verdict";
+const BARS = ".bar i, .stage-bar i, .bars .track i";
+function lookKey(el, seen) {
+  if (el.dataset.k) return "k:" + el.dataset.k;
+  const anc = el.closest("[data-k]"), base = (anc ? anc.dataset.k : "") + "|" + (el.classList[0] || el.tagName) + "|" + (el.textContent || "").trim().slice(0, 48);
+  const n = seen.get(base) || 0; seen.set(base, n + 1);
+  return base + "#" + n;
+}
+const lookOf = (cs) => [cs.backgroundColor, cs.color, cs.boxShadow, cs.borderTopColor];
+function snapshot(root) {
+  const pos = new Map(), look = new Map(), bars = new Map(), seen = new Map(), bseen = new Map();
+  for (const el of root.querySelectorAll("[data-k]")) pos.set(el.dataset.k, el.getBoundingClientRect().top);
+  for (const el of root.querySelectorAll(LOOKS)) look.set(lookKey(el, seen), lookOf(getComputedStyle(el)));
+  for (const el of root.querySelectorAll(BARS)) { const a = el.closest("[data-k]"), b = a ? a.dataset.k : ""; const n = bseen.get(b) || 0; bseen.set(b, n + 1); bars.set(b + "#" + n, el.style.width); }
+  return { pos, look, bars };
+}
+function morph(root, snap) {
+  if (!snap.pos.size) return;
+  const keyed = $$("[data-k]", root), isNew = (el) => !snap.pos.has(el.dataset.k);
+  const parentKeyed = (el) => el.parentElement ? el.parentElement.closest("[data-k]") : null;
+  const fresh = keyed.filter(el => isNew(el) && !(parentKeyed(el) && isNew(parentKeyed(el))));
+  // 1. new rows fold open first, so what sits below them is carried down by the layout itself
+  for (const el of fresh) if (el.dataset.enter === "expand") heightAnim(el, true);
+  // 2. blocks that moved slide from where they were (relative to a parent that moved too)
+  const dy = new Map();
+  for (const el of keyed) if (!isNew(el)) dy.set(el, snap.pos.get(el.dataset.k) - el.getBoundingClientRect().top);
+  for (const [el, d] of dy) {
+    const pk = parentKeyed(el), rel = d - (pk && dy.has(pk) ? dy.get(pk) : 0);
+    if (Math.abs(rel) > 0.5) anim(el, [{ transform: "translateY(" + rel.toFixed(1) + "px)" }, { transform: "none" }], { duration: 560, easing: EASE.soft });
+  }
+  // 3. other new blocks fade in where they land
+  for (const el of fresh) if (!el.dataset.enter) anim(el, [{ opacity: 0, transform: "scale(.98)" }, { opacity: 1, transform: "none" }], { duration: 360, easing: EASE.out });
+  // 4. colours of controls whose state changed, and bars, travel instead of switching
+  const seen = new Map(), bseen = new Map();
+  for (const el of root.querySelectorAll(LOOKS)) {
+    const was = snap.look.get(lookKey(el, seen)); if (!was) continue;
+    const now = lookOf(getComputedStyle(el));
+    if (now.some((v, i) => v !== was[i])) anim(el, [{ backgroundColor: was[0], color: was[1], boxShadow: was[2], borderTopColor: was[3] }, { backgroundColor: now[0], color: now[1], boxShadow: now[2], borderTopColor: now[3] }], { duration: 320, easing: "ease-out" });
+  }
+  for (const el of root.querySelectorAll(BARS)) {
+    const a = el.closest("[data-k]"), b = a ? a.dataset.k : "", n = bseen.get(b) || 0; bseen.set(b, n + 1);
+    const was = snap.bars.get(b + "#" + n);
+    if (was != null && was !== el.style.width) anim(el, [{ width: was || "0%" }, { width: el.style.width }], { duration: 600, easing: EASE.soft });
+  }
+}
+function rerenderKeepScroll() {
+  if (view === "chapter" || !RENDER[view]) return;
+  const root = $(ROOTS[view]), y = scrollY, snap = reduced || navT ? null : snapshot(root);
+  RENDER[view]();
+  if (!navT) window.scrollTo(0, y);
+  if (snap) morph(root, snap);
+}
 
 /* ---------- Plan ---------- */
 function renderPlan() {
@@ -796,25 +1296,36 @@ function renderPlan() {
   root.append(h("div", { class: "card" }, h("p", { class: "card-sub", style: "margin-bottom:6px", text: "About 20 hours a week, until university." }),
     h("ul", { class: "routine" }, ROUTINE.map(([what, when, hrs]) => h("li", null, h("span", null, what, h("small", { text: when })), h("b", { text: hrs + " h" }), h("span", { class: "track" }, h("i", { style: "width:" + Math.round(hrs / max * 100) + "%" })))))));
 }
+function stageBody(st, x) {
+  const b = h("div", { class: "stage-b", data: { k: "sb:" + st.n, enter: "expand" } });
+  b.append(h("div", { class: "stage-bar", "aria-hidden": "true" }, h("i", { style: "width:" + (x.steps.length ? Math.round(x.d / x.steps.length * 100) : 0) + "%" })));
+  const ul = h("ul", { class: "steps-l" });
+  for (const stp of x.steps) ul.append(stepRow(stp, "plan"));
+  b.append(ul, h("button", { class: "add-step", type: "button", onclick: () => addStep(st.n) }, h("i", { text: "+" }), "Add a step"));
+  if (st.gate) b.append(h("div", { class: "gate" }, h("p", null, h("b", { text: "Gate: " }), st.gate), gateToggle(st.n)));
+  return b;
+}
 function stageCard(st, p, i) {
   const x = p.per[i], open = UI.open[st.n] === true;
-  const card = h("section", { class: "stage" + (i === p.current ? " is-now" : "") + (x.complete ? " is-done" : ""), data: { stage: st.n } });
+  const card = h("section", { class: "stage" + (i === p.current ? " is-now" : "") + (x.complete ? " is-done" : ""), data: { stage: st.n, k: "st:" + st.n } });
   const head = h("button", { class: "stage-h", type: "button", "aria-expanded": String(open) },
     h("span", { class: "stage-n", text: x.complete ? "" : String(st.n) }),
     h("span", null, h("span", { class: "stage-t", text: st.title }), h("span", { class: "stage-w" }, i === p.current ? h("span", { class: "tag", text: "You're here" }) : null, st.when)),
     h("span", { class: "stage-c", text: x.d + "/" + x.steps.length }));
   if (x.complete) $(".stage-n", head).append(svgEl('<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M4.5 10.5l3.6 3.6 7.4-7.6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'));
-  head.addEventListener("click", () => { UI.open[st.n] = !(UI.open[st.n] === true); saveUI(); const y = scrollY; renderPlan(); window.scrollTo(0, y); });
+  // open and close in place: the steps fold out of the header and back into it
+  head.addEventListener("click", () => {
+    const willOpen = UI.open[st.n] !== true;
+    UI.open[st.n] = willOpen; saveUI();
+    head.setAttribute("aria-expanded", String(willOpen));
+    let b = $(".stage-b", card);
+    if (willOpen) {
+      if (!b) { b = stageBody(st, progress().per[i]); card.append(b); }
+      heightAnim(b, true);
+    } else if (b) heightAnim(b, false).then((ok) => { if (ok && UI.open[st.n] !== true && b.isConnected) b.remove(); });
+  });
   card.append(head);
-  if (open) {
-    const b = h("div", { class: "stage-b" });
-    b.append(h("div", { class: "stage-bar", "aria-hidden": "true" }, h("i", { style: "width:" + (x.steps.length ? Math.round(x.d / x.steps.length * 100) : 0) + "%" })));
-    const ul = h("ul", { class: "steps-l" });
-    for (const stp of x.steps) ul.append(stepRow(stp, "plan"));
-    b.append(ul, h("button", { class: "add-step", type: "button", onclick: () => addStep(st.n) }, h("i", { text: "+" }), "Add a step"));
-    if (st.gate) b.append(h("div", { class: "gate" }, h("p", null, h("b", { text: "Gate: " }), st.gate), gateToggle(st.n)));
-    card.append(b);
-  }
+  if (open) card.append(stageBody(st, x));
   return card;
 }
 function updatePlanHeaders() {
@@ -833,12 +1344,14 @@ function updatePlanHeaders() {
 function renderNumbers() {
   const root = $("#numRoot"), wkD = mondayOf(today());
   root.replaceChildren(largeTitle("Week of " + dShort(wkD), "Numbers"));
-  const seg = h("div", { class: "seg", role: "tablist", "aria-label": "Numbers" });
-  [["checkin", "Check-in"], ["tests", "Tests"], ["calc", "Calculators"]].forEach(([k, label]) => {
-    seg.append(h("button", { type: "button", role: "tab", "aria-selected": String(UI.numTab === k), text: label, onclick: () => { UI.numTab = k; saveUI(); history.replaceState(null, "", "#numbers"); renderNumbers(); window.scrollTo(0, 0); } }));
-  });
-  root.append(seg);
-  const box = h("div"); root.append(box);
+  const box = h("div");
+  root.append(segControl("Numbers", [["checkin", "Check-in"], ["tests", "Tests"], ["calc", "Calculators"]], UI.numTab, (k, dir) => {
+    UI.numTab = k; saveUI(); history.replaceState(null, "", "#numbers");
+    swapContent(box, () => fillNumbers(box), dir);
+  }), box);
+  fillNumbers(box);
+}
+function fillNumbers(box) {
   if (UI.numTab === "checkin") renderCheckin(box);
   else if (UI.numTab === "tests") renderTests(box);
   else renderCalcs(box);
@@ -965,7 +1478,7 @@ function renderHistory(box) {
     const meta = CHART_META[k], lastV = pts[pts.length - 1].y, prevV = pts.length > 1 ? pts[pts.length - 2].y : null;
     const fmtV = (x) => meta.unit === "€" ? euro(x) : fmtNum(x) + meta.unit;
     const delta = prevV == null ? "First week logged" : (lastV === prevV ? "Same as the week before" : (lastV > prevV ? "Up " : "Down ") + (meta.unit === "€" ? euro(Math.abs(lastV - prevV)) : fmtNum(Math.abs(lastV - prevV)) + meta.unit) + " on the week before");
-    box.append(h("div", { class: "card chart-card" }, h("div", { class: "chart-h" }, h("b", { text: meta.name }), h("span", { text: fmtV(lastV) })), h("p", { class: "chart-d", text: delta }), lineChart(pts, meta)));
+    box.append(h("div", { class: "card chart-card", data: { k: "ch:" + k } }, h("div", { class: "chart-h" }, h("b", { text: meta.name }), h("span", { text: fmtV(lastV) })), h("p", { class: "chart-d", text: delta }), lineChart(pts, meta)));
   }
   box.append(sectionHead("Past check-ins"));
   const list = h("div", { class: "list" });
@@ -974,7 +1487,7 @@ function renderHistory(box) {
     let g = 0, y = 0, r = 0;
     for (const K of KPIS) { const gr = K.grade(v); if (gr === "go") g++; else if (gr === "fix") y++; else if (gr === "stop") r++; }
     const bits = [g && g + " green", y && y + " yellow", r && r + " red"].filter(Boolean);
-    list.append(h("button", { class: "row", type: "button", onclick: () => openWeek(w) },
+    list.append(h("button", { class: "row", type: "button", data: { k: "w:" + w, enter: "expand" }, onclick: () => openWeek(w) },
       h("span", { class: "row-main" }, h("span", { class: "row-title", text: "Week of " + dShort(parseISO(w)) + (w === thisWeek() ? " (this week)" : "") }),
         h("span", { class: "row-sub", text: (bits.length ? bits.join(", ") : "No numbers") + (e.done ? "" : ", not saved") })), svgEl(ICON.chev)));
   }
@@ -1050,15 +1563,19 @@ function renderTests(box) {
 
   // results for this sample
   const L = S.tasters.filter(t => t.s === UI.tSample);
-  const res = h("div", { class: "card" });
+  const res = h("div", { class: "card", data: { k: "t-res" } });
   res.append(h("p", { class: "card-title", text: "Sample " + UI.tSample }));
   if (!L.length) res.append(h("p", { class: "card-sub", text: "No tasters yet. Add them as they taste, it takes two taps each." }));
   else {
     const avg = L.reduce((a, t) => a + t.score, 0) / L.length, buy = L.filter(t => t.buy).length / L.length * 100;
+    const nB = h("b"), aB = h("b"), bB = h("b"), sk = ":" + UI.tSample;
+    counter(nB, "tn" + sk, L.length, (v) => String(Math.round(v)), { dur: 450 });
+    counter(aB, "ta" + sk, avg, fmtNum, { dur: 600 });
+    counter(bB, "tb" + sk, buy, (v) => Math.round(v) + "%", { dur: 600 });
     res.append(h("div", { class: "stats" },
-      h("div", { class: "stat" }, h("b", { text: String(L.length) }), h("small", { text: L.length === 1 ? "taster" : "tasters" })),
-      h("div", { class: "stat" }, h("b", { text: fmtNum(avg) }), h("small", { text: "average taste" })),
-      h("div", { class: "stat" }, h("b", { text: Math.round(buy) + "%" }), h("small", { text: "would buy" }))));
+      h("div", { class: "stat" }, nB, h("small", { text: L.length === 1 ? "taster" : "tasters" })),
+      h("div", { class: "stat" }, aB, h("small", { text: "average taste" })),
+      h("div", { class: "stat" }, bB, h("small", { text: "would buy" }))));
     const tasteOK = avg >= 7, buyOK = buy >= 60, enough = L.length >= 30;
     let cls, msg;
     if (tasteOK && buyOK && enough) { cls = "go"; msg = "Passed: 7+ average and 6 in 10 would buy, from " + L.length + " tasters."; }
@@ -1071,9 +1588,10 @@ function renderTests(box) {
       let armedT = 0;
       x.addEventListener("click", () => {
         if (!x.classList.contains("armed")) { x.classList.add("armed"); x.style.color = "var(--stop)"; x.setAttribute("aria-label", "Tap again to delete"); armedT = setTimeout(() => { x.classList.remove("armed"); x.style.color = ""; }, 3000); return; }
-        clearTimeout(armedT); S.tasters = S.tasters.filter(z => z.id !== t.id); save(); rerenderKeepScroll(); toast("Taster deleted");
+        clearTimeout(armedT); S.tasters = S.tasters.filter(z => z.id !== t.id); save(); toast("Taster deleted");
+        foldAway(x.closest(".mini-row")).then(() => rerenderKeepScroll());
       });
-      list.append(h("div", { class: "mini-row" }, h("span", { class: "score", text: String(t.score) }),
+      list.append(h("div", { class: "mini-row", data: { k: "tr:" + t.id, enter: "expand" } }, h("span", { class: "score", text: String(t.score) }),
         h("span", { class: "row-main" }, h("span", { class: "row-title", style: "font-weight:600", text: (t.who || "Taster") + (t.buy ? ", would buy" : ", wouldn't buy") }), h("span", { class: "row-sub", text: dShort(parseISO(t.d)) })), x));
     }
     res.append(list);
@@ -1085,7 +1603,7 @@ function renderTests(box) {
     const cmp = h("div", { class: "list" });
     for (const k of used) {
       const M = S.tasters.filter(t => t.s === k), avg = M.reduce((a, t) => a + t.score, 0) / M.length, buy = M.filter(t => t.buy).length / M.length * 100;
-      cmp.append(h("button", { class: "row", type: "button", onclick: () => { UI.tSample = k; saveUI(); rerenderKeepScroll(); } },
+      cmp.append(h("button", { class: "row", type: "button", data: { k: "cmp:" + k }, onclick: () => { UI.tSample = k; saveUI(); rerenderKeepScroll(); } },
         h("span", { class: "av", text: String(k) }), h("span", { class: "row-main" }, h("span", { class: "row-title", text: "Sample " + k }), h("span", { class: "row-sub", text: plural(M.length, "taster", "tasters") + ", " + fmtNum(avg) + " average, " + Math.round(buy) + "% would buy" })), svgEl(ICON.chev)));
     }
     box.append(sectionHead("All samples"), cmp);
@@ -1094,6 +1612,34 @@ function renderTests(box) {
   // kitchen tests
   box.append(sectionHead("Kitchen tests"), h("p", { class: "hint", style: "margin:-4px 4px 12px", text: "Four versions, A to D. The leader (my rule): no clumps, still foamy after 5 minutes, then the best taste. Ties go to the taller foam." }));
   const leadV = kitchenLeader();
+  const testBody = (T) => {
+    const t = S.tests[T.v] || {};
+    const b = h("div", { class: "test-b", data: { k: "kb:" + T.v } });
+    b.append(h("p", { class: "hint", style: "margin:0 0 6px", text: T.why + "." }));
+    const num = (f, label, unit, max) => {
+      const inp = h("input", { class: "inp", type: "text", inputmode: "decimal", autocomplete: "off", "aria-label": label, placeholder: unit });
+      inp.value = finite(t[f]) ? String(t[f]) : "";
+      inp.addEventListener("input", () => {
+        const raw = inp.value.replace(",", ".").trim(), n = raw === "" ? NaN : Number(raw);
+        const o = Object.assign({}, S.tests[T.v]);
+        if (raw !== "" && isFinite(n)) o[f] = Math.min(max, Math.max(0, n)); else delete o[f];
+        if (Object.keys(o).length) S.tests[T.v] = o; else delete S.tests[T.v];
+        save();
+      });
+      inp.addEventListener("change", () => rerenderKeepScroll());
+      return h("div", { class: "t-field" }, h("span", { text: label }), inp);
+    };
+    b.append(num("h", "Foam height after 20 seconds", "cm", 30));
+    for (const [f, q] of KYN) {
+      const grp = h("div", { class: "ynmini", role: "group", "aria-label": q });
+      for (const [val, txt] of [[true, "Yes"], [false, "No"]]) grp.append(h("button", { type: "button", "aria-pressed": String(t[f] === val), text: txt, onclick: () => {
+        const o = Object.assign({}, S.tests[T.v]); if (o[f] === val) delete o[f]; else o[f] = val;
+        if (Object.keys(o).length) S.tests[T.v] = o; else delete S.tests[T.v]; save(); rerenderKeepScroll(); } }));
+      b.append(h("div", { class: "t-field" }, h("span", { text: q }), grp));
+    }
+    b.append(num("taste", "Taste, from 1 to 10", "/10", 10));
+    return b;
+  };
   for (const T of KTESTS) {
     const t = S.tests[T.v] || {};
     const bits = [];
@@ -1103,39 +1649,19 @@ function renderTests(box) {
     if (t.s5 === false) bits.push("foam gone by 5 minutes");
     const sum = bits.length ? bits.join(", ") : (Object.keys(t).length ? "Partly logged" : "Not tested yet");
     const isOpen = !!UI["k" + T.v];
-    const card = h("div", { class: "card test" + (leadV === T.v ? " lead" : "") });
-    const head = h("button", { class: "test-h", type: "button", "aria-expanded": String(isOpen), onclick: () => { UI["k" + T.v] = !isOpen; rerenderKeepScroll(); } },
+    const card = h("div", { class: "card test" + (leadV === T.v ? " lead" : ""), data: { k: "k:" + T.v } });
+    const head = h("button", { class: "test-h", type: "button", "aria-expanded": String(isOpen), onclick: () => {
+        const willOpen = !UI["k" + T.v]; UI["k" + T.v] = willOpen; saveUI();
+        head.setAttribute("aria-expanded", String(willOpen));
+        let b = $(".test-b", card);
+        if (willOpen) { if (!b) { b = testBody(T); card.append(b); } heightAnim(b, true); }
+        else if (b) heightAnim(b, false).then((ok) => { if (ok && !UI["k" + T.v] && b.isConnected) b.remove(); });
+      } },
       h("span", { class: "test-v", text: T.v }),
       h("span", null, h("span", { class: "row-title", text: T.what }), h("span", { class: "row-sub", text: (leadV === T.v ? "Leading. " : "") + sum.charAt(0).toUpperCase() + sum.slice(1) })),
       svgEl(ICON.chev));
     card.append(head);
-    if (isOpen) {
-      const b = h("div", { class: "test-b" });
-      b.append(h("p", { class: "hint", style: "margin:0 0 6px", text: T.why + "." }));
-      const num = (f, label, unit, max) => {
-        const inp = h("input", { class: "inp", type: "text", inputmode: "decimal", autocomplete: "off", "aria-label": label, placeholder: unit });
-        inp.value = finite(t[f]) ? String(t[f]) : "";
-        inp.addEventListener("input", () => {
-          const raw = inp.value.replace(",", ".").trim(), n = raw === "" ? NaN : Number(raw);
-          const o = Object.assign({}, S.tests[T.v]);
-          if (raw !== "" && isFinite(n)) o[f] = Math.min(max, Math.max(0, n)); else delete o[f];
-          if (Object.keys(o).length) S.tests[T.v] = o; else delete S.tests[T.v];
-          save();
-        });
-        inp.addEventListener("change", () => rerenderKeepScroll());
-        return h("div", { class: "t-field" }, h("span", { text: label }), inp);
-      };
-      b.append(num("h", "Foam height after 20 seconds", "cm", 30));
-      for (const [f, q] of KYN) {
-        const grp = h("div", { class: "ynmini", role: "group", "aria-label": q });
-        for (const [val, txt] of [[true, "Yes"], [false, "No"]]) grp.append(h("button", { type: "button", "aria-pressed": String(t[f] === val), text: txt, onclick: () => {
-          const o = Object.assign({}, S.tests[T.v]); if (o[f] === val) delete o[f]; else o[f] = val;
-          if (Object.keys(o).length) S.tests[T.v] = o; else delete S.tests[T.v]; save(); rerenderKeepScroll(); } }));
-        b.append(h("div", { class: "t-field" }, h("span", { text: q }), grp));
-      }
-      b.append(num("taste", "Taste, from 1 to 10", "/10", 10));
-      card.append(b);
-    }
+    if (isOpen) card.append(testBody(T));
     box.append(card);
   }
 }
@@ -1158,18 +1684,31 @@ function fillRange(el) { const p = (Number(el.value) - Number(el.min)) / (Number
 function slider(label, attrs, onInput) {
   const out = h("output");
   const inp = h("input", Object.assign({ type: "range", "aria-label": label }, attrs));
-  inp.addEventListener("input", () => { fillRange(inp); onInput(Number(inp.value), out); });
+  inp.addEventListener("input", () => { stopGlide(inp); fillRange(inp); onInput(Number(inp.value), out); });
   const wrap = h("div", { class: "ctrl" }, h("div", { class: "ctrl-h" }, h("span", { text: label }), out), inp);
   return { wrap, inp, out };
 }
 function chipGroup(label, options, current, onPick) {
   const g = h("div", { class: "chips", role: "group", "aria-label": label, style: "margin-bottom:6px" });
-  for (const [val, txt] of options) g.append(h("button", { class: "chip sm", type: "button", "aria-pressed": String(val === current), data: { val: String(val) }, text: txt, onclick: () => onPick(val) }));
+  const btns = options.map(([val, txt]) => h("button", { class: "chip sm", type: "button", "aria-pressed": String(val === current), data: { val: String(val) }, text: txt, onclick: () => onPick(val) }));
+  g.append(...btns);
+  g.set = (v) => { for (const b of btns) b.setAttribute("aria-pressed", String(v != null && b.dataset.val === String(v))); };
   return g;
 }
+const CALCS = ["order", "budget", "value", "round"];
 function renderCalcs(box) {
-  box.append(chipGroup("Calculator", [["order", "Per order"], ["budget", "Budget"], ["value", "Sale value"], ["round", "Investor round"]], UI.calcTab, (v) => { UI.calcTab = v; saveUI(); history.replaceState(null, "", "#numbers"); rerenderKeepScroll(); }));
-  const card = h("div", { class: "card" }); box.append(card);
+  const card = h("div", { class: "card" }), inner = h("div");
+  card.append(inner);
+  const pick = chipGroup("Calculator", [["order", "Per order"], ["budget", "Budget"], ["value", "Sale value"], ["round", "Investor round"]], UI.calcTab, (v) => {
+    if (v === UI.calcTab) return;
+    const dir = CALCS.indexOf(v) > CALCS.indexOf(UI.calcTab) ? 1 : -1;
+    UI.calcTab = v; saveUI(); history.replaceState(null, "", "#numbers"); pick.set(v);
+    swapContent(inner, () => fillCalc(inner), dir, card);
+  });
+  box.append(pick, card);
+  fillCalc(inner);
+}
+function fillCalc(card) {
   if (UI.calcTab === "order") calcOrderCard(card);
   else if (UI.calcTab === "budget") calcBudgetCard(card);
   else if (UI.calcTab === "value") calcValueCard(card);
@@ -1177,17 +1716,28 @@ function renderCalcs(box) {
 }
 function calcOrderCard(card) {
   const c = UI.calc;
+  let target = null; // the example being glided to, so its chip lights up straight away
   card.append(h("p", { class: "card-title", text: "What you keep per order" }));
-  const presets = chipGroup("Examples", [["old", "€24.90 (old)"], ["single", "€29.90"], ["double", "2 × €29.90"], ["sub", "Subscription"]], null, (k) => { Object.assign(UI.calc, PRESETS[k]); saveUI(); rerenderKeepScroll(); });
+  const presets = chipGroup("Examples", [["old", "€24.90 (old)"], ["single", "€29.90"], ["double", "2 × €29.90"], ["sub", "Subscription"]], null, (k) => {
+    const pr = PRESETS[k];
+    target = k; presets.set(k);
+    UI.calc.units = pr.units; UI.calc.disc = pr.disc;
+    glide(price.inp, pr.price, (v, landed) => { UI.calc.price = landed ? pr.price : Math.round(v * 100) / 100; if (landed) target = null; upd(); });
+  });
   card.append(h("p", { class: "hint", style: "margin:4px 0 8px", text: "Tap an example, then adjust. Subscription means 2 pouches at 10% off with free delivery." }), presets);
   const big = h("span", { class: "big num" }), pill = h("span", { class: "st" }), per = h("p", { class: "hint", style: "margin:4px 0 0" });
   const stack = h("div", { class: "stack", "aria-hidden": "true" }), legend = h("ul", { class: "legend" });
+  const bars = [0, 1, 2, 3, 4].map(() => h("span", { style: "width:0%" }));
+  stack.append(...bars);
   card.append(h("div", { class: "calc-out" }, big, pill), per, stack, legend);
   const costs = h("ol", { class: "cost-l" }), cac = h("p", { class: "hint" });
-  const price = slider("Price per pouch", { min: "19.9", max: "39.9", step: "1", value: String(c.price) }, (v) => { UI.calc.price = Math.round(v * 100) / 100; upd(); });
-  const units = h("div", { class: "ctrl" }, h("div", { class: "ctrl-h" }, h("span", { text: "Pouches per order" })), chipGroup("Pouches per order", [[1, "1"], [2, "2"], [3, "3"]], c.units, (v) => { UI.calc.units = v; saveUI(); rerenderKeepScroll(); }));
-  const disc = h("div", { class: "ctrl" }, h("div", { class: "ctrl-h" }, h("span", { text: "Discount" })), chipGroup("Discount", [[0, "None"], [10, "10%"], [15, "15%"], [20, "20%"], [25, "25%"]], c.disc, (v) => { UI.calc.disc = v; saveUI(); rerenderKeepScroll(); }));
-  const vat = h("div", { class: "ctrl" }, h("div", { class: "ctrl-h" }, h("span", { text: "VAT rate" })), chipGroup("VAT rate", [[24, "24%"], [13, "13%"]], c.vat, (v) => { UI.calc.vat = v; saveUI(); rerenderKeepScroll(); }), h("p", { class: "hint", style: "margin:0", text: "Not settled yet. Your accountant decides which applies." }));
+  const price = slider("Price per pouch", { min: "19.9", max: "39.9", step: "1", value: String(c.price) }, (v) => { target = null; UI.calc.price = Math.round(v * 100) / 100; upd(); });
+  const unitsG = chipGroup("Pouches per order", [[1, "1"], [2, "2"], [3, "3"]], c.units, (v) => { target = null; UI.calc.units = v; upd(); });
+  const discG = chipGroup("Discount", [[0, "None"], [10, "10%"], [15, "15%"], [20, "20%"], [25, "25%"]], c.disc, (v) => { target = null; UI.calc.disc = v; upd(); });
+  const vatG = chipGroup("VAT rate", [[24, "24%"], [13, "13%"]], c.vat, (v) => { UI.calc.vat = v; upd(); });
+  const units = h("div", { class: "ctrl" }, h("div", { class: "ctrl-h" }, h("span", { text: "Pouches per order" })), unitsG);
+  const disc = h("div", { class: "ctrl" }, h("div", { class: "ctrl-h" }, h("span", { text: "Discount" })), discG);
+  const vat = h("div", { class: "ctrl" }, h("div", { class: "ctrl-h" }, h("span", { text: "VAT rate" })), vatG, h("p", { class: "hint", style: "margin:0", text: "Not settled yet. Your accountant decides which applies." }));
   const whey = slider("Whey isolate price", { min: "15", max: "40", step: "0.5", value: String(c.whey) }, (v) => { UI.calc.whey = v; upd(); });
   const ship = slider("Shipping and box, per order", { min: "0", max: "6", step: "0.25", value: String(c.ship) }, (v) => { UI.calc.ship = v; upd(); });
   const serving = h("p", { class: "hint", style: "margin:0 0 6px" });
@@ -1201,13 +1751,13 @@ function calcOrderCard(card) {
     const c = UI.calc, o = calcOrder(c);
     price.out.textContent = euro(c.price); whey.out.textContent = euro(c.whey) + " a kilo"; ship.out.textContent = euro(c.ship);
     serving.textContent = "That's " + euro(c.price * (1 - c.disc / 100) / 20) + " a serving" + (c.disc ? " after the discount" : "") + ". A café protein freddo costs €4.60.";
-    big.textContent = euro(o.kept);
+    counter(big, "kept", o.kept, euro, { dur: 420 });
     const g = o.kept >= 7 ? "go" : o.kept >= 4 ? "fix" : "stop";
     pill.className = "st " + g; pill.textContent = g === "go" ? "Green: €7+ an order" : g === "fix" ? "Yellow: €4 to €7" : o.kept < 0 ? "Red: you lose money" : "Red: under €4";
     per.textContent = (o.kept < 0 ? "Lost" : "Kept") + " on an order of " + plural(c.units, "pouch", "pouches") + ", before ads." + (c.units > 1 ? " That's " + euro(o.kept / c.units) + " a pouch." : "");
     const parts = [["VAT", o.vat, "var(--latte)"], ["Product", o.product, "var(--brown)"], ["Card fee", o.fee, "var(--faint)"], ["Shipping and box", o.ship, "#8FB3B0"], [o.kept < 0 ? "You lose" : "You keep", o.kept, "var(--go)"]];
     const base = Math.max(o.gross, o.vat + o.product + o.fee + o.ship);
-    stack.replaceChildren(...parts.filter(p => p[1] > 0).map(([, v, col]) => h("span", { style: `width:${(v / base * 100).toFixed(2)}%;background:${col}` })));
+    parts.forEach(([, v, col], i) => { bars[i].style.width = (Math.max(0, v) / base * 100).toFixed(2) + "%"; bars[i].style.background = col; });
     legend.replaceChildren(
       h("li", null, h("i", { style: "background:transparent" }), h("span", { text: "The customer pays" }), h("b", { text: euro(o.gross) })),
       ...parts.slice(0, 4).map(([l, v, col]) => h("li", null, h("i", { style: "background:" + col }), h("span", { text: l }), h("b", { text: euro(v) }))),
@@ -1219,7 +1769,9 @@ function calcOrderCard(card) {
       h("li", { text: "Manufacturer's blending, filling and margin: about +30%, so " + euro(ing * (COST.markup - 1)) + "." }),
       h("li", { text: "Printed pouch, scoop and delivery to you: about " + euro(COST.pack) + "." }),
       h("li", { text: "Total: about " + euro(o.unit) + " a pouch." }));
-    for (const b of $$("button", presets)) { const pr = PRESETS[b.dataset.val]; b.setAttribute("aria-pressed", String(Math.abs(pr.price - c.price) < 0.001 && pr.units === c.units && pr.disc === c.disc)); }
+    unitsG.set(c.units); discG.set(c.disc); vatG.set(c.vat);
+    if (target) presets.set(target);
+    else presets.set(Object.keys(PRESETS).find(k => { const pr = PRESETS[k]; return Math.abs(pr.price - c.price) < 0.001 && pr.units === c.units && pr.disc === c.disc; }) || null);
     cac.textContent = o.kept > 0 ? "With these numbers: spend at most " + euro(o.kept) + " to win a customer today, and up to about " + euro(o.kept * 3) + " once 30%+ reorder." : "With these numbers you lose money on every order, so don't pay anything to win customers yet.";
   }
   upd();
@@ -1236,10 +1788,22 @@ const BUDGET = [
   { what: "Left over", a: 850, an: "Safety money", b: 400, bn: "Roughly what's left", spare: true }
 ];
 function calcBudgetCard(card) {
-  const big = UI.budget === "15", total = big ? 15000 : 3000;
-  card.append(h("p", { class: "card-title", text: "How to spend the first 6 months" }),
-    h("div", { class: "seg", style: "margin:12px 0 6px" }, [["3", "€3k: prove it"], ["15", "€15k: launch properly"]].map(([k, t]) => h("button", { type: "button", "aria-selected": String(UI.budget === k), text: t, onclick: () => { UI.budget = k; saveUI(); rerenderKeepScroll(); } }))),
-    h("ul", { class: "bars" }, BUDGET.map(r => { const amt = big ? r.b : r.a, note = big ? r.bn : r.an; return h("li", { class: r.spare ? "spare" : null }, h("span", null, r.what, note ? h("small", { text: note }) : null), h("b", { text: "€" + amt.toLocaleString("en-US") }), h("span", { class: "track" }, h("i", { style: "width:" + (amt / total * 100) + "%" }))); })),
+  // switching budgets keeps the rows: the bars grow or shrink and the amounts roll
+  const rows = BUDGET.map((r) => { const amt = h("b"), note = h("small"), bar = h("i", { style: "width:0%" }); return { r, amt, note, bar, li: h("li", { class: r.spare ? "spare" : null }, h("span", null, r.what, note), amt, h("span", { class: "track" }, bar)) }; });
+  const draw = () => {
+    const big = UI.budget === "15", total = big ? 15000 : 3000;
+    rows.forEach((x, i) => {
+      const a = big ? x.r.b : x.r.a, n = big ? x.r.bn : x.r.an;
+      counter(x.amt, "bud" + i, a, (v) => "€" + Math.round(v).toLocaleString("en-US"), { dur: 520 });
+      x.note.textContent = n || ""; x.note.hidden = !n;
+      x.bar.style.width = (a / total * 100) + "%";
+    });
+  };
+  draw();
+  const seg = segControl("Budget", [["3", "€3k: prove it"], ["15", "€15k: launch properly"]], UI.budget, (k) => { UI.budget = k; saveUI(); draw(); });
+  seg.style.margin = "12px 0 6px";
+  card.append(h("p", { class: "card-title", text: "How to spend the first 6 months" }), seg,
+    h("ul", { class: "bars" }, rows.map(x => x.li)),
     h("p", { class: "hint", html: 'Only the trademark fees are official prices (<a href="https://www.dury.de/en/european-tradmark-law/1077-eu-trademark-registration-2026-a-complete-guide-for-international-businesses" target="_blank" rel="noopener">EUIPO fees</a>). Everything else is my estimate, so swap in real quotes as you get them. With €3k you can\'t produce stock yet, but you can prove people want Fowm and take pre-orders. Around €8k is the smallest real launch (about 250 pouches).' }));
 }
 const salesFrom = (v) => roundNice(50000 * Math.pow(10000, v / 1000));
@@ -1249,8 +1813,12 @@ function calcValueCard(card) {
   card.append(h("p", { class: "card-title", text: "What could Fowm sell for?" }));
   const big = h("span", { class: "big md num" }), how = h("p", { class: "hint", style: "margin:6px 0 0" }), share = h("p", { class: "hint", style: "margin:4px 0 0" });
   card.append(h("div", { class: "calc-out" }, big), how, share);
-  const sales = slider("Yearly sales", { min: "0", max: "1000", step: "1", value: String(v.s) }, (x) => { UI.val.s = x; upd(); });
-  const quick = chipGroup("Quick picks", [[250000, "€250k"], [1000000, "€1M"], [10000000, "€10M"], [100000000, "€100M"]], null, (x) => { UI.val.s = sliderFromSales(x); sales.inp.value = String(UI.val.s); fillRange(sales.inp); upd(); });
+  let target = null; // the quick pick being glided to
+  const sales = slider("Yearly sales", { min: "0", max: "1000", step: "1", value: String(v.s) }, (x) => { target = null; UI.val.s = x; upd(); });
+  const quick = chipGroup("Quick picks", [[250000, "€250k"], [1000000, "€1M"], [10000000, "€10M"], [100000000, "€100M"]], null, (x) => {
+    target = x; quick.set(x);
+    glide(sales.inp, sliderFromSales(x), (v, landed) => { UI.val.s = Math.round(v); if (landed) target = null; upd(); });
+  });
   sales.wrap.append(quick);
   const margin = slider("Profit, as a share of sales", { min: "0", max: "40", step: "1", value: String(v.m) }, (x) => { UI.val.m = x; upd(); });
   margin.wrap.append(h("p", { class: "hint", style: "margin:0 0 6px", text: "15% is my starting guess. Use your real number once your accountant has one." }));
@@ -1273,7 +1841,8 @@ function calcValueCard(card) {
     else if (s < 15e6) { lo = profit * 3.5; hi = profit * 5.5; txt = "A medium brand with a team sells for 3.5–5.5 × yearly profit. Here that profit is " + shortEuro(profit) + " a year."; }
     else { lo = s * 0.5; hi = s * 1.9; txt = "A big, growing brand bought by a food giant sells for 0.5–1.9 × yearly sales."; }
     sales.out.textContent = shortEuro(s); margin.out.textContent = v.m + "%"; own.out.textContent = v.own + "%";
-    for (const b of $$("button", quick)) b.setAttribute("aria-pressed", String(sliderFromSales(Number(b.dataset.val)) === v.s));
+    if (target) quick.set(target);
+    else quick.set([250000, 1000000, 10000000, 100000000].find(x => sliderFromSales(x) === v.s) || null);
     if (lo <= 0) { big.textContent = "€0"; how.textContent = "With no profit, a small brand is worth very little to a buyer."; share.textContent = ""; }
     else { big.textContent = shortEuro(lo) + " to " + shortEuro(hi); how.textContent = txt; share.textContent = "Your " + v.own + "%: " + shortEuro(lo * v.own / 100) + " to " + shortEuro(hi * v.own / 100) + ", before tax (see Selling the company in the Guide)."; }
   }
@@ -1294,7 +1863,7 @@ function calcRoundCard(card) {
     saveUI();
     const d = UI.dil, p = preFrom(d.pre), sh = d.raise / (p + d.raise), after = d.own * (1 - sh), sp = String(Math.round(sh * 1000) / 10);
     raise.out.textContent = shortEuro(d.raise); pre.out.textContent = shortEuro(p); own.out.textContent = d.own + "%";
-    big.textContent = sp + "%";
+    counter(big, "round", Math.round(sh * 1000) / 10, (x) => String(Math.round(x * 10) / 10) + "%", { dur: 420 });
     pill.className = "st " + (sh > 0.2 ? "stop" : "go"); pill.textContent = sh > 0.2 ? "More than 20%" : "20% or less";
     txt.textContent = "Investors get " + sp + "% of Fowm for " + shortEuro(d.raise) + ", because " + shortEuro(d.raise) + " ÷ " + shortEuro(p + d.raise) + " = " + sp + "%. You go from " + d.own + "% to " + String(Math.round(after * 10) / 10) + "%." + (sh > 0.2 ? " Raise less, or wait until Fowm is worth more." : "");
   }
@@ -1310,27 +1879,34 @@ function contactSub(c) {
 }
 const initials = (n) => n.trim().split(/\s+/).slice(0, 2).map(w => w.charAt(0).toUpperCase()).join("") || "?";
 function renderContacts() {
-  const root = $("#conRoot"), T = CTYPES[UI.conTab];
-  const add = h("button", { class: "round-btn", type: "button", "aria-label": "Add a " + T.one, html: ICON.plus, onclick: () => editContact(null, UI.conTab) });
+  const root = $("#conRoot");
+  const add = h("button", { class: "round-btn", type: "button", "aria-label": "Add a " + CTYPES[UI.conTab].one, html: ICON.plus, onclick: () => editContact(null, UI.conTab) });
   root.replaceChildren(largeTitle(plural(S.contacts.length, "contact", "contacts"), "Contacts", [add]));
-  root.append(h("div", { class: "seg", role: "tablist", "aria-label": "Contact type" }, Object.entries(CTYPES).map(([k, t]) => h("button", { type: "button", role: "tab", "aria-selected": String(UI.conTab === k), text: t.label, onclick: () => { UI.conTab = k; saveUI(); renderContacts(); window.scrollTo(0, 0); } }))));
-  const L = S.contacts.filter(c => c.type === UI.conTab);
+  const box = h("div");
+  root.append(segControl("Contact type", Object.entries(CTYPES).map(([k, t]) => [k, t.label]), UI.conTab, (k, dir) => {
+    UI.conTab = k; saveUI(); add.setAttribute("aria-label", "Add a " + CTYPES[k].one);
+    swapContent(box, () => fillContacts(box), dir);
+  }), box);
+  fillContacts(box);
+}
+function fillContacts(box) {
+  const T = CTYPES[UI.conTab], L = S.contacts.filter(c => c.type === UI.conTab);
   if (!L.length) {
-    root.append(h("div", { class: "card empty" }, h("img", { src: "img/mascot-sm.png", alt: "" }), h("b", { text: "No " + T.label.toLowerCase() + " yet" }), h("p", { text: T.empty }),
+    box.append(h("div", { class: "card empty", data: { k: "c-empty:" + UI.conTab } }, h("img", { src: "img/mascot-sm.png", alt: "" }), h("b", { text: "No " + T.label.toLowerCase() + " yet" }), h("p", { text: T.empty }),
       h("button", { class: "btn small", type: "button", text: "Add a " + T.one, onclick: () => editContact(null, UI.conTab) })));
     return;
   }
-  const sum = h("div", { class: "sum" });
+  const sum = h("div", { class: "sum", data: { k: "c-sum" } });
   for (const st of T.statuses) { const n = L.filter(c => c.status === st).length; if (n) sum.append(h("span", { text: n + " " + st.toLowerCase() })); }
   if (UI.conTab === "maker") { const q = L.filter(c => finite(c.f.p1000)).sort((a, b) => a.f.p1000 - b.f.p1000)[0]; if (q) sum.append(h("span", { text: "Best: " + euro(q.f.p1000) + "/kg, " + q.name })); }
   if (UI.conTab === "cafe") { const a = cafeAverage(); if (a) sum.append(h("span", { text: (a.n === 1 ? "Selling café: " : "Selling cafés average ") + fmtNum(a.avg) + " a week" })); }
   if (UI.conTab === "creator") { const o = L.reduce((a, c) => a + (finite(c.f.orders) ? c.f.orders : 0), 0); if (o) sum.append(h("span", { text: plural(o, "order", "orders") + " from codes" })); }
-  root.append(sum);
+  box.append(sum);
   for (const st of T.statuses) {
     const M = L.filter(c => c.status === st).sort((a, b) => a.name.localeCompare(b.name));
     if (!M.length) continue;
-    root.append(h("p", { class: "grp", text: st }));
-    root.append(h("div", { class: "list" }, M.map(c => h("button", { class: "row", type: "button", onclick: () => editContact(c.id) },
+    box.append(h("p", { class: "grp", text: st, data: { k: "g:" + st, enter: "expand" } }));
+    box.append(h("div", { class: "list", data: { k: "gl:" + st, enter: "expand" } }, M.map(c => h("button", { class: "row", type: "button", data: { k: "c:" + c.id, enter: "expand" }, onclick: () => editContact(c.id) },
       h("span", { class: "av", text: initials(c.name) }), h("span", { class: "row-main" }, h("span", { class: "row-title", text: c.name }), h("span", { class: "row-sub", text: contactSub(c) || st })), svgEl(ICON.chev)))));
   }
 }
@@ -1349,15 +1925,18 @@ function editContact(id, type) {
   name.value = d.name;
   body.append(h("label", { class: "field" }, h("span", { text: "Name" }), name));
   const sts = h("div", { class: "statuses", role: "group", "aria-label": "Status" });
-  const drawSt = () => { sts.replaceChildren(...T.statuses.map(st => h("button", { type: "button", "aria-pressed": String(d.status === st), text: st, onclick: () => { d.status = st; drawSt(); } }))); };
-  drawSt();
+  const stBtns = T.statuses.map(st => h("button", { type: "button", "aria-pressed": String(d.status === st), text: st, onclick: () => { d.status = st; stBtns.forEach((b, i) => b.setAttribute("aria-pressed", String(T.statuses[i] === d.status))); } }));
+  sts.append(...stBtns);
   body.append(h("div", { class: "field" }, h("span", { text: "Status" }), sts));
   for (const fd of T.fields) {
     if (fd.type === "yn" || fd.type === "choice") {
       const opts = fd.type === "yn" ? [[true, "Yes"], [false, "No"]] : fd.options.map(o => [o, o]);
       const g = h("div", { class: "statuses", role: "group", "aria-label": fd.label });
-      const draw = () => g.replaceChildren(...opts.map(([v, t]) => h("button", { type: "button", "aria-pressed": String(d.f[fd.k] === v), text: t, onclick: () => { if (d.f[fd.k] === v) delete d.f[fd.k]; else d.f[fd.k] = v; draw(); } })));
-      draw();
+      const btns = opts.map(([v, t]) => h("button", { type: "button", "aria-pressed": String(d.f[fd.k] === v), text: t, onclick: () => {
+        if (d.f[fd.k] === v) delete d.f[fd.k]; else d.f[fd.k] = v;
+        btns.forEach((b, i) => b.setAttribute("aria-pressed", String(d.f[fd.k] === opts[i][0])));
+      } }));
+      g.append(...btns);
       body.append(h("div", { class: "field" }, h("span", { text: fd.label }), g));
       continue;
     }
@@ -1451,15 +2030,21 @@ function openSettings() {
   const reset = h("button", { class: "btn danger", type: "button", text: "Start over" });
   armed(reset, "Start over", "Tap again to erase everything", () => { S = blank(); save(); flush(); lastComplete = null; checkBadges(false); closeSheet(); toast("Everything erased"); rerenderKeepScroll(); });
   body.append(h("div", { class: "danger-zone" }, reset));
-  body.append(h("p", { class: "hint", style: "margin-top:22px", html: 'Fowm Plan 2.0. Built from your <a href="https://claude.ai/artifact/8CgYjH2Runv6Se3pEPD6qs" target="_blank" rel="noopener">Fowm blueprint</a>, 17 November 2026. Numbers marked "my estimate" or "my rule" are mine. Not legal, tax or financial advice.' }));
+  body.append(h("p", { class: "hint", style: "margin-top:22px", html: 'Fowm Plan 2.1. Built from your <a href="https://claude.ai/artifact/8CgYjH2Runv6Se3pEPD6qs" target="_blank" rel="noopener">Fowm blueprint</a>, 17 November 2026. Numbers marked "my estimate" or "my rule" are mine. Not legal, tax or financial advice.' }));
   openSheet("Settings", body);
 }
 
 /* ---------- celebration ---------- */
 function celebrate(n) {
   const st = STAGES[n], next = STAGES[n + 1];
+  // a burst of foam dots around the badge as it springs in
+  const sparks = Array.from({ length: 12 }, (_, i) => {
+    const a = (i / 12) * Math.PI * 2 + 0.26, r = 62 + (i % 3) * 7, col = ["var(--brown)", "var(--latte)", "var(--fix)"][i % 3];
+    return `<circle class="spark" cx="75" cy="75" r="${i % 2 ? 3 : 4.2}" fill="${col}" style="--dx:${(Math.cos(a) * r).toFixed(1)}px;--dy:${(Math.sin(a) * r).toFixed(1)}px;animation-delay:${(0.12 + (i % 4) * 0.025).toFixed(3)}s"/>`;
+  }).join("");
   const art = svgEl(`<svg viewBox="0 0 150 150" aria-hidden="true">
       <circle class="bub" cx="30" cy="112" r="7"/><circle class="bub" cx="122" cy="104" r="5"/><circle class="bub" cx="112" cy="42" r="6"/><circle class="bub" cx="36" cy="48" r="4.5"/>
+      ${sparks}
       <g class="badge-big"><path d="${scallop(75, 75, 52, 11)}" fill="var(--brown)"/><text x="75" y="75" dy="0.36em" text-anchor="middle" style="font:600 48px var(--display);fill:var(--foam)">${n}</text></g>
     </svg>`);
   const body = h("div", { class: "celebrate" }, art, h("b", { text: "Stage " + n + " done" }), h("p", { text: st.title + (next ? ". Next up: Stage " + next.n + ", " + next.title.toLowerCase() + "." : ". Every stage is done.") }),
@@ -1475,5 +2060,23 @@ RENDER.contacts = renderContacts;
 RENDER.guide = renderGuide;
 checkBadges(false);
 route();
+(() => { // the cover matches the iPhone launch screen; it lifts off as the first screen comes up
+  const reveal = () => {
+    const L = $("#launch");
+    launching = false;
+    const run = () => { for (const f of afterLaunch.splice(0)) f(); };
+    if (!L) { run(); return; }
+    if (reduced) { L.remove(); run(); return; }
+    L.style.pointerEvents = "none";
+    anim($("img", L), [{ transform: "translate(-50%,-50%)", opacity: 1 }, { transform: "translate(-50%,-50%) scale(1.14)", opacity: 0 }], { duration: 380, easing: "cubic-bezier(.4,0,.6,1)", fill: "forwards" });
+    const lift = anim(L, [{ opacity: 1 }, { opacity: 0 }], { duration: 420, delay: 90, easing: "ease-out", fill: "forwards" });
+    const root = view && ROOTS[view] ? $(ROOTS[view]) : null;
+    if (root) anim(root, [{ transform: "translateY(16px)" }, { transform: "none" }], { duration: 700, delay: 90, easing: EASE.out });
+    setTimeout(run, 140);
+    settled(lift).then(() => L.remove());
+  };
+  const fonts = document.fonts && document.fonts.ready ? Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 500))]) : Promise.resolve();
+  fonts.then(() => requestAnimationFrame(() => requestAnimationFrame(reveal)));
+})();
 if ("serviceWorker" in navigator) addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
 })();
