@@ -145,33 +145,33 @@ const STAGES = [
       { id: "s0-2", t: "Get a trademark attorney's opinion on the name Fowm",
         how: ['Search TMview (tmdn.org/tmview) for "Fowm" and close names like "Foam". Screenshot what you find.',
           "Find an EU trademark attorney on the EUIPO's list of professional representatives in Greece, or ask an accountant for a name.",
-          'Email 2 or 3 of them: "I want to register Fowm as an EU trademark for a protein coffee foam powder, in classes 29 and 30. Can you give me a written opinion and a fixed price?"',
+          'Email 2 or 3 of them: "I want to register Fowm as an EU trademark for a protein coffee creamer powder that also froths into foam, in classes 29 and 30. Can you give me a written opinion and a fixed price?"',
           'Ask about the main risk: Fowm sounds like "foam", and the product makes foam. Examiners refuse names that just describe the product.',
           "Budget about €800–1,500 for the attorney, plus the EUIPO fee: €850 for 1 class and €50 more for the 2nd."],
         done: "You have a written opinion and you've decided: file the word, file the logo, or adjust the name.",
         go: [["Legal", "#guide/legal"]] },
       { id: "s0-3", t: "Get quotes from 2 food technologists",
         how: ['Search Google for "τεχνολόγος τροφίμων" in Athens, and pick 2 who work with small food brands.',
-          "Send both the same email: Fowm is a whey protein powder you froth into cold foam for coffee, sold in 500 g pouches with 20 servings.",
+          "Send both the same email: Fowm is a high-protein coffee creamer powder made from milk proteins. It stirs into hot coffee, froths into cold foam, and comes in 530 g pouches with 20 servings.",
           "Ask each for a price to: confirm Fowm is sold as a food (EFET) and not a food supplement (EOF), check the Greek back label, and file the EFET registration later.",
           "Paste both quotes into this step's note."],
         done: "You have 2 written quotes, and one of them has confirmed Fowm is a food, not a supplement.",
         go: [["Legal", "#guide/legal"]] },
-      { id: "s0-4", t: "Order whey isolate and run kitchen tests A to D",
-        how: ["Buy unflavoured whey isolate (90% protein), a handheld frother, a scale that reads 0.01 g and a timer. Have cold milk, water, oat milk and freddo espresso ready.",
-          "One serving is about 17 g of isolate for 15 g of protein, so 20–25 g of powder once flavour is in.",
-          "Make 4 versions. A: whey isolate and flavour. B: A plus a tiny pinch of xanthan gum. C: your current 50/50 whey and pea with coconut. D: the best one, lightly sweetened.",
-          "For each one: froth 20 seconds, measure the foam, check it at 5 and 10 minutes, look for clumps, taste it from 1 to 10, and pour it on a hot latte to see if it curdles. Try milk, water and oat milk.",
-          "Log every result in Numbers, under Tests, and film each test for content."],
-        done: "All 4 versions are logged and the app shows a leader.",
-        go: [["Kitchen tests", "#numbers/tests"], ["Making the foam", "#guide/foam"]] },
+      { id: "s0-4", t: "Order the Recipe v3 ingredients and run the kitchen tests",
+        how: ["Order from Myprotein, all unflavoured: Milk Protein (1 kg), Impact Whey Isolate (the smallest bag) and 100% Maltodextrin (1 kg). Buy coconut milk powder that has milk protein in it (e.g. Maggi, 300 g). Your dipotassium phosphate (DKP) is already ordered.",
+          "Get a handheld frother, a scale that reads 0.01 g, a kitchen thermometer and 3 airtight jars. Have semi-skimmed milk, coffee and a jar of Coffee-mate Original ready.",
+          "Mix jar A, 10 scoops of 26.5 g: 150 g milk protein, 30 g whey isolate, 50 g coconut milk powder, 30 g maltodextrin and 5 g DKP. Stir the DKP into the maltodextrin first, sieve everything twice, then shake the closed jar for 1 minute.",
+          "Run 4 tests on jar A. Hot: 1 scoop in a fresh Americano at 75–85 °C, frothed 10 seconds in the mug. Iced: 1 scoop frothed in 100 ml cold milk, poured over iced coffee. Cold foam: 1 scoop in 150 ml fridge-cold milk, frothed 30 seconds. Taste: blind, against Coffee-mate in the same Americano.",
+          "If a test fails, make jar B with one fix from the list in the Guide (The recipe) and test again. Log every result in Numbers, under Tests, and film each test for content."],
+        done: "Jar A, or a fixed jar, passes all 4 tests, and the app shows a leader.",
+        go: [["Kitchen tests", "#numbers/tests"], ["The recipe", "#guide/foam"]] },
       { id: "s0-5", t: "Write the manufacturer brief and email 8 manufacturers",
-        how: ["Write one page: what Fowm is, your winning recipe, 500 g pouches with 20 servings, 15 g of protein a serving, and a first order of 250–500 pouches.",
-          "Add your questions: the minimum order and the price per kg at 250, 500 and 1,000 kg; what samples cost and how fast they come; whether they can fix the whey price for 6–12 months; their food-safety certificates (ISO 22000, FSSC 22000, HACCP); whether they test protein per serving and shelf life; sachets later, and at what minimum; and that you own the formula, in writing.",
+        how: ["Write one page: what Fowm is, the recipe that won your kitchen tests (Recipe v3 or its fixed jar), 530 g pouches with 20 servings of 26.5 g, 15 g of protein a serving, and a first order of 250–500 pouches.",
+          "Add your questions: the minimum order and the price per kg at 250, 500 and 1,000 kg; what samples cost and how fast they come; whether they can fix the milk protein and whey prices for 6–12 months; their food-safety certificates (ISO 22000, FSSC 22000, HACCP); whether they test protein per serving and shelf life; sachets later, and at what minimum; and that you own the formula, in writing.",
           "Email 8 manufacturers. Start with AMHES Pharma (Greece), ERA Scientifico (Latvia), Nutrikal (Bulgaria) and Private Vitamin Lab (Slovenia).",
           "Add each one in Contacts, under Manufacturers, and set them to Emailed."],
         done: "8 manufacturers are in Contacts, marked Emailed.",
-        go: [["Manufacturers", "#contacts/maker"], ["Making the foam", "#guide/foam"]] },
+        go: [["Manufacturers", "#contacts/maker"], ["The recipe", "#guide/foam"]] },
       { id: "s0-6", t: "Set the shop price to €29.90 and plan the 2-pouch subscription",
         how: ["In your Shopify admin, open Products, then your pouch, and set the price to €29.90.",
           "Write down the subscription for later: 2 pouches every 5–6 weeks, 10% off, free delivery. You switch it on in Stage 3.",
@@ -184,7 +184,7 @@ const STAGES = [
     steps: [
       { id: "s1-1", t: "Get samples from 3 manufacturers and foam-test each",
         how: ["Ask at least 3 of the manufacturers who replied for samples of your winning recipe.",
-          "Test each one exactly like the kitchen tests: froth 20 seconds, foam height, 5 and 10 minutes, clumps, taste from 1 to 10, hot latte.",
+          "Test each one exactly like the kitchen tests: hot Americano, iced coffee, cold foam (height, 5 and 10 minutes), lumps, and taste from 1 to 10 against Coffee-mate.",
           "Write each score in their card in Contacts (Your foam test score) and set them to Samples in."],
         done: "3 samples are tested and scored in Contacts.",
         go: [["Manufacturers", "#contacts/maker"]] },
@@ -214,7 +214,7 @@ const STAGES = [
         done: "10 creators have said yes and 3 cafés have agreed to a trial.",
         go: [["Creators", "#contacts/creator"], ["Cafés", "#contacts/cafe"]] },
       { id: "s1-6", t: "Get courier quotes from BOX NOW and ACS",
-        how: ["Ask both for an e-shop quote for parcels in Greece: one 500 g pouch in a small box.",
+        how: ["Ask both for an e-shop quote for parcels in Greece: one 530 g pouch in a small box.",
           "Take the cheaper price per parcel and add what the box costs.",
           "Put that number into Numbers, Calculators, Per order, under Shipping and box."],
         done: "The calculator uses your real shipping cost.",
@@ -245,19 +245,19 @@ const STAGES = [
         done: "You have the EFET registration and your ΕΜΠΑ number.",
         go: [["Legal", "#guide/legal"]] },
       { id: "s2-4", t: "Get the Greek back label approved, then print 500 pouches",
-        how: ["Write the back label in Greek. Among other things it lists the ingredients with milk highlighted as an allergen (whey comes from milk), the net weight, the nutrition table, how to use it, the best-before date, and the company's name and address.",
+        how: ["Write the back label in Greek. Among other things it lists the ingredients with milk highlighted as an allergen (the proteins come from milk), plus soy if they contain soy lecithin, the net weight, the nutrition table, how to use it, the best-before date, and the company's name and address.",
           'Claims: "high protein" is allowed. Never write "burns fat", "boosts metabolism" or anything about weight-loss drugs.',
           "Send it to your technologist, who checks nothing is missing. Print only once they approve it.",
           "Print 500 doypacks with digital printing (Packhelp prints from 500)."],
         done: "The technologist has approved the label and the 500 pouches are ordered.",
-        go: [["Legal", "#guide/legal"], ["Making the foam", "#guide/foam"]] },
+        go: [["Legal", "#guide/legal"], ["The recipe", "#guide/foam"]] },
       { id: "s2-5", t: "Order the first batch, then lab-test it",
         how: ["Order 250–500 pouches from your chosen manufacturer.",
           "Get their shelf-life test, and print the best-before date it supports.",
           "Send a finished pouch to an accredited lab, such as TÜV Austria Hellas in Athens, to confirm the protein per serving.",
           "Check the lab result matches the label. If it doesn't, fix the label before you sell."],
         done: "The stock is with you and the lab result matches the label.",
-        go: [["Making the foam", "#guide/foam"]] },
+        go: [["The recipe", "#guide/foam"]] },
       { id: "s2-6", t: "Set up the shop: payments, BOX NOW, legal pages, product page",
         how: ["In Shopify, go to Settings, then Payments, and activate Shopify Payments. It works for stores in Greece.",
           "Install the Box Now app from the Shopify App Store and connect your BOX NOW business account, so customers can pick a locker.",
@@ -267,7 +267,7 @@ const STAGES = [
         done: "A real test order goes through, with a BOX NOW locker.",
         go: [["Legal", "#guide/legal"]] },
       { id: "s2-7", t: "Open pre-orders to the waitlist at €27.90 or more",
-        how: ["Make a founder code worth €2 off in Shopify, under Discounts, so a pouch costs €27.90. Never go lower, or you keep less than about €4 a pouch.",
+        how: ["Make a founder code worth €2 off in Shopify, under Discounts, so a pouch costs €27.90. Never go lower: launch prices are hard to raise later. At €27.90 you still keep about €8 on a single pouch.",
           "In Products, let the pouch sell before stock arrives (Continue selling when out of stock), and write the ship date on the page.",
           "Email the waitlist: the founder price, for the first 100 people, and when pouches ship.",
           "Ask each founder for honest feedback and a short video once they've tried it."],
@@ -338,8 +338,8 @@ const STAGES = [
         go: [["Taste test", "#numbers/tests"]] },
       { id: "s4-4", t: "Order a bigger batch of 1,000–2,000 pouches",
         how: ["Check your months of cash left first: stock eats cash before it earns anything.",
-          "Ask your manufacturer for the price per kg at the bigger size, and lock the whey price for 6–12 months if they offer it.",
-          "Update the whey price in Numbers, Calculators, Per order.",
+          "Ask your manufacturer for the price per kg at the bigger size, and lock the milk protein and whey prices for 6–12 months if they offer it.",
+          "Update both protein prices in Numbers, Calculators, Per order.",
           "Order 1,000–2,000 pouches."],
         done: "The batch is ordered and the calculator shows your new cost.",
         go: [["Per-order calculator", "#numbers/order"]] },
@@ -420,14 +420,14 @@ const BUILTIN = new Map();
 STAGES.forEach(st => st.steps.forEach(x => BUILTIN.set(x.id, { id: x.id, text: x.t, how: x.how, done: x.done, go: x.go || [], stage: st.n, own: false })));
 // Ready-to-send messages for the steps where you contact someone. Fill in the [brackets] before sending.
 const MSGS = {
-  "s0-2": { label: "Email to trademark attorneys", text: "Hello,\n\nI'm starting Fowm, a protein coffee foam powder: whey protein you froth into cold foam for coffee. I'd like to register \"Fowm\" as an EU trademark in classes 29 and 30.\n\nCould you give me a written opinion on whether it can be registered (I know it sounds like \"foam\"), and a fixed price for the opinion and for filing?\n\nThank you,\nFaris Keblawi" },
-  "s0-3": [{ label: "Email to food technologists", text: "Hello,\n\nI'm launching Fowm in Athens: a whey protein powder you froth into cold foam for coffee, sold in 500 g pouches with 20 servings (15 g of protein a serving).\n\nCould you send me a price for:\n1. Confirming it is sold as a food (EFET), not a food supplement\n2. Checking the Greek back label\n3. Filing the company's EFET registration once the company is set up\n\nThank you,\nFaris Keblawi" },
-    { label: "Στα ελληνικά", text: "Καλησπέρα σας,\n\nΕτοιμάζω το Fowm στην Αθήνα: σκόνη πρωτεΐνης ορού γάλακτος που χτυπιέται σε κρύο αφρό για τον καφέ, σε συσκευασίες των 500 g με 20 δόσεις (15 g πρωτεΐνη ανά δόση).\n\nΘα μπορούσατε να μου στείλετε προσφορά για:\n1. Επιβεβαίωση ότι κατατάσσεται ως τρόφιμο (ΕΦΕΤ) και όχι ως συμπλήρωμα διατροφής\n2. Έλεγχο της ελληνικής ετικέτας\n3. Την καταχώριση της εταιρείας στον ΕΦΕΤ, όταν συσταθεί η εταιρεία\n\nΕυχαριστώ,\nFaris Keblawi" }],
-  "s0-5": { label: "Email to manufacturers", text: "Hello,\n\nI'm launching Fowm, a protein coffee foam powder: whey protein isolate with flavour that you froth into cold foam for coffee. 500 g pouches, 20 servings, 15 g of protein a serving. First order: 250–500 pouches.\n\nCould you tell me:\n1. Your minimum order, and the price per kg at 250, 500 and 1,000 kg\n2. What samples cost and how fast you can send them\n3. Whether you can buy the whey isolate and fix its price for 6–12 months\n4. Your food-safety certificates (ISO 22000, FSSC 22000 or HACCP)\n5. Whether you test protein per serving and shelf life\n6. Whether you can pack single-serve sachets later, and the minimum\n7. That I would own the formula, in writing\n\nThank you,\nFaris Keblawi\ngetfowm.com" },
+  "s0-2": { label: "Email to trademark attorneys", text: "Hello,\n\nI'm starting Fowm, a high-protein coffee creamer powder made from milk proteins: it stirs into hot coffee and froths into cold foam. I'd like to register \"Fowm\" as an EU trademark in classes 29 and 30.\n\nCould you give me a written opinion on whether it can be registered (I know it sounds like \"foam\"), and a fixed price for the opinion and for filing?\n\nThank you,\nFaris Keblawi" },
+  "s0-3": [{ label: "Email to food technologists", text: "Hello,\n\nI'm launching Fowm in Athens: a high-protein coffee creamer powder made from milk proteins, which stirs into hot coffee and froths into cold foam. It comes in 530 g pouches with 20 servings (15 g of protein a serving).\n\nCould you send me a price for:\n1. Confirming it is sold as a food (EFET), not a food supplement\n2. Checking the Greek back label\n3. Filing the company's EFET registration once the company is set up\n\nThank you,\nFaris Keblawi" },
+    { label: "Στα ελληνικά", text: "Καλησπέρα σας,\n\nΕτοιμάζω το Fowm στην Αθήνα: λευκαντικό καφέ σε σκόνη (creamer) από πρωτεΐνες γάλακτος, με υψηλή περιεκτικότητα σε πρωτεΐνη, που διαλύεται στον ζεστό καφέ και χτυπιέται σε κρύο αφρό. Κυκλοφορεί σε συσκευασίες των 530 g με 20 δόσεις (15 g πρωτεΐνη ανά δόση).\n\nΘα μπορούσατε να μου στείλετε προσφορά για:\n1. Επιβεβαίωση ότι κατατάσσεται ως τρόφιμο (ΕΦΕΤ) και όχι ως συμπλήρωμα διατροφής\n2. Έλεγχο της ελληνικής ετικέτας\n3. Την καταχώριση της εταιρείας στον ΕΦΕΤ, όταν συσταθεί η εταιρεία\n\nΕυχαριστώ,\nFaris Keblawi" }],
+  "s0-5": { label: "Email to manufacturers", text: "Hello,\n\nI'm launching Fowm, a high-protein coffee creamer powder. It stirs into hot coffee and froths into cold foam. Per 26.5 g serving: 15 g milk protein concentrate, 3 g whey protein isolate, 5 g coconut milk powder, 3 g maltodextrin and 0.5 g dipotassium phosphate, for 15 g of protein. 530 g pouches, 20 servings. First order: 250–500 pouches.\n\nCould you tell me:\n1. Your minimum order, and the price per kg at 250, 500 and 1,000 kg\n2. What samples cost and how fast you can send them\n3. Whether you can buy the milk protein and whey isolate, and fix their prices for 6–12 months\n4. Your food-safety certificates (ISO 22000, FSSC 22000 or HACCP)\n5. Whether you test protein per serving and shelf life\n6. Whether you can pack single-serve sachets later, and the minimum\n7. That I would own the formula, in writing\n\nThank you,\nFaris Keblawi\ngetfowm.com" },
   "s1-2": [{ label: "What to say to each taster", text: "Got one minute for a blind taste test? Try cup A and cup B.\n\nFrom 1 to 10, how good is each one?\n\nCup [B] had Fowm: a protein foam, 15 g of protein a serving. Would you buy it at €29.90 for 20 servings?\n\nWant first access when it launches? Scan the code to join the waitlist." },
     { label: "Στα ελληνικά", text: "Έχεις ένα λεπτό για ένα τυφλό τεστ γεύσης; Δοκίμασε το ποτήρι Α και το ποτήρι Β.\n\nΑπό το 1 έως το 10, πόσο καλό είναι το καθένα;\n\nΤο ποτήρι [Β] είχε Fowm: αφρό πρωτεΐνης, 15 g πρωτεΐνη ανά δόση. Θα το αγόραζες με €29,90 για 20 δόσεις;\n\nΘες να το μάθεις πρώτος όταν βγει; Σκάναρε τον κωδικό για τη λίστα αναμονής." }],
   "s1-5": { label: "Message to creators", text: "Hey [name]! I'm launching Fowm in Athens: protein foam for your freddo, 15 g of protein in 20 seconds.\n\nWant your own discount code? You'd get 10% of every sale it brings, paid monthly, with no fixed fee. I'll send you a pouch to try.\n\nIf you like it, I'd love to use your best videos as ads too, with your OK in writing." },
-  "s1-6": { label: "Email to BOX NOW and ACS", text: "Hello,\n\nI'm opening an online shop (getfowm.com) selling 500 g pouches in small boxes, shipped within Greece.\n\nCould you send me your e-shop prices per parcel, for lockers and home delivery if you offer both, and what you need to open a business account?\n\nThank you,\nFaris Keblawi" },
+  "s1-6": { label: "Email to BOX NOW and ACS", text: "Hello,\n\nI'm opening an online shop (getfowm.com) selling 530 g pouches in small boxes, shipped within Greece.\n\nCould you send me your e-shop prices per parcel, for lockers and home delivery if you offer both, and what you need to open a business account?\n\nThank you,\nFaris Keblawi" },
   "s2-7": { label: "Email to the waitlist", text: "Subject: Fowm is here: founder price for the first 100\n\nHi! You joined the Fowm waitlist, so you get first access.\n\nFowm turns your freddo into a protein freddo: one scoop, 20 seconds of frothing, 15 g of protein.\n\nFounder price for the first 100 people: €27.90 instead of €29.90, with the code [CODE]. Pouches ship on [DATE].\n\nOrder at getfowm.com\n\nThank you for being first,\nFaris" },
   "s3-2": { label: "Message asking for a review", text: "Hi [name]! How are you finding Fowm?\n\nIf you like it, could you leave a short review on getfowm.com? And if you film a 10-second video of the foam pour, I'd love to repost it, with your OK.\n\nThank you!" },
   "s3-3": { label: "Brief for creators", text: "Your code: [CODE]. You get 10% of every sale it brings, paid monthly.\n\nVideo ideas that work:\n- The slow foam pour\n- Plain freddo vs protein freddo\n- 15 g of protein in 20 seconds\n- A café's €4.60 protein freddo vs yours\n\nPlease say Fowm is a protein coffee foam, and don't claim anything beyond \"high protein\": no fat burning, no metabolism, no weight loss." },
@@ -471,7 +471,7 @@ const KPIS = [
     fields: [{ k: "kept", label: "Kept per order", unit: "€", pre: true, min: -100, max: 1000 }],
     lines: "Green: €7+. Yellow: €4–7. Red: under €4.",
     grade: v => v.kept === undefined ? null : v.kept >= 7 ? "go" : v.kept >= 4 ? "fix" : "stop",
-    fix: "Raise the price, push bundles, or renegotiate whey and shipping. Don't buy ads until it's green." },
+    fix: "Raise the price, push bundles, or renegotiate protein prices and shipping. Don't buy ads until it's green." },
   { id: "cac", name: "Cost to win one customer",
     fields: [{ k: "cac", label: "Cost per new customer", unit: "€", pre: true, min: 0, max: 1000 }],
     lines: "Green: under the first order's kept money. Yellow: up to 3 orders' kept money. Red: more than 3 orders' kept money.",
@@ -499,12 +499,12 @@ const CHART_META = {
 };
 
 const KTESTS = [
-  { v: "A", what: "Whey isolate + flavour", why: "Should foam best" },
-  { v: "B", what: "Version A + a tiny pinch of xanthan gum", why: "Thicker foam that lasts longer" },
-  { v: "C", what: "Your current 50/50 whey and pea + coconut", why: "The control to beat" },
-  { v: "D", what: "The winner, lightly sweetened", why: "Plain may taste flat on a freddo" }
+  { v: "A", what: "Recipe v3, exactly as written", why: "The final recipe. Run all 4 tests on it first" },
+  { v: "B", what: "v3 plus the first fix it needs", why: "Only if A fails a test. Change one thing, from the fix list in the Guide" },
+  { v: "C", what: "B plus the next fix", why: "Only if B still fails a test" },
+  { v: "D", what: "The best jar, with 1–2 drops of stevia", why: "Coffee-mate Original isn't sweet, but check whether sweet wins" }
 ];
-const KYN = [["s5", "Still foamy after 5 minutes?"], ["s10", "Still foamy after 10 minutes?"], ["clumps", "Any clumps?"], ["curdle", "Curdles in a hot latte?"]];
+const KYN = [["s5", "Foam still standing after 5 minutes?"], ["s10", "Still standing after 10 minutes?"], ["clumps", "Any lumps or grit?"], ["curdle", "White flecks in a hot Americano?"]];
 
 const CTYPES = {
   maker: { label: "Manufacturers", one: "manufacturer", statuses: ["To contact", "Emailed", "Samples coming", "Samples in", "Quoted", "Chosen", "Not a fit"],
@@ -545,7 +545,7 @@ const CHAPTERS = [
   ["start", "Start here", "The plan in eight lines, and the honest odds"],
   ["run", "Running Fowm", "Your week, stock, cash, customers, and what never to do"],
   ["market", "The market", "Why protein foam, why Greece, and who else is out there"],
-  ["foam", "Making the foam", "How foam works, manufacturers, packaging, first checks"],
+  ["foam", "The recipe", "Recipe v3, why it works, kitchen tests, manufacturers, packaging"],
   ["money", "The money math", "Price, VAT, what you keep and the numbers to watch"],
   ["selling", "Selling it", "Champions, creators, cafés, Skroutz, then shops"],
   ["brands", "Winning brands", "What Grüns, Poppi, Grenade and others did"],
@@ -637,7 +637,7 @@ function loadState() {
 let S = loadState();
 
 const UI_DEFAULT = { numTab: "checkin", calcTab: "order", conTab: "maker", tSample: 1, open: {},
-  calc: { price: 29.9, units: 2, disc: 0, vat: 24, whey: 27, ship: 3.5 }, budget: "3",
+  calc: { price: 29.9, units: 2, disc: 0, vat: 24, mpc: 14, whey: 32, ship: 3.5 }, budget: "3",
   val: { s: 325, m: 15, own: 100, hot: false }, dil: { raise: 150000, pre: 316, own: 100 } };
 function loadUI() {
   const u = readLS(UIKEY) || {}, old = readLS("fowm-blueprint/ui") || {};
@@ -650,7 +650,9 @@ function loadUI() {
     tSample: Number.isInteger(src.tSample) && src.tSample >= 1 && src.tSample <= 5 ? src.tSample : 1,
     open: isObj(src.open) ? Object.fromEntries(Object.entries(src.open).filter(([k, x]) => /^[0-6]$/.test(k) && typeof x === "boolean")) : {},
     calc: { price: clamp(c.price, 19.9, 39.9, 29.9), units: [1, 2, 3].includes(c.units) ? c.units : 2, disc: [0, 10, 15, 20, 25].includes(c.disc) ? c.disc : 0,
-      vat: [24, 13].includes(c.vat) ? c.vat : 24, whey: clamp(c.whey, 15, 40, 27), ship: clamp(c.ship, 0, 6, 3.5) },
+      vat: [24, 13].includes(c.vat) ? c.vat : 24, mpc: clamp(c.mpc, 6, 25, 14),
+      // saved before v3 with the old €27 default: move to today's whey price
+      whey: c.mpc === undefined && c.whey === 27 ? 32 : clamp(c.whey, 15, 45, 32), ship: clamp(c.ship, 0, 6, 3.5) },
     budget: src.budget === "15" ? "15" : "3",
     val: { s: clamp(v.s, 0, 1000, 325), m: clamp(v.m, 0, 40, 15), own: clamp(v.own, 5, 100, 100), hot: v.hot === true },
     dil: { raise: clamp(dl.raise, 25000, 2000000, 150000), pre: clamp(dl.pre, 0, 1000, 316), own: clamp(dl.own, 10, 100, 100) }
@@ -2045,7 +2047,7 @@ function renderTests(box) {
   }
 
   // kitchen tests
-  box.append(sectionHead("Kitchen tests"), h("p", { class: "hint", style: "margin:-4px 4px 12px", text: "Four versions, A to D. The leader (my rule): no clumps, still foamy after 5 minutes, then the best taste. Ties go to the taller foam." }));
+  box.append(sectionHead("Kitchen tests"), h("p", { class: "hint", style: "margin:-4px 4px 12px", text: "Jar A is Recipe v3. B and C are for fixes, D is a sweet version. The leader (my rule): no lumps, no flecks in hot coffee, foam still standing at 5 minutes, then the best taste. Ties go to the taller foam." }));
   const leadV = kitchenLeader();
   const testBody = (T) => {
     const t = S.tests[T.v] || {};
@@ -2064,7 +2066,7 @@ function renderTests(box) {
       inp.addEventListener("change", () => { inp._check(true); if (!inp.classList.contains("bad")) rerenderKeepScroll(); });
       return h("div", { class: "t-field-w" }, h("div", { class: "t-field" }, h("span", { text: label }), inp), err);
     };
-    b.append(num("h", "Foam height after 20 seconds", "cm", 30));
+    b.append(num("h", "Foam height after 30 seconds", "cm", 30));
     for (const [f, q] of KYN) {
       const grp = h("div", { class: "ynmini", role: "group", "aria-label": q });
       for (const [val, txt] of [[true, "Yes"], [false, "No"]]) grp.append(h("button", { type: "button", "aria-pressed": String(t[f] === val), text: txt, onclick: () => {
@@ -2080,7 +2082,8 @@ function renderTests(box) {
     const bits = [];
     if (t.taste !== undefined) bits.push("taste " + t.taste + "/10");
     if (t.h !== undefined) bits.push(t.h + " cm of foam");
-    if (t.clumps === true) bits.push("clumps");
+    if (t.clumps === true) bits.push("lumps");
+    if (t.curdle === true) bits.push("flecks in hot coffee");
     if (t.s5 === false) bits.push("foam gone by 5 minutes");
     const sum = bits.length ? bits.join(", ") : (Object.keys(t).length ? "Partly logged" : "Not tested yet");
     const isOpen = !!UI["k" + T.v];
@@ -2101,16 +2104,18 @@ function renderTests(box) {
   }
 }
 function kitchenLeader() {
-  const c = KTESTS.filter(T => { const t = S.tests[T.v] || {}; return t.taste !== undefined && t.clumps !== true && t.s5 !== false; })
+  const c = KTESTS.filter(T => { const t = S.tests[T.v] || {}; return t.taste !== undefined && t.clumps !== true && t.curdle !== true && t.s5 !== false; })
     .sort((a, b) => { const x = S.tests[a.v], y = S.tests[b.v]; return (y.taste - x.taste) || ((y.h || 0) - (x.h || 0)) || ((y.s10 === true) - (x.s10 === true)); });
   return c.length ? c[0].v : null;
 }
 
 /* calculators */
-const COST = { gramsWPI: 340, other: 0.60, markup: 1.30, pack: 1.40, feePct: 0.021, feeFix: 0.30 };
-const pouchCost = (whey) => (whey * COST.gramsWPI / 1000 + COST.other) * COST.markup + COST.pack;
+// Recipe v3, per 530 g pouch (20 scoops): 300 g milk protein, 60 g whey isolate, plus about €0.60 of
+// coconut milk powder, maltodextrin and DKP. My estimate until manufacturers quote.
+const COST = { gMPC: 300, gWPI: 60, other: 0.60, markup: 1.30, pack: 1.40, feePct: 0.021, feeFix: 0.30 };
+const pouchCost = (mpc, whey) => ((mpc * COST.gMPC + whey * COST.gWPI) / 1000 + COST.other) * COST.markup + COST.pack;
 function calcOrder(c) {
-  const gross = c.price * c.units * (1 - c.disc / 100), net = gross / (1 + c.vat / 100), unit = pouchCost(c.whey);
+  const gross = c.price * c.units * (1 - c.disc / 100), net = gross / (1 + c.vat / 100), unit = pouchCost(c.mpc, c.whey);
   const product = unit * c.units, fee = gross * COST.feePct + COST.feeFix, kept = net - product - fee - c.ship;
   return { gross, net, vat: gross - net, unit, product, fee, ship: c.ship, kept };
 }
@@ -2173,18 +2178,20 @@ function calcOrderCard(card) {
   const units = h("div", { class: "ctrl" }, h("div", { class: "ctrl-h" }, h("span", { text: "Pouches per order" })), unitsG);
   const disc = h("div", { class: "ctrl" }, h("div", { class: "ctrl-h" }, h("span", { text: "Discount" })), discG);
   const vat = h("div", { class: "ctrl" }, h("div", { class: "ctrl-h" }, h("span", { text: "VAT rate" })), vatG, h("p", { class: "hint", style: "margin:0", text: "Not settled yet. Your accountant decides which applies." }));
-  const whey = slider("Whey isolate price", { min: "15", max: "40", step: "0.5", value: String(c.whey) }, (v) => { UI.calc.whey = v; upd(); });
+  const mpc = slider("Milk protein price", { min: "6", max: "25", step: "0.5", value: String(c.mpc) }, (v) => { UI.calc.mpc = v; upd(); });
+  const whey = slider("Whey isolate price", { min: "15", max: "45", step: "0.5", value: String(c.whey) }, (v) => { UI.calc.whey = v; upd(); });
   const ship = slider("Shipping and box, per order", { min: "0", max: "6", step: "0.25", value: String(c.ship) }, (v) => { UI.calc.ship = v; upd(); });
   const serving = h("p", { class: "hint", style: "margin:0 0 6px" });
   price.wrap.append(serving);
-  whey.wrap.append(h("p", { class: "hint", style: "margin:0 0 6px", text: "€27 a kilo is the 2026 record range. Whey is most of what a pouch costs." }));
+  mpc.wrap.append(h("p", { class: "hint", style: "margin:0 0 6px", html: 'Milk protein (MPC85) cost about €14 a kilo in Europe in September 2026 (<a href="https://foodcom.pl/en/european-dairy-market-cheese-smp-and-cream-supported-by-limited-milk-availability-316th-edition-of-the-foodcom-dairy-newsletter/" target="_blank" rel="noopener">Foodcom</a>). It\'s most of what a pouch costs.' }));
+  whey.wrap.append(h("p", { class: "hint", style: "margin:0 0 6px", text: "Whey isolate was €32–32.50 a kilo then, near a record. A pouch uses only 60 g." }));
   ship.wrap.append(h("p", { class: "hint", style: "margin:0 0 6px", text: "€3.50 until you get a courier quote from BOX NOW or ACS." }));
-  card.append(price.wrap, units, disc, vat, whey.wrap, ship.wrap, h("details", { class: "more" }, h("summary", { text: "What one pouch costs you" }), costs, h("p", { class: "hint", html: 'My estimate until manufacturers quote. Card fees on Shopify Payments run about 2.1% + €0.30 per order in Germany (<a href="https://qualimero.com/blog/shopify-gebuehren" target="_blank" rel="noopener">Qualimero</a>).' })), cac);
-  [price.inp, whey.inp, ship.inp].forEach(fillRange);
+  card.append(price.wrap, units, disc, vat, mpc.wrap, whey.wrap, ship.wrap, h("details", { class: "more" }, h("summary", { text: "What one pouch costs you" }), costs, h("p", { class: "hint", html: 'My estimate until manufacturers quote. Card fees on Shopify Payments run about 2.1% + €0.30 per order in Germany (<a href="https://qualimero.com/blog/shopify-gebuehren" target="_blank" rel="noopener">Qualimero</a>).' })), cac);
+  [price.inp, mpc.inp, whey.inp, ship.inp].forEach(fillRange);
   function upd() {
     saveUI();
     const c = UI.calc, o = calcOrder(c);
-    price.out.textContent = euro(c.price); whey.out.textContent = euro(c.whey) + " a kilo"; ship.out.textContent = euro(c.ship);
+    price.out.textContent = euro(c.price); mpc.out.textContent = euro(c.mpc) + " a kilo"; whey.out.textContent = euro(c.whey) + " a kilo"; ship.out.textContent = euro(c.ship);
     serving.textContent = "That's " + euro(c.price * (1 - c.disc / 100) / 20) + " a serving" + (c.disc ? " after the discount" : "") + ". A café protein freddo costs €4.60.";
     counter(big, "kept", o.kept, euro, { dur: 420 });
     const g = o.kept >= 7 ? "go" : o.kept >= 4 ? "fix" : "stop";
@@ -2197,10 +2204,11 @@ function calcOrderCard(card) {
       h("li", null, h("i", { style: "background:transparent" }), h("span", { text: "The customer pays" }), h("b", { text: euro(o.gross) })),
       ...parts.slice(0, 4).map(([l, v, col]) => h("li", null, h("i", { style: "background:" + col }), h("span", { text: l }), h("b", { text: euro(v) }))),
       h("li", { class: "total" }, h("i", { style: "background:var(--go)" }), h("span", { text: parts[4][0] }), h("b", { text: euro(o.kept) })));
-    const wpi = c.whey * COST.gramsWPI / 1000, ing = wpi + COST.other;
+    const mp = c.mpc * COST.gMPC / 1000, wp = c.whey * COST.gWPI / 1000, ing = mp + wp + COST.other;
     costs.replaceChildren(
-      h("li", { text: "Whey isolate: 340g at " + euro(c.whey) + " a kilo = " + euro(wpi) + "." }),
-      h("li", { text: "Other ingredients (flavour, sweetener, phosphate, gum): about " + euro(COST.other) + "." }),
+      h("li", { text: "Milk protein: 300 g at " + euro(c.mpc) + " a kilo = " + euro(mp) + "." }),
+      h("li", { text: "Whey isolate: 60 g at " + euro(c.whey) + " a kilo = " + euro(wp) + "." }),
+      h("li", { text: "Other ingredients (coconut milk powder, maltodextrin, DKP): about " + euro(COST.other) + "." }),
       h("li", { text: "Manufacturer's blending, filling and margin: about +30%, so " + euro(ing * (COST.markup - 1)) + "." }),
       h("li", { text: "Printed pouch, scoop and delivery to you: about " + euro(COST.pack) + "." }),
       h("li", { text: "Total: about " + euro(o.unit) + " a pouch." }));
@@ -2218,9 +2226,9 @@ const BUDGET = [
   { what: "Company, accountant, social security (from month 4)", a: 0, an: "Not yet", b: 2000 },
   { what: "Food technologist, label check, EFET", a: 400, b: 500 },
   { what: "Lab test", a: 0, an: "Not yet", b: 500 },
-  { what: "First production run", a: 0, an: "Not yet", b: 7000, bn: "About 500 pouches" },
+  { what: "First production run", a: 0, an: "Not yet", b: 5100, bn: "About 500 pouches" },
   { what: "Shopify, email app, shipping boxes", a: 150, b: 600 },
-  { what: "Left over", a: 850, an: "Safety money", b: 400, bn: "Roughly what's left", spare: true }
+  { what: "Left over", a: 850, an: "Safety money", b: 2650, bn: "Roughly what's left", spare: true }
 ];
 function calcBudgetCard(card) {
   // switching budgets keeps the rows: the bars grow or shrink and the amounts roll
@@ -2239,7 +2247,7 @@ function calcBudgetCard(card) {
   seg.style.margin = "12px 0 6px";
   card.append(h("p", { class: "card-title", text: "How to spend the first 6 months" }), seg,
     h("ul", { class: "bars" }, rows.map(x => x.li)),
-    h("p", { class: "hint", html: 'Only the trademark fees are official prices (<a href="https://www.dury.de/en/european-tradmark-law/1077-eu-trademark-registration-2026-a-complete-guide-for-international-businesses" target="_blank" rel="noopener">EUIPO fees</a>). Everything else is my estimate, so swap in real quotes as you get them. With €3k you can\'t produce stock yet, but you can prove people want Fowm and take pre-orders. Around €8k is the smallest real launch (about 250 pouches).' }));
+    h("p", { class: "hint", html: 'Only the trademark fees are official prices (<a href="https://www.dury.de/en/european-tradmark-law/1077-eu-trademark-registration-2026-a-complete-guide-for-international-businesses" target="_blank" rel="noopener">EUIPO fees</a>). Everything else is my estimate, so swap in real quotes as you get them. With €3k you can\'t produce stock yet, but you can prove people want Fowm and take pre-orders. Around €7k is the smallest real launch (about 250 pouches).' }));
 }
 const salesFrom = (v) => roundNice(50000 * Math.pow(10000, v / 1000));
 const sliderFromSales = (x) => Math.round(1000 * Math.log10(x / 50000) / 4);
